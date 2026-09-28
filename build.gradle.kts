@@ -9,4 +9,27 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    // LF everywhere, matching .gitattributes (Windows batch files are not formatted).
+    lineEndings = com.diffplug.spotless.LineEnding.UNIX
+    val ktlintVersion = libs.versions.ktlint.get()
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
+        ktlint(ktlintVersion)
+    }
+    kotlinGradle {
+        target("**/*.kts")
+        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
+        ktlint(ktlintVersion)
+    }
+    format("xml") {
+        target("**/*.xml")
+        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**", ".idea/**")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }

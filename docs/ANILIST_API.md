@@ -7,7 +7,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - One endpoint: `POST https://graphql.anilist.co`, JSON body `{ "query": ..., "variables": ... }`, headers `Content-Type: application/json`, `Accept: application/json`.
 - Authenticated requests add `Authorization: Bearer <token>`. Guest requests send no header.
 - Schema: download via Apollo introspection (`./gradlew :core:network:downloadAnilistApolloSchemaFromIntrospection`) and commit `schema.graphqls`. Refresh it when a query needs a new field.
-- Operations live in `core/network/src/main/graphql/com/tobfd/tsuzuki/core/network/` (moved there from the handoff's `graphql/` folder in M2), next to `schema.graphqls` and `extra.graphqls`. Apollo codegen validates them on every build. Known warning: `User.stats` (activity history in `UserProfile`) is deprecated in the schema; check for a replacement in M9.
+- Operations live in `core/network/src/main/graphql/com/tobfd/tsuzuki/core/network/` (moved there from the handoff's `graphql/` folder in M2), next to `schema.graphqls` and `extra.graphqls`. Apollo codegen validates them on every build. Known warning: `User.stats` (activity history in `UserProfile`) is deprecated in the schema; it stays until M9, which checks for a replacement (roadmap item).
 
 ## Login (OAuth implicit grant)
 

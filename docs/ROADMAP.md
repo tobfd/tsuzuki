@@ -120,6 +120,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Own profile (Profile tab) and other users (route `UserRoute(name)`).
 - [ ] Banner, avatar, name, stats (total anime, episodes watched, days watched, mean score), tabs Overview / Favourites / Stats / Social.
 - [ ] Overview: activity history heatmap (12 weeks, `User.stats.activityHistory`), recent activity.
+- [ ] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided by Tobias, 2026-09-28).
 - [ ] Favourites: anime, manga, characters, staff; empty state.
 - [ ] Stats: anime by status, score overview.
 - [ ] Social: following / followers (first page); follow / unfollow on other profiles.

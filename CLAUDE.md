@@ -65,7 +65,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Paging | Paging 3 (`paging-compose`) | Feeds, search, notifications. |
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
-| Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy | Prefer hand-written fakes over mocks for repositories. |
+| Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture
@@ -154,7 +154,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Unit tests for every ViewModel (state transitions with Turbine), every repository (with fake Apollo responses / in-memory Room), mappers, score format conversion, JWT and redirect parsing, the rate limiter and the mutation queue.
 - Compose UI tests for the list editor sheet, +1 with undo, and login redirect handling.
 - Test names describe behavior: `plusOne_whenReachingTotal_marksCompletedAndOffersUndo`.
-- `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design).
+- `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design), `MainDispatcherRule`, fakes like `FakeSessionRepository`, and `InMemoryDataStore`. Unit tests never use the file-backed DataStore: it can't replace its file on Windows JVMs, so such tests fail locally while CI (Linux) passes.
 
 ## Don'ts
 

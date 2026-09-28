@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    api(project(":core:common"))
     api(project(":core:designsystem"))
     api(project(":core:model"))
 

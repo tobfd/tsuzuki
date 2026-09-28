@@ -4,22 +4,22 @@ Work top to bottom. Each milestone ends in a working app that Tobias can install
 
 Before M0, Tobias does two things by hand:
 
-- [ ] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
+- [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
 - [ ] Create the GitHub repository (private) and copy this handoff folder into its root.
 
 ---
 
 ## M0 · Project setup
 
-- [ ] New Android Studio project "Tsuzuki", Empty Compose Activity, package `com.tobfd.tsuzuki`, minSdk 31, target/compile 37, Kotlin DSL.
-- [ ] `gradle/libs.versions.toml` with the stack from `CLAUDE.md` (latest stable versions, Compose BOM 2026.09.00).
-- [ ] `build-logic` convention plugins: `tsuzuki.android.application`, `tsuzuki.android.library`, `tsuzuki.android.compose`, `tsuzuki.android.feature`, `tsuzuki.hilt`, `tsuzuki.room`.
-- [ ] Spotless + ktlint, Android lint with `warningsAsErrors` off but `abortOnError` on.
-- [ ] Hilt application class, `enableEdgeToEdge()`, splash screen, predictive back flag in the manifest.
-- [ ] `local.properties` → `BuildConfig.ANILIST_CLIENT_ID`; build fails with a clear message if it is missing.
-- [ ] Placeholder adaptive app icon + monochrome layer (themed icon). Name "Tsuzuki".
-- [ ] GitHub Actions workflow: `./gradlew spotlessCheck build` on every PR (uses a dummy client ID).
-- [ ] `README.md` updated with setup steps.
+- [x] New Android Studio project "Tsuzuki", Empty Compose Activity, package `com.tobfd.tsuzuki`, minSdk 31, target/compile 37, Kotlin DSL.
+- [x] `gradle/libs.versions.toml` with the stack from `CLAUDE.md` (latest stable versions, Compose BOM 2026.09.00).
+- [x] `build-logic` convention plugins: `tsuzuki.android.application`, `tsuzuki.android.library`, `tsuzuki.android.compose`, `tsuzuki.android.feature`, `tsuzuki.hilt`, `tsuzuki.room`.
+- [x] Spotless + ktlint, Android lint with `warningsAsErrors` off but `abortOnError` on.
+- [x] Hilt application class, `enableEdgeToEdge()`, splash screen, predictive back flag in the manifest.
+- [x] `local.properties` → `BuildConfig.ANILIST_CLIENT_ID`; build fails with a clear message if it is missing.
+- [x] Placeholder adaptive app icon + monochrome layer (themed icon). Name "Tsuzuki".
+- [x] GitHub Actions workflow: `./gradlew spotlessCheck build` on every PR (uses a dummy client ID).
+- [x] `README.md` updated with setup steps.
 
 **Done when:** CI is green, the app installs and shows an empty screen in dynamic color, light and dark.
 

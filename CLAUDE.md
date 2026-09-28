@@ -53,11 +53,11 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 |---|---|---|
 | Language | Kotlin (K2), Kotlin Serialization, Coroutines + Flow | |
 | UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. |
-| Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. If it turns out not to be stable, fall back to Navigation Compose with type-safe `@Serializable` routes and tell Tobias. |
-| GraphQL | Apollo Kotlin (latest stable major) + normalized cache (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. |
+| Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. Stable since 1.0 (M0 pins 1.2.0), so no Navigation Compose fallback is needed. |
+| GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |
 | DI | Hilt (KSP) | `hilt-navigation-compose` or the Nav3 ViewModel integration for scoped ViewModels. |
-| Local data | Room (KSP) | Own lists (offline first) and the pending-mutation queue. |
+| Local data | Room 3 (`androidx.room3`, KSP) | Own lists (offline first) and the pending-mutation queue. Room 3 is the current stable major: package `androidx.room3`, Kotlin codegen only, DAOs are `suspend` or return `Flow`. |
 | Settings | DataStore (Preferences) | App settings. |
 | Token storage | DataStore + Tink AEAD with an Android Keystore master key | `EncryptedSharedPreferences` is deprecated; do not use it. |
 | Background | WorkManager (+ Hilt worker factory) | Flush queued mutations, periodic list sync. |
@@ -66,7 +66,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy | Prefer hand-written fakes over mocks for repositories. |
-| Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | |
+| Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture
 

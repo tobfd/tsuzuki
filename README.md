@@ -2,18 +2,45 @@
 
 An unofficial, native Android client for [AniList](https://anilist.co), built with Kotlin, Jetpack Compose and Material 3. Not affiliated with AniList.
 
-**Status:** planning done, implementation starts with milestone M0 (see `docs/ROADMAP.md`).
+**Status:** M0 (project setup) done; next is M1, the design system (see `docs/ROADMAP.md`).
 
 ## Getting started
 
 1. Register an API client at https://anilist.co/settings/developer
    - Name: `Tsuzuki for AniList`
    - Redirect URL: `tsuzuki://auth`
-2. Add the client ID to `local.properties` (never committed):
+2. Add the client ID to `local.properties` in the project root (the file is git-ignored and never committed):
    ```properties
    anilist.clientId=12345
    ```
-3. Open the project in Android Studio (latest stable) and run the `app` configuration on a device with Android 12 or newer.
+   It reaches the code as `BuildConfig.ANILIST_CLIENT_ID`. Without it, the build stops with an error that says what to add.
+3. Open the project in Android Studio (latest stable) and run the `app` configuration on a device with Android 12 or newer, or use the command line:
+   ```bash
+   ./gradlew installDebug
+   ```
+
+## Commands
+
+```bash
+./gradlew assembleDebug                 # build the app
+./gradlew installDebug                  # install on the connected device / emulator
+./gradlew testDebugUnitTest             # unit tests
+./gradlew connectedDebugAndroidTest     # instrumented + Compose UI tests (device needed)
+./gradlew lint                          # Android lint
+./gradlew spotlessApply                 # format Kotlin, Gradle scripts and XML (ktlint)
+./gradlew spotlessCheck build           # what CI runs
+```
+
+## Project layout
+
+- `app`: the application module.
+- `build-logic`: Gradle convention plugins (`tsuzuki.android.application`, `tsuzuki.android.library`, `tsuzuki.android.compose`, `tsuzuki.android.feature`, `tsuzuki.hilt`, `tsuzuki.room`). New modules apply these instead of configuring Android, Kotlin, Compose, Hilt or Room themselves.
+- `gradle/libs.versions.toml`: every dependency and plugin version.
+- `core/*` and `feature/*` modules are added by the milestone that needs them (see `CLAUDE.md`).
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs `./gradlew spotlessCheck build` on every pull request and on pushes to `main`, with a dummy client ID.
 
 ## Docs
 
@@ -25,8 +52,8 @@ An unofficial, native Android client for [AniList](https://anilist.co), built wi
 
 ## Requirements
 
-- minSdk 31 (Android 12), targetSdk 37 (Android 17)
-- JDK 17+, Android Studio latest stable
+- minSdk 31 (Android 12), targetSdk and compileSdk 37 (Android 17)
+- Android Studio latest stable. Gradle runs on JDK 25 (`gradle/gradle-daemon-jvm.properties`) and downloads it automatically if it is not installed; any JDK 17+ can start `./gradlew`.
 
 ## License
 

@@ -52,7 +52,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Area | Library | Notes |
 |---|---|---|
 | Language | Kotlin (K2), Kotlin Serialization, Coroutines + Flow | |
-| UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. material3 1.4.0 (the version in the BOM) keeps the Expressive APIs (`MaterialExpressiveTheme`, `MotionScheme`, shape morphs) internal; they are public only in the 1.5 alphas. Ask Tobias before moving to an alpha. |
+| UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. material3 1.4.0 (the version in the BOM) keeps the Expressive APIs (`MaterialExpressiveTheme`, `MotionScheme`, shape morphs) internal; they are public only in the 1.5 alphas. Decided: stay on stable; expressive motion follows in M12 once material3 1.5 is stable. |
 | Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. Stable since 1.0 (M0 pins 1.2.0), so no Navigation Compose fallback is needed. |
 | GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |

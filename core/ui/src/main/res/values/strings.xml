@@ -13,12 +13,19 @@
     <string name="ui_score_liked">Liked</string>
     <string name="ui_score_none_description">Not scored</string>
 
-    <string name="ui_status_watching">Watching</string>
-    <string name="ui_status_reading">Reading</string>
-    <string name="ui_status_planning">Planning</string>
-    <string name="ui_status_completed">Completed</string>
-    <string name="ui_status_paused">Paused</string>
-    <string name="ui_status_dropped">Dropped</string>
-    <string name="ui_status_rewatching">Rewatching</string>
-    <string name="ui_status_rereading">Rereading</string>
+    <string name="ui_list_status_watching">Watching</string>
+    <string name="ui_list_status_reading">Reading</string>
+    <string name="ui_list_status_planning">Planning</string>
+    <string name="ui_list_status_completed_anime">Completed</string>
+    <string name="ui_list_status_completed_manga">Completed</string>
+    <string name="ui_list_status_paused">Paused</string>
+    <string name="ui_list_status_dropped">Dropped</string>
+    <string name="ui_list_status_rewatching">Rewatching</string>
+    <string name="ui_list_status_rereading">Rereading</string>
+
+    <string name="ui_media_status_releasing">Releasing</string>
+    <string name="ui_media_status_finished">Finished</string>
+    <string name="ui_media_status_not_yet_released">Not yet released</string>
+    <string name="ui_media_status_cancelled">Cancelled</string>
+    <string name="ui_media_status_hiatus">Hiatus</string>
 </resources>

@@ -23,24 +23,30 @@ fun MediaListStatus.statusColor(): StatusColor {
     }
 }
 
-/** Label for this status; current and repeating read differently for anime and manga. */
+/**
+ * Label for this list status. Current, completed and repeating read differently for anime and manga
+ * (in German even "Completed": "Gesehen" / "Gelesen"). Wording: docs/DESIGN.md, "Status wording".
+ */
 @StringRes
 fun MediaListStatus.labelRes(type: MediaType): Int = when (this) {
     MediaListStatus.CURRENT -> when (type) {
-        MediaType.ANIME -> R.string.ui_status_watching
-        MediaType.MANGA -> R.string.ui_status_reading
+        MediaType.ANIME -> R.string.ui_list_status_watching
+        MediaType.MANGA -> R.string.ui_list_status_reading
     }
 
-    MediaListStatus.PLANNING -> R.string.ui_status_planning
+    MediaListStatus.PLANNING -> R.string.ui_list_status_planning
 
-    MediaListStatus.COMPLETED -> R.string.ui_status_completed
+    MediaListStatus.COMPLETED -> when (type) {
+        MediaType.ANIME -> R.string.ui_list_status_completed_anime
+        MediaType.MANGA -> R.string.ui_list_status_completed_manga
+    }
 
-    MediaListStatus.PAUSED -> R.string.ui_status_paused
+    MediaListStatus.PAUSED -> R.string.ui_list_status_paused
 
-    MediaListStatus.DROPPED -> R.string.ui_status_dropped
+    MediaListStatus.DROPPED -> R.string.ui_list_status_dropped
 
     MediaListStatus.REPEATING -> when (type) {
-        MediaType.ANIME -> R.string.ui_status_rewatching
-        MediaType.MANGA -> R.string.ui_status_rereading
+        MediaType.ANIME -> R.string.ui_list_status_rewatching
+        MediaType.MANGA -> R.string.ui_list_status_rereading
     }
 }

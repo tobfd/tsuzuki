@@ -10,12 +10,19 @@
     <string name="ui_score_liked">Gemocht</string>
     <string name="ui_score_none_description">Nicht bewertet</string>
 
-    <string name="ui_status_watching">Am Schauen</string>
-    <string name="ui_status_reading">Am Lesen</string>
-    <string name="ui_status_planning">Geplant</string>
-    <string name="ui_status_completed">Abgeschlossen</string>
-    <string name="ui_status_paused">Pausiert</string>
-    <string name="ui_status_dropped">Abgebrochen</string>
-    <string name="ui_status_rewatching">Erneut schauen</string>
-    <string name="ui_status_rereading">Erneut lesen</string>
+    <string name="ui_list_status_watching">Schaue ich</string>
+    <string name="ui_list_status_reading">Lese ich</string>
+    <string name="ui_list_status_planning">Geplant</string>
+    <string name="ui_list_status_completed_anime">Gesehen</string>
+    <string name="ui_list_status_completed_manga">Gelesen</string>
+    <string name="ui_list_status_paused">Pausiert</string>
+    <string name="ui_list_status_dropped">Abgebrochen</string>
+    <string name="ui_list_status_rewatching">Schaue ich erneut</string>
+    <string name="ui_list_status_rereading">Lese ich erneut</string>
+
+    <string name="ui_media_status_releasing">Läuft</string>
+    <string name="ui_media_status_finished">Beendet</string>
+    <string name="ui_media_status_not_yet_released">Angekündigt</string>
+    <string name="ui_media_status_cancelled">Abgesetzt</string>
+    <string name="ui_media_status_hiatus">Unterbrochen</string>
 </resources>

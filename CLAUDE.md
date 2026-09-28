@@ -52,7 +52,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Area | Library | Notes |
 |---|---|---|
 | Language | Kotlin (K2), Kotlin Serialization, Coroutines + Flow | |
-| UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. |
+| UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. material3 1.4.0 (the version in the BOM) keeps the Expressive APIs (`MaterialExpressiveTheme`, `MotionScheme`, shape morphs) internal; they are public only in the 1.5 alphas. Ask Tobias before moving to an alpha. |
 | Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. Stable since 1.0 (M0 pins 1.2.0), so no Navigation Compose fallback is needed. |
 | GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |
@@ -137,7 +137,9 @@ Details in `docs/ANILIST_API.md`. The short version:
 ## UI rules
 
 - Material 3 components first; custom components only when M3 has nothing (the +1 button and the cover card are custom). Build them in `core/designsystem` / `core/ui`, never inline in a feature.
-- **All colors, type, shapes and spacing come from the theme** (`MaterialTheme.colorScheme`, `MaterialTheme.typography`, `MaterialTheme.shapes`, `TsuzukiTheme.statusColors`, `TsuzukiSpacing`). No hex values or raw `dp` numbers for spacing in features.
+- **All colors, type, shapes and spacing come from the theme** (`MaterialTheme.colorScheme`, `MaterialTheme.typography`, `MaterialTheme.shapes`, `TsuzukiTheme.statusColors`, `TsuzukiSpacing`, `TsuzukiSizes`). No hex values or raw `dp` numbers for spacing in features.
+- Icons: Material Symbols Rounded vector drawables through `TsuzukiIcons` in `core/designsystem` (no `material-icons-extended`). New icons are added there.
+- Every component has previews: `@ThemePreviews` (light + dark) around `TsuzukiPreview { }` (both color sources). The debug-only component catalog (`app/src/debug`, launcher entry "Tsuzuki Catalog") shows every component in all four theme combinations; add new components to it.
 - Default theme: dynamic color (`dynamicLightColorScheme` / `dynamicDarkColorScheme`). Setting "AniList blue" switches to the schemes in `design/tokens.json`. Theme mode: system / light / dark.
 - Edge-to-edge everywhere (`enableEdgeToEdge()`), correct `WindowInsets` padding, predictive back enabled (`android:enableOnBackInvokedCallback="true"`).
 - Adaptive: `NavigationSuiteScaffold` (bottom bar on phones, rail on larger widths); list-detail (Lists → Detail, Browse → Detail) shows two panes on expanded widths. Never lock orientation.

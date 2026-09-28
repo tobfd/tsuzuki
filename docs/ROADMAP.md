@@ -25,13 +25,13 @@ Before M0, Tobias does two things by hand:
 
 ## M1 · Design system
 
-- [ ] `core/designsystem`: `TsuzukiTheme(colorSource, themeMode)` with dynamic color and AniList blue light/dark from `design/tokens.json`.
-- [ ] Status colors (current, planning, completed, paused, dropped, repeating) as `TsuzukiTheme.statusColors`, harmonized for dynamic color (use `MaterialColors.harmonize` or the tokens as fixed values; tokens are generated against `#3DB4F2`).
-- [ ] Typography with Google Sans Flex (bundle the variable font in `res/font`, OFL license file in `assets/licenses`), type scale from tokens.
-- [ ] Shapes and spacing from tokens (`TsuzukiSpacing`).
-- [ ] Components: `PlusOneButton` (shape morph, haptic), `MediaCover` (2:3, placeholder color, badge slot), `StatusChip`, `ScoreText` (all 5 score formats), `SectionHeader` (title + "See all"), `EmptyState`, `ErrorState` (retry), `TsuzukiTopBar` (bell with badge + avatar), `SegmentedToggle`.
-- [ ] Debug-only "Catalog" screen showing every component in both color sources and modes.
-- [ ] Previews for every component.
+- [x] `core/designsystem`: `TsuzukiTheme(colorSource, themeMode)` with dynamic color and AniList blue light/dark from `design/tokens.json`.
+- [x] Status colors (current, planning, completed, paused, dropped, repeating) as `TsuzukiTheme.statusColors`, harmonized for dynamic color (use `MaterialColors.harmonize` or the tokens as fixed values; tokens are generated against `#3DB4F2`).
+- [x] Typography with Google Sans Flex (bundle the variable font in `res/font`, OFL license file in `assets/licenses`), type scale from tokens.
+- [x] Shapes and spacing from tokens (`TsuzukiSpacing`).
+- [x] Components: `PlusOneButton` (shape morph, haptic), `MediaCover` (2:3, placeholder color, badge slot), `StatusChip`, `ScoreText` (all 5 score formats), `SectionHeader` (title + "See all"), `EmptyState`, `ErrorState` (retry), `TsuzukiTopBar` (bell with badge + avatar), `SegmentedToggle`. (`MediaCover` and `ScoreText` know AniList models, so they live in `core/ui`.)
+- [x] Debug-only "Catalog" screen showing every component in both color sources and modes.
+- [x] Previews for every component.
 
 **Done when:** the catalog screen matches `docs/DESIGN.md` on a phone in all four theme combinations.
 

@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.tobfd.tsuzuki.core.common.ApplicationScope
 import com.tobfd.tsuzuki.core.common.Dispatcher
 import com.tobfd.tsuzuki.core.common.TsuzukiDispatchers
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,4 +40,11 @@ object DataStoreModule {
         scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
         produceFile = { context.preferencesDataStoreFile(SESSION_DATASTORE_NAME) }
     )
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface TokenEncryptionModule {
+    @Binds
+    fun tokenEncryption(impl: TokenCipher): TokenEncryption
 }

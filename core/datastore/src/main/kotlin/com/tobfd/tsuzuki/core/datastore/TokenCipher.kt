@@ -18,13 +18,21 @@ private const val KEYSET_NAME = "tsuzuki_token_keyset"
 private const val MASTER_KEY_URI = "android-keystore://tsuzuki_master_key"
 private val ASSOCIATED_DATA = "tsuzuki-anilist-token".encodeToByteArray()
 
+/** Encrypts the access token at rest; [TokenCipher] in the app, a fake in tests. */
+interface TokenEncryption {
+    fun encrypt(plaintext: String): String
+
+    /** Returns null if [ciphertext] can't be decrypted; the session then counts as logged out. */
+    fun decrypt(ciphertext: String): String?
+}
+
 /**
  * Encrypts the AniList access token with Tink AES-256-GCM. The Tink keyset is itself encrypted with a
  * master key in the Android Keystore, so the token never touches disk in clear text.
  * (`EncryptedSharedPreferences` is deprecated and not used.)
  */
 @Singleton
-class TokenCipher @Inject constructor(@ApplicationContext private val context: Context) {
+class TokenCipher @Inject constructor(@ApplicationContext private val context: Context) : TokenEncryption {
     // Created on first use, off the main thread (DataStore and login run on the IO dispatcher).
     private val aead: Aead by lazy {
         AeadConfig.register()
@@ -37,14 +45,11 @@ class TokenCipher @Inject constructor(@ApplicationContext private val context: C
             .getPrimitive(RegistryConfiguration.get(), Aead::class.java)
     }
 
-    fun encrypt(plaintext: String): String =
+    override fun encrypt(plaintext: String): String =
         Base64.encodeToString(aead.encrypt(plaintext.encodeToByteArray(), ASSOCIATED_DATA), Base64.NO_WRAP)
 
-    /**
-     * Returns null if the ciphertext can't be decrypted, e.g. after a device restore where the Keystore
-     * key is gone; the caller then treats the session as logged out.
-     */
-    fun decrypt(ciphertext: String): String? = try {
+    /** Null e.g. after a device restore, where the Keystore key is gone. */
+    override fun decrypt(ciphertext: String): String? = try {
         aead.decrypt(Base64.decode(ciphertext, Base64.NO_WRAP), ASSOCIATED_DATA).decodeToString()
     } catch (e: GeneralSecurityException) {
         null

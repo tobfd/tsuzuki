@@ -38,7 +38,7 @@ data class StoredSession(
 @Singleton
 class SessionStore @Inject constructor(
     @SessionPreferences private val dataStore: DataStore<Preferences>,
-    private val cipher: TokenCipher
+    private val cipher: TokenEncryption
 ) {
     val session: Flow<StoredSession> = dataStore.data.map { it.toStoredSession() }
 

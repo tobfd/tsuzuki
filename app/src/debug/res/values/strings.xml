@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug-only developer tool: English only, not translated. -->
+<resources>
+    <string name="catalog_launcher_label" translatable="false">Tsuzuki Catalog</string>
+    <string name="catalog_title" translatable="false">Component catalog</string>
+    <string name="catalog_color_material_you" translatable="false">Material You</string>
+    <string name="catalog_color_anilist_blue" translatable="false">AniList blue</string>
+    <string name="catalog_mode_light" translatable="false">Light</string>
+    <string name="catalog_mode_dark" translatable="false">Dark</string>
+
+    <string name="catalog_section_colors" translatable="false">Color roles</string>
+    <string name="catalog_section_status_colors" translatable="false">Status colors</string>
+    <string name="catalog_section_typography" translatable="false">Typography (Google Sans Flex)</string>
+    <string name="catalog_section_shapes" translatable="false">Shapes</string>
+    <string name="catalog_section_plus_one" translatable="false">PlusOneButton</string>
+    <string name="catalog_section_status_chip" translatable="false">StatusChip</string>
+    <string name="catalog_section_score_text" translatable="false">ScoreText</string>
+    <string name="catalog_section_section_header" translatable="false">SectionHeader</string>
+    <string name="catalog_section_media_cover" translatable="false">MediaCover</string>
+    <string name="catalog_section_segmented_toggle" translatable="false">SegmentedToggle</string>
+    <string name="catalog_section_top_bar" translatable="false">TsuzukiTopBar</string>
+    <string name="catalog_section_empty_state" translatable="false">EmptyState</string>
+    <string name="catalog_section_error_state" translatable="false">ErrorState</string>
+
+    <string name="catalog_plus_one_standard" translatable="false">Standard 48 dp</string>
+    <string name="catalog_plus_one_dense" translatable="false">Dense 40 dp</string>
+    <string name="catalog_plus_one_disabled" translatable="false">Disabled (no action)</string>
+    <string name="catalog_progress" translatable="false">%1$d / %2$d</string>
+    <string name="catalog_score_format" translatable="false">%1$s:</string>
+
+    <string name="catalog_header_in_progress" translatable="false">In Progress</string>
+    <string name="catalog_header_planning" translatable="false">Up next from Planning</string>
+    <string name="catalog_cover_badge" translatable="false">EP %1$d / %2$d</string>
+    <string name="catalog_cover_no_image" translatable="false">No image</string>
+    <string name="catalog_anime" translatable="false">Anime</string>
+    <string name="catalog_manga" translatable="false">Manga</string>
+    <string name="catalog_following" translatable="false">Following</string>
+    <string name="catalog_global" translatable="false">Global</string>
+    <string name="catalog_top_bar_home" translatable="false">Home</string>
+    <string name="catalog_top_bar_lists" translatable="false">Lists</string>
+    <string name="catalog_empty_title" translatable="false">Nothing here yet</string>
+    <string name="catalog_empty_message" translatable="false">Entries you add to this list show up here.</string>
+    <string name="catalog_empty_action" translatable="false">Browse</string>
+    <string name="catalog_error_title" translatable="false">You\'re offline</string>
+    <string name="catalog_error_message" translatable="false">Check your connection and try again.</string>
+</resources>

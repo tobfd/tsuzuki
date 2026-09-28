@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_score_none" translatable="false">–</string>
+    <string name="ui_score_star_filled" translatable="false">★</string>
+    <string name="ui_score_star_empty" translatable="false">☆</string>
+    <string name="ui_score_out_of">%1$s out of %2$d</string>
+    <plurals name="ui_score_stars">
+        <item quantity="one">%1$d out of %2$d stars</item>
+        <item quantity="other">%1$d out of %2$d stars</item>
+    </plurals>
+    <string name="ui_score_disliked">Disliked</string>
+    <string name="ui_score_neutral">Neutral</string>
+    <string name="ui_score_liked">Liked</string>
+    <string name="ui_score_none_description">Not scored</string>
+
+    <string name="ui_list_status_watching">Watching</string>
+    <string name="ui_list_status_reading">Reading</string>
+    <string name="ui_list_status_planning">Planning</string>
+    <string name="ui_list_status_completed_anime">Completed</string>
+    <string name="ui_list_status_completed_manga">Completed</string>
+    <string name="ui_list_status_paused">Paused</string>
+    <string name="ui_list_status_dropped">Dropped</string>
+    <string name="ui_list_status_rewatching">Rewatching</string>
+    <string name="ui_list_status_rereading">Rereading</string>
+
+    <string name="ui_media_status_releasing">Releasing</string>
+    <string name="ui_media_status_finished">Finished</string>
+    <string name="ui_media_status_not_yet_released">Not yet released</string>
+    <string name="ui_media_status_cancelled">Cancelled</string>
+    <string name="ui_media_status_hiatus">Hiatus</string>
+</resources>

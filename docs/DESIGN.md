@@ -9,7 +9,7 @@ The clickable prototype (private to Tobias): https://claude.ai/artifact/6Ek7UyxL
 ### Color
 
 - **Default: dynamic color** from the wallpaper (`dynamicDarkColorScheme` / `dynamicLightColorScheme`).
-- **AniList blue** (setting): full light and dark schemes in `tokens.json → color.anilistBlue`, generated with material-color-utilities `SchemeFidelity` from seed `#3DB4F2`. Map every key 1:1 onto `ColorScheme` (the key names match Compose's parameter names). Keys missing in the tokens use Compose defaults.
+- **AniList blue** (setting): full light and dark schemes in `tokens.json → color.anilistBlue`, generated with material-color-utilities `SchemeFidelity` from seed `#3DB4F2`. Map every key 1:1 onto `ColorScheme` (the key names match Compose's parameter names). The roles the tokens leave out are derived the way material-color-utilities does: `background` = `surface`, `onBackground` = `onSurface`, `surfaceVariant` = `surfaceContainerHighest`, `surfaceTint` = `primary`.
 - **Status colors** (`tokens.json → color.status`): current, planning, completed, paused, dropped, repeating, each with `color`, `container`, `onContainer` for light and dark. Expose them as `TsuzukiTheme.statusColors` through a `CompositionLocal`. They stay the same in both color sources.
 - Use `surfaceContainer*` roles for cards and sheets, `secondaryContainer` for selected chips and the active nav indicator, `primary` for the +1 button and progress bars, `inverseSurface` for the episode badge on covers.
 - Cover placeholder color = AniList `coverImage.color` (fallback `surfaceContainerHigh`).
@@ -42,10 +42,32 @@ Font: **Google Sans Flex** (Google Fonts, OFL), bundled as a variable font. Scal
 
 - **+1 button** (signature component): filled `primary`, label "+1". At rest it is a rounded square (shape medium, 12 dp); while pressed it morphs to a circle (full) with a spring (`Spring.DampingRatioMediumBouncy`, stiffness medium-low), then back. Light haptic tick on tap; confirm haptic when the entry completes. When progress reaches the total, the button is replaced by a "Completed" chip in completed-container colors.
 - Default M3 Expressive motion scheme for everything else. Sheets and dialogs follow predictive back.
+  - Not possible yet: material3 1.4.0 (Compose BOM 2026.09.00) keeps `MotionScheme` and `MaterialExpressiveTheme` internal, so the theme uses the standard motion scheme. Tobias decided to stay on stable; expressive motion follows in M12 once material3 1.5 is stable. The +1 spring does not depend on it.
+
+### Status wording
+
+List status (the user's entry, `MediaListStatus`) and release status (the series, `MediaStatus`) never share a word, so a "Beendet" series is never confused with a "Gesehen" entry. English follows AniList. Decided by Tobias; `StatusWordingTest` in `core/ui` guards the no-overlap rule.
+
+| `MediaListStatus` | English anime / manga | German anime | German manga |
+|---|---|---|---|
+| CURRENT | Watching / Reading | Schaue ich | Lese ich |
+| PLANNING | Planning | Geplant | Geplant |
+| COMPLETED | Completed | Gesehen | Gelesen |
+| PAUSED | Paused | Pausiert | Pausiert |
+| DROPPED | Dropped | Abgebrochen | Abgebrochen |
+| REPEATING | Rewatching / Rereading | Schaue ich erneut | Lese ich erneut |
+
+| `MediaStatus` | English | German |
+|---|---|---|
+| RELEASING | Releasing | Läuft |
+| FINISHED | Finished | Beendet |
+| NOT_YET_RELEASED | Not yet released | Angekündigt |
+| CANCELLED | Cancelled | Abgesetzt |
+| HIATUS | Hiatus | Unterbrochen |
 
 ### Iconography
 
-Material Symbols Rounded, 24 dp, weight 400. Icon-only buttons are 48 dp touch targets.
+Material Symbols Rounded, 24 dp, weight 400. Icon-only buttons are 48 dp touch targets. The icons are vector drawables in `core/designsystem`, exposed through `TsuzukiIcons`.
 
 ## Components
 

@@ -58,5 +58,9 @@ gradlePlugin {
             id = libs.plugins.tsuzuki.room.get().pluginId
             implementationClass = "RoomConventionPlugin"
         }
+        register("jvmLibrary") {
+            id = libs.plugins.tsuzuki.jvm.library.get().pluginId
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }

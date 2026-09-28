@@ -1,6 +1,5 @@
 package com.tobfd.tsuzuki.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.tobfd.tsuzuki.R
-import com.tobfd.tsuzuki.ui.theme.TsuzukiTheme
+import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
 
 /**
  * Root of the app UI. Empty shell until the navigation scaffold arrives in M3.
@@ -36,8 +35,7 @@ fun TsuzukiApp(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "Light")
-@Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ThemePreviews
 @Composable
 private fun TsuzukiAppPreview() {
     TsuzukiTheme {

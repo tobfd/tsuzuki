@@ -27,7 +27,7 @@ composeBom = "2026.09.00"
 
 # Other libraries
 apollo = "5.2.0"
-apolloNormalizedCache = "1.0.8"
+apolloNormalizedCache = "1.0.9"
 coil = "3.6.3"
 hilt = "2.60.1"
 okhttp = "5.5.0"
@@ -141,4 +141,5 @@ tsuzuki-android-compose = { id = "tsuzuki.android.compose" }
 tsuzuki-android-feature = { id = "tsuzuki.android.feature" }
 tsuzuki-android-library = { id = "tsuzuki.android.library" }
 tsuzuki-hilt = { id = "tsuzuki.hilt" }
+tsuzuki-jvm-library = { id = "tsuzuki.jvm.library" }
 tsuzuki-room = { id = "tsuzuki.room" }

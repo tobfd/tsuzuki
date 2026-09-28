@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_score_out_of">%1$s von %2$d</string>
+    <plurals name="ui_score_stars">
+        <item quantity="one">%1$d von %2$d Sternen</item>
+        <item quantity="other">%1$d von %2$d Sternen</item>
+    </plurals>
+    <string name="ui_score_disliked">Nicht gemocht</string>
+    <string name="ui_score_neutral">Neutral</string>
+    <string name="ui_score_liked">Gemocht</string>
+    <string name="ui_score_none_description">Nicht bewertet</string>
+
+    <string name="ui_list_status_watching">Schaue ich</string>
+    <string name="ui_list_status_reading">Lese ich</string>
+    <string name="ui_list_status_planning">Geplant</string>
+    <string name="ui_list_status_completed_anime">Gesehen</string>
+    <string name="ui_list_status_completed_manga">Gelesen</string>
+    <string name="ui_list_status_paused">Pausiert</string>
+    <string name="ui_list_status_dropped">Abgebrochen</string>
+    <string name="ui_list_status_rewatching">Schaue ich erneut</string>
+    <string name="ui_list_status_rereading">Lese ich erneut</string>
+
+    <string name="ui_media_status_releasing">Läuft</string>
+    <string name="ui_media_status_finished">Beendet</string>
+    <string name="ui_media_status_not_yet_released">Angekündigt</string>
+    <string name="ui_media_status_cancelled">Abgesetzt</string>
+    <string name="ui_media_status_hiatus">Unterbrochen</string>
+</resources>

@@ -57,9 +57,14 @@ androidComponents {
 }
 
 dependencies {
+    implementation(project(":core:designsystem"))
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Component catalog (debug only).
+    debugImplementation(project(":core:ui"))
 }

@@ -116,6 +116,15 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - **Mappers:** GraphQL and Room types never leave `core/data`. Features only see `core/model`.
 - **Errors:** one `AppError` sealed type (`Offline`, `RateLimited(retryAfterSec)`, `ApiUnavailable`, `Unauthorized`, `Validation(fields)`, `NotFound`, `Unknown`). Every screen has an error state with a retry action and uses the snackbar for action errors.
 
+### Navigation (since M3)
+
+- Each feature defines its route keys (`@Serializable ... : NavKey`, e.g. `MediaRoute(id)`) next to its screen composables. Screens get navigation as callbacks (`onOpenMedia: (Int) -> Unit`, `onBack`); they never import another feature.
+- `app` wires everything in `AppShell`: one `rememberNavBackStack` per tab (`TopLevelTab`), each decorated with its own saveable state and ViewModel store (`rememberDecoratedNavEntries`), shown as Home's stack plus the current tab's stack in `NavDisplay`. `TopLevelNavigator` holds the logic (navigate, back, tab switch, reselect) and is unit tested.
+- Tab roots are wrapped in `TabRootScaffold` (top bar with bell and avatar, expiry banner); pushed screens draw their own `TsuzukiBackTopBar`.
+- Navigation 3 keeps entries across recompositions, so entry content must not capture changing values: shell data (viewer, unread count, expiry) comes from `LocalShellChrome`.
+- Reselecting the current tab pops it to its root and sets a `ScrollToTopRequest`; root screens with a list call `ScrollToTopOnTabReselect(listState)`.
+- Screens not built yet use `PlaceholderContent` from `core/ui`; each feature replaces it in its milestone.
+
 ### Offline first for the user's own lists
 
 - Room holds the viewer's full anime and manga list (entries + a compact media row: id, titles, cover, format, episodes/chapters, status, next airing episode).

@@ -74,7 +74,7 @@ Material Symbols Rounded, 24 dp, weight 400. Icon-only buttons are 48 dp touch t
 | Component | Spec |
 |---|---|
 | `TsuzukiTopBar` | 64 dp, title in titleLarge on the left. Actions: bell (badge dot/number in `error` when unread > 0), avatar 32 dp circle (initial on primaryContainer as placeholder). |
-| Bottom navigation | M3 `NavigationBar` via `NavigationSuiteScaffold`, 4 items: Home (house), Lists (list), Browse (explore), Profile (person). Active item: pill indicator in secondaryContainer. |
+| Bottom navigation | M3 `NavigationBar` via `NavigationSuiteScaffold`, 4 items: Home (house), Lists (list), Browse (explore), Profile (person); the selected item uses the filled icon. Active item: pill indicator in secondaryContainer. From medium width on, a `NavigationRail` instead, also on phones in landscape. German labels: Start, Listen, Entdecken, Profil. |
 | `MediaCover` | 2:3, shape medium, placeholder color, optional top-left badge (inverseSurface, labelSmall, e.g. "EP 18 / 28" or a status), optional 4 dp progress bar at the bottom (primary on surfaceContainerHighest). |
 | `MediaListRow` | Row in a large-shaped surfaceContainerLow card: thumbnail 48 × 68, title (titleMedium, 1 line, ellipsis), meta (bodyMedium, onSurfaceVariant: "TV · 2023 · ★ 9.0"), progress "18 / 28", trailing +1 (current/repeating) or "Start" tonal button (planning). Tap opens the list editor; long press opens detail. |
 | `StatusChip` | Filter-chip style; selected = status container + onContainer, unselected = outline with a 8 dp status dot. |

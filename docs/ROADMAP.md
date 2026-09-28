@@ -51,12 +51,12 @@ Before M0, Tobias does two things by hand:
 
 ## M3 · App shell and navigation
 
-- [ ] Navigation 3 back stack per tab (Home, Lists, Browse, Profile) with state kept when switching tabs; reselecting a tab pops to its root and scrolls to top.
-- [ ] `NavigationSuiteScaffold`: bottom bar on compact, rail on medium/expanded.
-- [ ] Top bar with bell (badge from `Viewer.unreadNotificationCount`) and avatar (→ Profile tab).
-- [ ] Routes for Media, Character, Staff, User, Notifications, Settings with placeholder screens.
-- [ ] Guest mode: Lists and Profile tabs show a "Log in to see your lists" state.
-- [ ] Predictive back works on every screen, including sheets.
+- [x] Navigation 3 back stack per tab (Home, Lists, Browse, Profile) with state kept when switching tabs; reselecting a tab pops to its root and scrolls to top.
+- [x] `NavigationSuiteScaffold`: bottom bar on compact, rail on medium/expanded. (The rail also shows on phones in landscape; the library default would keep the bar there.)
+- [x] Top bar with bell (badge from `Viewer.unreadNotificationCount`) and avatar (→ Profile tab).
+- [x] Routes for Media, Character, Staff, User, Notifications, Settings with placeholder screens.
+- [x] Guest mode: Lists and Profile tabs show a "Log in to see your lists" state.
+- [x] Predictive back works on every screen, including sheets. (Navigation 3 animates it; there are no sheets yet, M4's list editor sheet must keep it working.)
 
 **Done when:** every tab and route is reachable, back behaves correctly, rotating or resizing keeps state.
 

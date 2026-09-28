@@ -141,4 +141,5 @@ tsuzuki-android-compose = { id = "tsuzuki.android.compose" }
 tsuzuki-android-feature = { id = "tsuzuki.android.feature" }
 tsuzuki-android-library = { id = "tsuzuki.android.library" }
 tsuzuki-hilt = { id = "tsuzuki.hilt" }
+tsuzuki-jvm-library = { id = "tsuzuki.jvm.library" }
 tsuzuki-room = { id = "tsuzuki.room" }

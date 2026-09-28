@@ -3,9 +3,11 @@ package com.tobfd.tsuzuki.buildlogic
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 /** SDK levels shared by every Android module (see docs/PRODUCT.md, D6). */
 internal object TsuzukiSdk {
@@ -34,6 +36,20 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     }
 
     extensions.configure<KotlinAndroidProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+        }
+    }
+}
+
+/** Kotlin/JVM setup for pure Kotlin modules such as `core/model`. */
+internal fun Project.configureKotlinJvm() {
+    extensions.configure<JavaPluginExtension> {
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+
+    extensions.configure<KotlinJvmProjectExtension> {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
         }

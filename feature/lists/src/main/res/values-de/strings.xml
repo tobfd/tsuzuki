@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lists_placeholder">Deine Anime- und Manga-Listen kommen in M4, auch offline nutzbar.</string>
+    <string name="lists_guest_title">Melde dich an, um deine Listen zu sehen</string>
+    <string name="lists_guest_message">Deine Listen liegen in deinem AniList-Konto. Entdecken und Details funktionieren auch ohne.</string>
+    <string name="lists_log_in">Anmelden</string>
+</resources>

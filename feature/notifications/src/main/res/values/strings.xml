@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_placeholder">Notifications with filters and grouped likes arrive in M10.</string>
+</resources>

@@ -1,19 +1,14 @@
 package com.tobfd.tsuzuki.core.data.session
 
 import androidx.datastore.preferences.core.emptyPreferences
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Error
-import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.exception.ApolloHttpException
-import com.apollographql.apollo.network.NetworkTransport
-import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.fetchPolicy
-import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.benasher44.uuid.uuid4
 import com.tobfd.tsuzuki.core.common.AppError
+import com.tobfd.tsuzuki.core.data.TestApollo
 import com.tobfd.tsuzuki.core.datastore.SessionStore
 import com.tobfd.tsuzuki.core.datastore.TokenEncryption
 import com.tobfd.tsuzuki.core.model.LogoutReason
@@ -25,7 +20,6 @@ import com.tobfd.tsuzuki.core.model.Viewer
 import com.tobfd.tsuzuki.core.model.ViewerOptions
 import com.tobfd.tsuzuki.core.network.ViewerQuery
 import com.tobfd.tsuzuki.core.network.auth.AuthEvents
-import com.tobfd.tsuzuki.core.network.cache.Cache
 import com.tobfd.tsuzuki.core.network.type.ScoreFormat as GqlScoreFormat
 import com.tobfd.tsuzuki.core.network.type.UserStaffNameLanguage
 import com.tobfd.tsuzuki.core.network.type.UserTitleLanguage
@@ -35,8 +29,6 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.Base64
-import java.util.concurrent.atomic.AtomicInteger
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -54,11 +46,9 @@ class DefaultSessionRepositoryTest {
     private val validExpiry = now + Duration.ofDays(300)
     private val validToken = jwt(validExpiry)
 
-    private val queue = QueueTestNetworkTransport()
-    private val transport = CountingNetworkTransport(queue)
-    private val apolloClient = with(Cache) {
-        ApolloClient.Builder().networkTransport(transport).cache(MemoryCacheFactory()).build()
-    }
+    private val apollo = TestApollo()
+    private val queue = apollo.queue
+    private val apolloClient = apollo.client
     private val authEvents = AuthEvents()
     private val store = SessionStore(InMemoryDataStore(emptyPreferences()), FakeTokenEncryption)
 
@@ -94,7 +84,7 @@ class DefaultSessionRepositoryTest {
         assertEquals(Result.success(tobfd), result)
         assertEquals(SessionState.LoggedIn(tobfd, validExpiry), repository.session.first())
         assertEquals(validToken, store.accessToken())
-        assertEquals(1, transport.requests.get())
+        assertEquals(1, apollo.requests)
     }
 
     @Test
@@ -104,7 +94,7 @@ class DefaultSessionRepositoryTest {
         val result = repository.logIn(jwt(now - Duration.ofDays(1)))
 
         assertEquals(AppError.Unauthorized, result.exceptionOrNull())
-        assertEquals(0, transport.requests.get())
+        assertEquals(0, apollo.requests)
         assertEquals(SessionState.LoggedOut(), repository.session.first())
     }
 
@@ -113,7 +103,7 @@ class DefaultSessionRepositoryTest {
         val result = repository().logIn("not-a-jwt")
 
         assertEquals(AppError.Unauthorized, result.exceptionOrNull())
-        assertEquals(0, transport.requests.get())
+        assertEquals(0, apollo.requests)
     }
 
     @Test
@@ -190,7 +180,7 @@ class DefaultSessionRepositoryTest {
 
         assertNull(store.accessToken())
         assertEquals(SessionState.LoggedOut(LogoutReason.Expired), repository.session.first())
-        assertEquals(0, transport.requests.get())
+        assertEquals(0, apollo.requests)
     }
 
     @Test
@@ -201,7 +191,7 @@ class DefaultSessionRepositoryTest {
 
         repository.validate()
 
-        assertEquals(0, transport.requests.get())
+        assertEquals(0, apollo.requests)
         assertEquals(SessionState.LoggedIn(tobfd, validExpiry), repository.session.first())
     }
 
@@ -214,7 +204,7 @@ class DefaultSessionRepositoryTest {
 
         repository.validate()
 
-        assertEquals(1, transport.requests.get())
+        assertEquals(1, apollo.requests)
         assertEquals(
             SessionState.LoggedIn(tobfd.copy(name = "tobfd-renamed"), validExpiry),
             repository.session.first()
@@ -239,7 +229,7 @@ class DefaultSessionRepositoryTest {
 
         repository.validate()
 
-        assertEquals(0, transport.requests.get())
+        assertEquals(0, apollo.requests)
         assertEquals(SessionState.LoggedOut(), repository.session.first())
     }
 
@@ -331,18 +321,6 @@ class DefaultSessionRepositoryTest {
         return "${encode(
             """{"typ":"JWT","alg":"RS256"}"""
         )}.${encode("""{"sub":"5424000","exp":${expiresAt.epochSecond}}""")}.sig"
-    }
-
-    /** Counts requests that reach the network, so tests can assert "no request". */
-    private class CountingNetworkTransport(private val delegate: NetworkTransport) : NetworkTransport {
-        val requests = AtomicInteger()
-
-        override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
-            requests.incrementAndGet()
-            return delegate.execute(request)
-        }
-
-        override fun dispose() = delegate.dispose()
     }
 
     /** Reversible stand-in for Tink, which needs the Android Keystore. */

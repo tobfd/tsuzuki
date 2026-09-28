@@ -39,4 +39,5 @@
     <string name="ui_error_validation">AniList rejected the change.</string>
     <string name="ui_error_not_found">AniList couldn\'t find this.</string>
     <string name="ui_error_unknown">Something went wrong. Try again.</string>
+    <string name="ui_placeholder_open">Open %1$s</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_placeholder">Your profile (stats, activity history, favourites, social) arrives in M9.</string>
+    <string name="profile_user_placeholder">Profiles of other users arrive in M9.</string>
+    <string name="profile_guest_title">Log in to see your profile</string>
+    <string name="profile_guest_message">Your profile, stats and favourites come from your AniList account.</string>
+    <string name="profile_log_in">Log in</string>
+    <string name="profile_settings">Settings</string>
+</resources>

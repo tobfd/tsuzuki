@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.core.data.di
 
+import com.tobfd.tsuzuki.core.data.notifications.DefaultNotificationsRepository
+import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.DefaultSessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionTokenProvider
@@ -17,4 +19,7 @@ internal interface DataModule {
 
     @Binds
     fun accessTokenProvider(impl: SessionTokenProvider): AccessTokenProvider
+
+    @Binds
+    fun notificationsRepository(impl: DefaultNotificationsRepository): NotificationsRepository
 }

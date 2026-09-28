@@ -64,4 +64,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Component catalog (debug only).
+    debugImplementation(project(":core:ui"))
 }

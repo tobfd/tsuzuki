@@ -3,7 +3,9 @@ package com.tobfd.tsuzuki.ui
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +22,7 @@ import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.window.core.layout.WindowSizeClass
 import com.tobfd.tsuzuki.core.ui.LocalScrollToTopRequest
 import com.tobfd.tsuzuki.feature.browse.BrowseRoute
 import com.tobfd.tsuzuki.feature.browse.BrowseScreen
@@ -148,6 +151,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
     CompositionLocalProvider(LocalShellChrome provides chrome) {
         NavigationSuiteScaffold(
             modifier = modifier,
+            layoutType = navigationSuiteType(),
             navigationSuiteItems = {
                 TopLevelTab.entries.forEach { tab ->
                     val selected = tab == navigator.currentTab
@@ -170,6 +174,22 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onBack = { navigator.back() }
             )
         }
+    }
+}
+
+/**
+ * Bottom bar on compact widths, rail from medium width on (docs/ROADMAP.md, M3). Unlike the library
+ * default this also uses the rail on phones in landscape, where a bottom bar would take a large part
+ * of the low window height. Tabletop posture keeps the bar.
+ */
+@Composable
+private fun navigationSuiteType(): NavigationSuiteType {
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
+    val wide = adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    return if (wide && !adaptiveInfo.windowPosture.isTabletop) {
+        NavigationSuiteType.NavigationRail
+    } else {
+        NavigationSuiteType.NavigationBar
     }
 }
 

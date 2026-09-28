@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="designsystem_see_all">See all</string>
+    <string name="designsystem_retry">Retry</string>
+    <string name="designsystem_notifications">Notifications</string>
+    <plurals name="designsystem_notifications_unread">
+        <item quantity="one">%d unread notification</item>
+        <item quantity="other">%d unread notifications</item>
+    </plurals>
+    <string name="designsystem_badge_overflow" translatable="false">99+</string>
+    <string name="designsystem_profile">Profile</string>
+    <string name="designsystem_plus_one_label" translatable="false">+1</string>
+    <string name="designsystem_plus_one_description">Increase progress by one</string>
+</resources>

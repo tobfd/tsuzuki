@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="designsystem_see_all">Alle anzeigen</string>
+    <string name="designsystem_retry">Erneut versuchen</string>
+    <string name="designsystem_notifications">Benachrichtigungen</string>
+    <plurals name="designsystem_notifications_unread">
+        <item quantity="one">%d ungelesene Benachrichtigung</item>
+        <item quantity="other">%d ungelesene Benachrichtigungen</item>
+    </plurals>
+    <string name="designsystem_profile">Profil</string>
+    <string name="designsystem_plus_one_description">Fortschritt um eins erhöhen</string>
+</resources>

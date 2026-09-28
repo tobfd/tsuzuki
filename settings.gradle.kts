@@ -26,7 +26,10 @@ dependencyResolutionManagement {
 rootProject.name = "Tsuzuki"
 include(":app")
 include(":core:common")
+include(":core:data")
+include(":core:datastore")
 include(":core:designsystem")
 include(":core:model")
 include(":core:network")
+include(":core:testing")
 include(":core:ui")

@@ -14,4 +14,8 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:network"))
     implementation(libs.kotlinx.serialization.json)
+
+    testImplementation(project(":core:testing"))
+    testImplementation(libs.androidx.datastore.preferences)
+    testImplementation(libs.apollo.testing.support)
 }

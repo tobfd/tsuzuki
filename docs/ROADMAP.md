@@ -2,6 +2,15 @@
 
 Work top to bottom. Each milestone ends in a working app that Tobias can install. Tick boxes in the PR that finishes them. "Done when" is the acceptance check; it must hold before the next milestone starts.
 
+From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each with one branch, one PR and one phone test:
+
+1. M4
+2. M5 + M6
+3. M7 + M8 + M9
+4. M10 + M11 + M12
+
+Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
+
 Before M0, Tobias does two things by hand:
 
 - [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
@@ -51,12 +60,12 @@ Before M0, Tobias does two things by hand:
 
 ## M3 · App shell and navigation
 
-- [ ] Navigation 3 back stack per tab (Home, Lists, Browse, Profile) with state kept when switching tabs; reselecting a tab pops to its root and scrolls to top.
-- [ ] `NavigationSuiteScaffold`: bottom bar on compact, rail on medium/expanded.
-- [ ] Top bar with bell (badge from `Viewer.unreadNotificationCount`) and avatar (→ Profile tab).
-- [ ] Routes for Media, Character, Staff, User, Notifications, Settings with placeholder screens.
-- [ ] Guest mode: Lists and Profile tabs show a "Log in to see your lists" state.
-- [ ] Predictive back works on every screen, including sheets.
+- [x] Navigation 3 back stack per tab (Home, Lists, Browse, Profile) with state kept when switching tabs; reselecting a tab pops to its root and scrolls to top.
+- [x] `NavigationSuiteScaffold`: bottom bar on compact, rail on medium/expanded. (The rail also shows on phones in landscape; the library default would keep the bar there.)
+- [x] Top bar with bell (badge from `Viewer.unreadNotificationCount`) and avatar (→ Profile tab).
+- [x] Routes for Media, Character, Staff, User, Notifications, Settings with placeholder screens.
+- [x] Guest mode: Lists and Profile tabs show a "Log in to see your lists" state.
+- [x] Predictive back works on every screen, including sheets. (Navigation 3 animates it; there are no sheets yet, M4's list editor sheet must keep it working.)
 
 **Done when:** every tab and route is reachable, back behaves correctly, rotating or resizing keeps state.
 

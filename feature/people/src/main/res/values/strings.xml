@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="people_character_title">Character</string>
+    <string name="people_staff_title">Staff</string>
+    <string name="people_character_placeholder">Character pages arrive in M8. This is AniList id %1$d.</string>
+    <string name="people_staff_placeholder">Staff pages arrive in M8. This is AniList id %1$d.</string>
+</resources>

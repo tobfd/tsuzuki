@@ -34,39 +34,69 @@ private const val MAX_BADGE_COUNT = 99
 
 /**
  * Top app bar of the tab roots: title on the left, then the notification bell (badge with the
- * unread count) and the viewer's avatar.
+ * unread count) and the viewer's avatar. Guests get neither.
  *
- * @param avatar content of the 32 dp avatar circle, e.g. [InitialAvatar] or a loaded image.
+ * @param unreadNotificationCount null hides the bell (guest mode).
+ * @param avatar content of the 32 dp avatar circle, e.g. [InitialAvatar] or a loaded image; null
+ *   hides it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TsuzukiTopBar(
     title: String,
-    unreadNotificationCount: Int,
-    onNotificationsClick: () -> Unit,
-    onAvatarClick: () -> Unit,
-    avatar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    unreadNotificationCount: Int? = null,
+    onNotificationsClick: () -> Unit = {},
+    avatar: (@Composable () -> Unit)? = null,
+    onAvatarClick: () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
 ) {
     TopAppBar(
         title = { Text(title) },
         modifier = modifier,
         actions = {
-            NotificationBell(unreadCount = unreadNotificationCount, onClick = onNotificationsClick)
-            val profileDescription = stringResource(R.string.designsystem_profile)
-            IconButton(
-                onClick = onAvatarClick,
-                modifier = Modifier.semantics { contentDescription = profileDescription }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(TsuzukiSizes.topBarAvatar)
-                        .clearAndSetSemantics {},
-                    contentAlignment = Alignment.Center
+            if (unreadNotificationCount != null) {
+                NotificationBell(unreadCount = unreadNotificationCount, onClick = onNotificationsClick)
+            }
+            if (avatar != null) {
+                val profileDescription = stringResource(R.string.designsystem_profile)
+                IconButton(
+                    onClick = onAvatarClick,
+                    modifier = Modifier.semantics { contentDescription = profileDescription }
                 ) {
-                    avatar()
+                    Box(
+                        modifier = Modifier
+                            .size(TsuzukiSizes.topBarAvatar)
+                            .clearAndSetSemantics {},
+                        contentAlignment = Alignment.Center
+                    ) {
+                        avatar()
+                    }
                 }
+            }
+        },
+        windowInsets = windowInsets
+    )
+}
+
+/** Top app bar of pushed screens: back arrow and title. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TsuzukiBackTopBar(
+    title: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
+) {
+    TopAppBar(
+        title = { Text(title) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = painterResource(TsuzukiIcons.ArrowBack),
+                    contentDescription = stringResource(R.string.designsystem_back)
+                )
             }
         },
         windowInsets = windowInsets
@@ -135,18 +165,16 @@ private fun TsuzukiTopBarPreview() {
         TsuzukiTopBar(
             title = "Home",
             unreadNotificationCount = 3,
-            onNotificationsClick = {},
-            onAvatarClick = {},
             avatar = { InitialAvatar(name = "tobfd") },
             windowInsets = WindowInsets(0)
         )
         TsuzukiTopBar(
             title = "Lists",
             unreadNotificationCount = 0,
-            onNotificationsClick = {},
-            onAvatarClick = {},
             avatar = { InitialAvatar(name = "tobfd") },
             windowInsets = WindowInsets(0)
         )
+        TsuzukiTopBar(title = "Browse", windowInsets = WindowInsets(0))
+        TsuzukiBackTopBar(title = "Settings", onBack = {}, windowInsets = WindowInsets(0))
     }
 }

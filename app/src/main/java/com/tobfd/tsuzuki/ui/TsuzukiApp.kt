@@ -5,14 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.tobfd.tsuzuki.MainUiState
 import com.tobfd.tsuzuki.feature.auth.LoginRoute
+import com.tobfd.tsuzuki.navigation.ShellChrome
 
-/**
- * Root of the app UI: login when logged out, otherwise a temporary session screen until the
- * navigation shell arrives in M3.
- */
+/** Root of the app UI: the login screen when logged out, otherwise the tab shell. */
 @Composable
 fun TsuzukiApp(uiState: MainUiState, onLogOut: () -> Unit, modifier: Modifier = Modifier) {
     when (uiState) {
@@ -21,18 +20,21 @@ fun TsuzukiApp(uiState: MainUiState, onLogOut: () -> Unit, modifier: Modifier = 
 
         MainUiState.LoggedOut -> LoginRoute(modifier = modifier)
 
-        MainUiState.Guest -> SessionScreen(
-            viewer = null,
-            expiryWarningDays = null,
-            onLogOut = onLogOut,
-            modifier = modifier
-        )
+        // Guest and logged-in shells never share state: switching goes through the login screen.
+        MainUiState.Guest -> key(MainUiState.Guest) {
+            AppShell(chrome = ShellChrome(), onLogOut = onLogOut, modifier = modifier)
+        }
 
-        is MainUiState.LoggedIn -> SessionScreen(
-            viewer = uiState.viewer,
-            expiryWarningDays = uiState.expiryWarningDays,
-            onLogOut = onLogOut,
-            modifier = modifier
-        )
+        is MainUiState.LoggedIn -> key(uiState.viewer.id) {
+            AppShell(
+                chrome = ShellChrome(
+                    viewer = uiState.viewer,
+                    unreadNotificationCount = uiState.unreadNotificationCount,
+                    expiryWarningDays = uiState.expiryWarningDays
+                ),
+                onLogOut = onLogOut,
+                modifier = modifier
+            )
+        }
     }
 }

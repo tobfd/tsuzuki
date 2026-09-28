@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_placeholder">Settings arrive in M11. Until then you can log out here.</string>
+    <string name="settings_logged_in_as">Logged in as %1$s</string>
+    <string name="settings_log_out">Log out</string>
+</resources>

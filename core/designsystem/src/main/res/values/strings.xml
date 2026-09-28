@@ -11,4 +11,5 @@
     <string name="designsystem_profile">Profile</string>
     <string name="designsystem_plus_one_label" translatable="false">+1</string>
     <string name="designsystem_plus_one_description">Increase progress by one</string>
+    <string name="designsystem_back">Back</string>
 </resources>

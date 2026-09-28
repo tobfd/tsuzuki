@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lists_placeholder">Your anime and manga lists arrive in M4, offline first.</string>
+    <string name="lists_guest_title">Log in to see your lists</string>
+    <string name="lists_guest_message">Your lists are saved in your AniList account. Browse and details work without one.</string>
+    <string name="lists_log_in">Log in</string>
+</resources>

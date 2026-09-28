@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
 import com.tobfd.tsuzuki.feature.auth.AuthRedirects
@@ -31,6 +32,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            LifecycleResumeEffect(viewModel) {
+                viewModel.onAppResumed()
+                onPauseOrDispose {}
+            }
             TsuzukiTheme {
                 TsuzukiApp(uiState = uiState, onLogOut = viewModel::onLogOut)
             }

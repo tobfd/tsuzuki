@@ -60,6 +60,15 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:browse"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:lists"))
+    implementation(project(":feature:media"))
+    implementation(project(":feature:notifications"))
+    implementation(project(":feature:people"))
+    implementation(project(":feature:profile"))
+    implementation(project(":feature:settings"))
     implementation(project(":feature:auth"))
 
     implementation(libs.androidx.activity.compose)
@@ -68,7 +77,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.navigation.suite)
 
-    // Component catalog (debug only).
-    debugImplementation(project(":core:ui"))
+    testImplementation(project(":core:testing"))
 }

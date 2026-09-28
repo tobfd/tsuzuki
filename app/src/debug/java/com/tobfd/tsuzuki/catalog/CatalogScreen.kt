@@ -46,6 +46,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.StatusChip
 import com.tobfd.tsuzuki.core.designsystem.component.StatusDot
+import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBackTopBar
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBanner
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiLogo
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiTopBar
@@ -469,4 +470,18 @@ private fun TopBarSamples() {
             windowInsets = WindowInsets(0)
         )
     }
+    CatalogVariantLabel(R.string.catalog_top_bar_guest_label)
+    TsuzukiTopBar(title = stringResource(R.string.catalog_top_bar_browse), windowInsets = WindowInsets(0))
+    CatalogVariantLabel(R.string.catalog_top_bar_back_label)
+    TsuzukiBackTopBar(title = stringResource(R.string.catalog_top_bar_settings), onBack = {
+    }, windowInsets = WindowInsets(0))
+}
+
+@Composable
+private fun CatalogVariantLabel(label: Int) {
+    Text(
+        text = stringResource(label),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }

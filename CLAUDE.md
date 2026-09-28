@@ -25,8 +25,10 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 
 - **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
 - **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **One milestone at a time.** Start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
-- **Branches and commits:** branch `m<N>/<short-topic>` (e.g. `m4/list-editor`), Conventional Commits (`feat(lists): add +1 with undo`). Open a PR per milestone or per larger task; Tobias merges.
+- **Work in packages** (decided by Tobias, 2026-09-28): M4 alone, then M5+M6, then M7+M8+M9, then M10+M11+M12. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`). Conventional Commits (`feat(lists): add +1 with undo`).
+- **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
+- **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
 - **Before saying "done":** `./gradlew spotlessApply` then `./gradlew build` (compiles, unit tests, lint). Report failures honestly with the output.
 - **Ask Tobias first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches his AniList account in bulk (mass edits, deletes).
 - **Keep docs true.** When a decision or behavior changes, update the matching doc in the same PR. Tick roadmap boxes in the PR that finishes them.
@@ -116,6 +118,15 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - **Mappers:** GraphQL and Room types never leave `core/data`. Features only see `core/model`.
 - **Errors:** one `AppError` sealed type (`Offline`, `RateLimited(retryAfterSec)`, `ApiUnavailable`, `Unauthorized`, `Validation(fields)`, `NotFound`, `Unknown`). Every screen has an error state with a retry action and uses the snackbar for action errors.
 
+### Navigation (since M3)
+
+- Each feature defines its route keys (`@Serializable ... : NavKey`, e.g. `MediaRoute(id)`) next to its screen composables. Screens get navigation as callbacks (`onOpenMedia: (Int) -> Unit`, `onBack`); they never import another feature.
+- `app` wires everything in `AppShell`: one `rememberNavBackStack` per tab (`TopLevelTab`), each decorated with its own saveable state and ViewModel store (`rememberDecoratedNavEntries`), shown as Home's stack plus the current tab's stack in `NavDisplay`. `TopLevelNavigator` holds the logic (navigate, back, tab switch, reselect) and is unit tested.
+- Tab roots are wrapped in `TabRootScaffold` (top bar with bell and avatar, expiry banner); pushed screens draw their own `TsuzukiBackTopBar`.
+- Navigation 3 keeps entries across recompositions, so entry content must not capture changing values: shell data (viewer, unread count, expiry) comes from `LocalShellChrome`.
+- Reselecting the current tab pops it to its root and sets a `ScrollToTopRequest`; root screens with a list call `ScrollToTopOnTabReselect(listState)`.
+- Screens not built yet use `PlaceholderContent` from `core/ui`; each feature replaces it in its milestone.
+
 ### Offline first for the user's own lists
 
 - Room holds the viewer's full anime and manga list (entries + a compact media row: id, titles, cover, format, episodes/chapters, status, next airing episode).
@@ -148,6 +159,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Strings only from resources. English in `values/strings.xml`, German in `values-de/strings.xml`, both complete in every PR that adds UI text. Use plurals for counts. Per-app language via `locales_config.xml`.
 - Images: always pass the AniList `coverImage.color` as placeholder color, crossfade, correct `contentScale`. Covers are 2:3.
 - Haptics: light tick on +1, confirm haptic when an entry completes.
+- Screen transitions come from `TsuzukiTransitions` in `core/designsystem` (M3 motion tokens, emphasized easing): shared axis X for opening screens and for back via arrow or button, the system's own back animation between activities for the back gesture (`PredictiveBackEntry` entry decorator with the AOSP values in `PredictiveBackTokens`, fed by `PredictiveBackState` from the `NavigationEventDispatcher`; `predictiveBack` itself moves nothing), and fade through for tab switches. Bottom sheets use `ModalBottomSheet`'s own predictive back. `AppShell` applies them to `NavDisplay`, so new screens get them automatically; don't add per-screen transitions.
 
 ## Testing
 

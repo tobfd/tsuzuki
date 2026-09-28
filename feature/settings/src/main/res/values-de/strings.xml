@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_placeholder">Die Einstellungen kommen in M11. Bis dahin kannst du dich hier abmelden.</string>
+    <string name="settings_logged_in_as">Angemeldet als %1$s</string>
+    <string name="settings_log_out">Abmelden</string>
+</resources>

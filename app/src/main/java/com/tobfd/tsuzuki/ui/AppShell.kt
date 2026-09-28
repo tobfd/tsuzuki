@@ -17,14 +17,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.NavigationEvent
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackCorners
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTransitions
+import com.tobfd.tsuzuki.core.designsystem.theme.rememberReducedMotion
 import com.tobfd.tsuzuki.core.ui.LocalScrollToTopRequest
 import com.tobfd.tsuzuki.feature.browse.BrowseRoute
 import com.tobfd.tsuzuki.feature.browse.BrowseScreen
@@ -138,6 +143,13 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
         }
     }
 
+    val predictiveBackCornersDecorator = remember {
+        NavEntryDecorator<NavKey> { entry ->
+            PredictiveBackCorners(LocalNavAnimatedContentScope.current) { entry.Content() }
+        }
+    }
+    val reducedMotion = rememberReducedMotion()
+
     // Each tab decorates its own stack, so its saved state and ViewModels live as long as the stack
     // does, whether or not the tab is visible.
     val entriesPerTab: Map<TopLevelTab, List<NavEntry<NavKey>>> = TopLevelTab.entries.associateWith { tab ->
@@ -145,7 +157,8 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             backStack = navigator.stackOf(tab),
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
+                rememberViewModelStoreNavEntryDecorator(),
+                predictiveBackCornersDecorator
             ),
             entryProvider = entryProvider
         )
@@ -175,8 +188,8 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             val slideDistancePx = with(LocalDensity.current) { TsuzukiTransitions.SharedAxisSlideDistance.roundToPx() }
             NavDisplay(
                 entries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) },
-                // Tab switches fade through; opening and closing screens use shared axis X. Predictive
-                // back runs the backward transition, driven by the gesture.
+                // Tab switches fade through; opening screens, the back arrow and back without the
+                // gesture use shared axis X.
                 transitionSpec = {
                     if (navigator.lastTransition == NavigationTransition.TabSwitch) {
                         TsuzukiTransitions.fadeThrough()
@@ -191,8 +204,12 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                         TsuzukiTransitions.sharedAxisX(forward = false, slideDistancePx = slideDistancePx)
                     }
                 },
-                predictivePopTransitionSpec = {
-                    TsuzukiTransitions.sharedAxisX(forward = false, slideDistancePx = slideDistancePx)
+                // Only the back gesture: Material 3 predictive back (shrink, round corners, parallax).
+                predictivePopTransitionSpec = { swipeEdge ->
+                    TsuzukiTransitions.predictiveBack(
+                        fromLeftEdge = swipeEdge == NavigationEvent.EDGE_LEFT,
+                        reducedMotion = reducedMotion
+                    )
                 },
                 onBack = { navigator.back() }
             )

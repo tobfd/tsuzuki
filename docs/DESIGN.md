@@ -41,6 +41,10 @@ Font: **Google Sans Flex** (Google Fonts, OFL), bundled as a variable font. Scal
 ### Motion and feel
 
 - **+1 button** (signature component): filled `primary`, label "+1". At rest it is a rounded square (shape medium, 12 dp); while pressed it morphs to a circle (full) with a spring (`Spring.DampingRatioMediumBouncy`, stiffness medium-low), then back. Light haptic tick on tap; confirm haptic when the entry completes. When progress reaches the total, the button is replaced by a "Completed" chip in completed-container colors.
+- **Screen transitions** (`TsuzukiTransitions`, M3 motion tokens, emphasized easing):
+  - Opening a screen: shared axis X, 450 ms (long1). The new screen slides in from 30 dp to the right while the old one moves 30 dp to the left; the old one fades out in the first 35 %, the new one fades in during the rest (emphasized accelerate / decelerate).
+  - Back, including predictive back: the mirror image. During the back gesture the animation follows the finger.
+  - Switching tabs: fade through, 300 ms (medium2). The old content fades out in the first 35 %, the new one fades in and scales from 92 % to 100 %.
 - Default M3 Expressive motion scheme for everything else. Sheets and dialogs follow predictive back.
   - Not possible yet: material3 1.4.0 (Compose BOM 2026.09.00) keeps `MotionScheme` and `MaterialExpressiveTheme` internal, so the theme uses the standard motion scheme. Tobias decided to stay on stable; expressive motion follows in M12 once material3 1.5 is stable. The +1 spring does not depend on it.
 

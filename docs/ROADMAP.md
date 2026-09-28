@@ -2,6 +2,15 @@
 
 Work top to bottom. Each milestone ends in a working app that Tobias can install. Tick boxes in the PR that finishes them. "Done when" is the acceptance check; it must hold before the next milestone starts.
 
+From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each with one branch, one PR and one phone test:
+
+1. M4
+2. M5 + M6
+3. M7 + M8 + M9
+4. M10 + M11 + M12
+
+Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
+
 Before M0, Tobias does two things by hand:
 
 - [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.

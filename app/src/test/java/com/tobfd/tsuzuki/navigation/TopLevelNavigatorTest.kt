@@ -121,4 +121,37 @@ class TopLevelNavigatorTest {
 
         assertEquals(NotificationsRoute, navigator.stackOf(TopLevelTab.Browse).last())
     }
+
+    @Test
+    fun openingAScreen_isAForwardTransition() {
+        navigator.navigate(MediaRoute(1))
+        assertEquals(NavigationTransition.Forward, navigator.lastTransition)
+    }
+
+    @Test
+    fun back_isABackwardTransition() {
+        navigator.navigate(MediaRoute(1))
+        navigator.back()
+        assertEquals(NavigationTransition.Backward, navigator.lastTransition)
+    }
+
+    @Test
+    fun selectingAnotherTab_isATabSwitch() {
+        navigator.selectTab(TopLevelTab.Lists)
+        assertEquals(NavigationTransition.TabSwitch, navigator.lastTransition)
+    }
+
+    @Test
+    fun backFromAnotherTabsRootToHome_isBackwardNotATabSwitch() {
+        navigator.selectTab(TopLevelTab.Profile)
+        navigator.back()
+        assertEquals(NavigationTransition.Backward, navigator.lastTransition)
+    }
+
+    @Test
+    fun reselectingTheCurrentTab_isBackward() {
+        navigator.navigate(MediaRoute(1))
+        navigator.selectTab(TopLevelTab.Home)
+        assertEquals(NavigationTransition.Backward, navigator.lastTransition)
+    }
 }

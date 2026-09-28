@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -23,6 +24,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTransitions
 import com.tobfd.tsuzuki.core.ui.LocalScrollToTopRequest
 import com.tobfd.tsuzuki.feature.browse.BrowseRoute
 import com.tobfd.tsuzuki.feature.browse.BrowseScreen
@@ -45,6 +47,7 @@ import com.tobfd.tsuzuki.feature.profile.UserScreen
 import com.tobfd.tsuzuki.feature.settings.SettingsRoute
 import com.tobfd.tsuzuki.feature.settings.SettingsScreen
 import com.tobfd.tsuzuki.navigation.LocalShellChrome
+import com.tobfd.tsuzuki.navigation.NavigationTransition
 import com.tobfd.tsuzuki.navigation.ShellChrome
 import com.tobfd.tsuzuki.navigation.TopLevelNavigator
 import com.tobfd.tsuzuki.navigation.TopLevelTab
@@ -169,8 +172,28 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 }
             }
         ) {
+            val slideDistancePx = with(LocalDensity.current) { TsuzukiTransitions.SharedAxisSlideDistance.roundToPx() }
             NavDisplay(
                 entries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) },
+                // Tab switches fade through; opening and closing screens use shared axis X. Predictive
+                // back runs the backward transition, driven by the gesture.
+                transitionSpec = {
+                    if (navigator.lastTransition == NavigationTransition.TabSwitch) {
+                        TsuzukiTransitions.fadeThrough()
+                    } else {
+                        TsuzukiTransitions.sharedAxisX(forward = true, slideDistancePx = slideDistancePx)
+                    }
+                },
+                popTransitionSpec = {
+                    if (navigator.lastTransition == NavigationTransition.TabSwitch) {
+                        TsuzukiTransitions.fadeThrough()
+                    } else {
+                        TsuzukiTransitions.sharedAxisX(forward = false, slideDistancePx = slideDistancePx)
+                    }
+                },
+                predictivePopTransitionSpec = {
+                    TsuzukiTransitions.sharedAxisX(forward = false, slideDistancePx = slideDistancePx)
+                },
                 onBack = { navigator.back() }
             )
         }

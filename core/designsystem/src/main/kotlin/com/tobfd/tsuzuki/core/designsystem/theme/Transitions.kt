@@ -1,33 +1,20 @@
 package com.tobfd.tsuzuki.core.designsystem.theme
 
 import android.provider.Settings
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -107,72 +94,13 @@ object TsuzukiTransitions {
         return enter togetherWith exit
     }
 
-    /** Scale of the current screen at the end of a predictive back gesture. */
-    const val PREDICTIVE_BACK_SCALE = 0.9f
-
-    /** Corner radius the current screen reaches during predictive back (shape extraLarge). */
-    val PredictiveBackCornerRadius = ShapeTokens.extraLarge
-
-    /** Dim of the previous screen at the start of predictive back; it clears as the gesture goes on. */
-    const val ENTERING_SCRIM_ALPHA = 0.08f
-
-    /** Timeline of the predictive back transition; the gesture drives it, so easing is linear. */
-    const val PREDICTIVE_BACK_DURATION = 400
-
-    private const val PREDICTIVE_BACK_SHIFT_FRACTION = 20
-    private const val PREDICTIVE_BACK_PARALLAX_FRACTION = 10
-
     /**
-     * The Material 3 predictive back pattern for the back gesture only: the current screen shrinks to
-     * [PREDICTIVE_BACK_SCALE] and shifts slightly towards the side the swipe comes from, while the
-     * previous screen, fully visible behind it, follows with a slight parallax from the left. Corners
-     * are rounded by [PredictiveBackCorners]. The gesture's progress drives it; release finishes it
-     * and cancelling runs it back. With animations turned off ([reducedMotion]) nothing moves.
-     *
-     * @param fromLeftEdge true when the swipe started at the left edge.
+     * The predictive pop transition for the back gesture. It moves nothing itself (the leaving
+     * screen stays composed until the transition ends): [PredictiveBackEntry] draws the system's
+     * back animation, because that one has a gesture phase and a separate phase after release,
+     * which a single seekable transition cannot express.
      */
-    fun predictiveBack(fromLeftEdge: Boolean, reducedMotion: Boolean): ContentTransform {
-        if (reducedMotion) return EnterTransition.None togetherWith ExitTransition.None
-        val direction = if (fromLeftEdge) 1 else -1
-        val slide = tween<IntOffset>(PREDICTIVE_BACK_DURATION, easing = LinearEasing)
-        val enter = slideInHorizontally(slide) { fullWidth -> -fullWidth / PREDICTIVE_BACK_PARALLAX_FRACTION }
-        val exit =
-            scaleOut(tween(PREDICTIVE_BACK_DURATION, easing = LinearEasing), targetScale = PREDICTIVE_BACK_SCALE) +
-                slideOutHorizontally(slide) { fullWidth -> direction * fullWidth / PREDICTIVE_BACK_SHIFT_FRACTION }
-        return enter togetherWith exit
-    }
-}
-
-/**
- * Decorates every navigation entry for the transitions: rounds the corners of a leaving screen
- * ([EnterExitState.PostExit]) up to [TsuzukiTransitions.PredictiveBackCornerRadius], and dims an
- * entering screen by [TsuzukiTransitions.ENTERING_SCRIM_ALPHA] until it has arrived. Both show
- * during predictive back, where the leaving screen stays on top of the dimmed previous one; in the
- * other transitions the screens have faded before either is noticeable.
- */
-@Composable
-fun PredictiveBackCorners(scope: AnimatedVisibilityScope, content: @Composable () -> Unit) {
-    val spec = tween<Float>(TsuzukiTransitions.PREDICTIVE_BACK_DURATION, easing = LinearEasing)
-    val corner by scope.transition.animateDp(
-        transitionSpec = { tween(TsuzukiTransitions.PREDICTIVE_BACK_DURATION, easing = LinearEasing) },
-        label = "predictiveBackCorner"
-    ) { state -> if (state == EnterExitState.PostExit) TsuzukiTransitions.PredictiveBackCornerRadius else 0.dp }
-    val scrim by scope.transition.animateFloat(transitionSpec = { spec }, label = "enteringScrim") { state ->
-        if (state == EnterExitState.PreEnter) TsuzukiTransitions.ENTERING_SCRIM_ALPHA else 0f
-    }
-    Box(
-        modifier = Modifier
-            .graphicsLayer {
-                shape = RoundedCornerShape(corner)
-                clip = corner > 0.dp
-            }
-            .drawWithContent {
-                drawContent()
-                if (scrim > 0f) drawRect(Color.Black.copy(alpha = scrim))
-            }
-    ) {
-        content()
-    }
+    fun predictiveBack(): ContentTransform = EnterTransition.None togetherWith ExitTransition.None
 }
 
 /** True when the user turned animations off (animator duration scale 0 in the system settings). */

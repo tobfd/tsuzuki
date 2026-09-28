@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_app_name" translatable="false">Tsuzuki</string>
+    <string name="auth_tagline">Keep track of what comes next. Your AniList, made for Android.</string>
+    <string name="auth_log_in">Log in with AniList</string>
+    <string name="auth_logging_in">Logging in…</string>
+    <string name="auth_browse_as_guest">Browse without an account</string>
+    <string name="auth_unofficial_note">Unofficial app for AniList. Not affiliated with AniList.</string>
+    <string name="auth_reason_expired">Your AniList login has expired. Log in again to continue.</string>
+    <string name="auth_reason_unauthorized">AniList ended your session. Log in again to continue.</string>
+    <string name="auth_error_denied">The login was cancelled on AniList.</string>
+    <string name="auth_error_invalid_redirect">AniList didn\'t send a login. Try again.</string>
+    <string name="auth_error_no_browser">No browser found to open the AniList login.</string>
+</resources>

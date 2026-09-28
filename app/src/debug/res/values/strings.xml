@@ -40,6 +40,10 @@
     <string name="catalog_global" translatable="false">Global</string>
     <string name="catalog_top_bar_home" translatable="false">Home</string>
     <string name="catalog_top_bar_lists" translatable="false">Lists</string>
+    <string name="catalog_top_bar_browse" translatable="false">Browse</string>
+    <string name="catalog_top_bar_settings" translatable="false">Settings</string>
+    <string name="catalog_top_bar_guest_label" translatable="false">Guest (no bell, no avatar)</string>
+    <string name="catalog_top_bar_back_label" translatable="false">Pushed screen: TsuzukiBackTopBar</string>
     <string name="catalog_empty_title" translatable="false">Nothing here yet</string>
     <string name="catalog_empty_message" translatable="false">Entries you add to this list show up here.</string>
     <string name="catalog_empty_action" translatable="false">Browse</string>

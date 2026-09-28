@@ -46,6 +46,8 @@ import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.StatusChip
 import com.tobfd.tsuzuki.core.designsystem.component.StatusDot
+import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBanner
+import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiLogo
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiTopBar
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
@@ -109,6 +111,21 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
             item { CatalogSection(R.string.catalog_section_top_bar) { TopBarSamples() } }
+            item {
+                CatalogSection(R.string.catalog_section_logo) {
+                    TsuzukiLogo()
+                }
+            }
+            item {
+                CatalogSection(R.string.catalog_section_banner) {
+                    TsuzukiBanner(
+                        message = stringResource(R.string.catalog_banner_message),
+                        actionLabel = stringResource(R.string.catalog_banner_action),
+                        onAction = {}
+                    )
+                    TsuzukiBanner(message = stringResource(R.string.catalog_banner_message_short))
+                }
+            }
             item {
                 CatalogSection(R.string.catalog_section_empty_state) {
                     EmptyState(

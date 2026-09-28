@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name" translatable="false">Tsuzuki</string>
+
+    <!-- Temporary session screen (M2), replaced by the tab shell in M3. -->
+    <string name="session_logged_in_as">Logged in as %1$s</string>
+    <string name="session_guest">Browsing without an account</string>
+    <string name="session_log_out">Log out</string>
+    <string name="session_log_in">Log in</string>
+    <string name="session_log_in_again">Log in again</string>
+    <plurals name="session_expiry_warning">
+        <item quantity="one">Your AniList login expires in %d day. Log in again to renew it.</item>
+        <item quantity="other">Your AniList login expires in %d days. Log in again to renew it.</item>
+    </plurals>
+    <string name="session_placeholder_note">Temporary screen until the app navigation arrives.</string>
 </resources>

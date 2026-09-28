@@ -21,6 +21,8 @@
     <string name="catalog_section_top_bar" translatable="false">TsuzukiTopBar</string>
     <string name="catalog_section_empty_state" translatable="false">EmptyState</string>
     <string name="catalog_section_error_state" translatable="false">ErrorState</string>
+    <string name="catalog_section_logo" translatable="false">TsuzukiLogo</string>
+    <string name="catalog_section_banner" translatable="false">TsuzukiBanner</string>
 
     <string name="catalog_plus_one_standard" translatable="false">Standard 48 dp</string>
     <string name="catalog_plus_one_dense" translatable="false">Dense 40 dp</string>
@@ -43,4 +45,7 @@
     <string name="catalog_empty_action" translatable="false">Browse</string>
     <string name="catalog_error_title" translatable="false">You\'re offline</string>
     <string name="catalog_error_message" translatable="false">Check your connection and try again.</string>
+    <string name="catalog_banner_message" translatable="false">Your AniList login expires in 5 days. Log in again to renew it.</string>
+    <string name="catalog_banner_action" translatable="false">Log in again</string>
+    <string name="catalog_banner_message_short" translatable="false">AniList is busy. Retrying in 30 seconds.</string>
 </resources>

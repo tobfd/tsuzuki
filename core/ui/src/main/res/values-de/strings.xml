@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_score_out_of">%1$s von %2$d</string>
+    <plurals name="ui_score_stars">
+        <item quantity="one">%1$d von %2$d Sternen</item>
+        <item quantity="other">%1$d von %2$d Sternen</item>
+    </plurals>
+    <string name="ui_score_disliked">Nicht gemocht</string>
+    <string name="ui_score_neutral">Neutral</string>
+    <string name="ui_score_liked">Gemocht</string>
+    <string name="ui_score_none_description">Nicht bewertet</string>
+
+    <string name="ui_status_watching">Am Schauen</string>
+    <string name="ui_status_reading">Am Lesen</string>
+    <string name="ui_status_planning">Geplant</string>
+    <string name="ui_status_completed">Abgeschlossen</string>
+    <string name="ui_status_paused">Pausiert</string>
+    <string name="ui_status_dropped">Abgebrochen</string>
+    <string name="ui_status_rewatching">Erneut schauen</string>
+    <string name="ui_status_rereading">Erneut lesen</string>
+</resources>

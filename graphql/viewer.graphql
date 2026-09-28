@@ -1,0 +1,32 @@
+# Called right after login and on app start (cache-first, refresh in the background).
+# The only query that knows who the user is; cache id, name and options locally.
+query Viewer {
+  Viewer {
+    id
+    name
+    avatar { large medium }
+    bannerImage
+    siteUrl
+    unreadNotificationCount
+    options {
+      titleLanguage
+      staffNameLanguage
+      displayAdultContent
+      profileColor
+    }
+    mediaListOptions {
+      scoreFormat
+      rowOrder
+      animeList { customLists sectionOrder advancedScoringEnabled }
+      mangaList { customLists sectionOrder advancedScoringEnabled }
+    }
+  }
+}
+
+# Cheap badge refresh for the bell (on app resume, at most every 5 minutes).
+query UnreadNotificationCount {
+  Viewer {
+    id
+    unreadNotificationCount
+  }
+}

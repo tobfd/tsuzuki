@@ -1,0 +1,130 @@
+# Notifications (Paging 3). Filter chips map to `types`:
+#   All       null (forum and submission notifications are dropped client-side in v1)
+#   Airing    [AIRING]
+#   Activity  [ACTIVITY_MESSAGE, ACTIVITY_REPLY, ACTIVITY_MENTION, ACTIVITY_LIKE, ACTIVITY_REPLY_LIKE, ACTIVITY_REPLY_SUBSCRIBED]
+#   Follows   [FOLLOWING]
+#   Media     [RELATED_MEDIA_ADDITION, MEDIA_DATA_CHANGE, MEDIA_MERGE, MEDIA_DELETION]
+# Pass reset = true on the first page when the screen opens, and for "Mark all as read".
+# The API has no per-item read state: read Viewer.unreadNotificationCount BEFORE resetting and treat that many
+# newest items as unread.
+query Notifications($page: Int!, $types: [NotificationType], $reset: Boolean = false) {
+  Page(page: $page, perPage: 25) {
+    pageInfo { hasNextPage }
+    notifications(type_in: $types, resetNotificationCount: $reset) {
+      __typename
+      ... on AiringNotification {
+        id
+        type
+        createdAt
+        episode
+        contexts
+        media { ...MediaCard }
+      }
+      ... on FollowingNotification {
+        id
+        type
+        createdAt
+        context
+        user { ...UserLite }
+      }
+      ... on ActivityLikeNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+        activity { ...NotificationActivity }
+      }
+      ... on ActivityReplyNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+        activity { ...NotificationActivity }
+      }
+      ... on ActivityReplyLikeNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+        activity { ...NotificationActivity }
+      }
+      ... on ActivityReplySubscribedNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+        activity { ...NotificationActivity }
+      }
+      ... on ActivityMentionNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+        activity { ...NotificationActivity }
+      }
+      ... on ActivityMessageNotification {
+        id
+        type
+        createdAt
+        context
+        activityId
+        user { ...UserLite }
+      }
+      ... on RelatedMediaAdditionNotification {
+        id
+        type
+        createdAt
+        context
+        media { ...MediaCard }
+      }
+      ... on MediaDataChangeNotification {
+        id
+        type
+        createdAt
+        context
+        reason
+        media { ...MediaCard }
+      }
+      ... on MediaMergeNotification {
+        id
+        type
+        createdAt
+        context
+        reason
+        deletedMediaTitles
+        media { ...MediaCard }
+      }
+      ... on MediaDeletionNotification {
+        id
+        type
+        createdAt
+        context
+        reason
+        deletedMediaTitle
+      }
+    }
+  }
+}
+
+# Short activity summary for the subline ("Watched episodes 17 - 18 of Frieren").
+fragment NotificationActivity on ActivityUnion {
+  __typename
+  ... on ListActivity {
+    id
+    status
+    progress
+    media { id title { userPreferred } }
+  }
+  ... on TextActivity { id }
+  ... on MessageActivity { id }
+}

@@ -1,0 +1,54 @@
+# Profile (own and others) in ONE request: user data + first page of their activity.
+query UserProfile($id: Int!) {
+  User(id: $id) {
+    id
+    name
+    about(asHtml: true)
+    avatar { large }
+    bannerImage
+    siteUrl
+    isFollowing
+    isFollower
+    statistics {
+      anime { count episodesWatched minutesWatched meanScore statuses { status count } }
+      manga { count chaptersRead volumesRead meanScore statuses { status count } }
+    }
+    stats {
+      activityHistory { date amount level }
+    }
+    favourites {
+      anime(perPage: 12) { nodes { ...MediaCard } }
+      manga(perPage: 12) { nodes { ...MediaCard } }
+      characters(perPage: 12) { nodes { ...CharacterLite } }
+      staff(perPage: 12) { nodes { ...StaffLite } }
+    }
+  }
+  activity: Page(perPage: 10) {
+    pageInfo { hasNextPage }
+    activities(userId: $id, sort: [ID_DESC]) {
+      ...FeedActivity
+    }
+  }
+}
+
+# Social tab (paged).
+query UserFollowing($id: Int!, $page: Int!) {
+  Page(page: $page, perPage: 25) {
+    pageInfo { hasNextPage }
+    following(userId: $id, sort: [USERNAME]) { ...UserLite }
+  }
+}
+
+query UserFollowers($id: Int!, $page: Int!) {
+  Page(page: $page, perPage: 25) {
+    pageInfo { hasNextPage }
+    followers(userId: $id, sort: [USERNAME]) { ...UserLite }
+  }
+}
+
+mutation ToggleFollow($userId: Int!) {
+  ToggleFollow(userId: $userId) {
+    id
+    isFollowing
+  }
+}

@@ -1,0 +1,56 @@
+query CharacterDetail($id: Int!, $page: Int = 1) {
+  Character(id: $id) {
+    id
+    name { full native alternative userPreferred }
+    image { large }
+    description(asHtml: true)
+    gender
+    age
+    bloodType
+    dateOfBirth { year month day }
+    favourites
+    isFavourite
+    siteUrl
+    media(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
+      pageInfo { hasNextPage }
+      edges {
+        characterRole
+        node { ...MediaCard }
+        voiceActors(language: JAPANESE) { ...StaffLite }
+      }
+    }
+  }
+}
+
+query StaffDetail($id: Int!, $page: Int = 1) {
+  Staff(id: $id) {
+    id
+    name { full native alternative userPreferred }
+    image { large }
+    description(asHtml: true)
+    primaryOccupations
+    gender
+    age
+    dateOfBirth { year month day }
+    homeTown
+    yearsActive
+    favourites
+    isFavourite
+    siteUrl
+    characters(page: $page, perPage: 25, sort: [FAVOURITES_DESC]) {
+      pageInfo { hasNextPage }
+      edges {
+        role
+        node { ...CharacterLite }
+        media { ...MediaCard }
+      }
+    }
+    staffMedia(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
+      pageInfo { hasNextPage }
+      edges {
+        staffRole
+        node { ...MediaCard }
+      }
+    }
+  }
+}

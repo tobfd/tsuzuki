@@ -1,0 +1,66 @@
+# First load of Home: trending row + first feed page in ONE request.
+# "In Progress" and "Up next from Planning" come from Room, not from here.
+query Home($isFollowing: Boolean = true, $isAdult: Boolean = false) {
+  trending: Page(perPage: 10) {
+    media(type: ANIME, sort: [TRENDING_DESC, POPULARITY_DESC], isAdult: $isAdult) {
+      ...MediaCard
+    }
+  }
+  feed: Page(page: 1, perPage: 20) {
+    pageInfo { hasNextPage }
+    activities(isFollowing: $isFollowing, type_in: [ANIME_LIST, MANGA_LIST, TEXT], sort: [ID_DESC]) {
+      ...FeedActivity
+    }
+  }
+}
+
+# Further feed pages (Paging 3). For the Global feed pass isFollowing = false and hasRepliesOrTypeText = true,
+# which is what anilist.co does to keep the global feed readable.
+query ActivityFeed($page: Int!, $isFollowing: Boolean, $hasRepliesOrTypeText: Boolean) {
+  Page(page: $page, perPage: 20) {
+    pageInfo { hasNextPage }
+    activities(
+      isFollowing: $isFollowing
+      hasRepliesOrTypeText: $hasRepliesOrTypeText
+      type_in: [ANIME_LIST, MANGA_LIST, TEXT]
+      sort: [ID_DESC]
+    ) {
+      ...FeedActivity
+    }
+  }
+}
+
+fragment FeedActivity on ActivityUnion {
+  __typename
+  ... on ListActivity {
+    id
+    status
+    progress
+    createdAt
+    likeCount
+    replyCount
+    isLiked
+    siteUrl
+    user { ...UserLite }
+    media { ...MediaCard }
+  }
+  ... on TextActivity {
+    id
+    text(asHtml: true)
+    createdAt
+    likeCount
+    replyCount
+    isLiked
+    siteUrl
+    user { ...UserLite }
+  }
+}
+
+mutation ToggleActivityLike($id: Int!) {
+  ToggleLikeV2(id: $id, type: ACTIVITY) {
+    __typename
+    ... on ListActivity { id likeCount isLiked }
+    ... on TextActivity { id likeCount isLiked }
+    ... on MessageActivity { id likeCount isLiked }
+  }
+}

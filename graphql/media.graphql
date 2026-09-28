@@ -1,0 +1,91 @@
+# Media detail: everything on the screen in ONE request.
+# `following` needs a logged-in user; pass loggedIn = false for guests.
+query MediaDetail($id: Int!, $loggedIn: Boolean!) {
+  Media(id: $id) {
+    ...MediaCard
+    idMal
+    duration
+    season
+    source(version: 3)
+    countryOfOrigin
+    meanScore
+    popularity
+    favourites
+    isFavourite
+    hashtag
+    siteUrl
+    bannerImage
+    coverImage { extraLarge large color }
+    endDate { year month day }
+    synonyms
+    description(asHtml: true)
+    genres
+    tags { id name rank isMediaSpoiler isGeneralSpoiler description }
+    rankings { id rank type allTime context season year format }
+    studios(isMain: true) { nodes { id name } }
+    externalLinks { id site url type language color icon }
+    trailer { id site thumbnail }
+    mediaListEntry @include(if: $loggedIn) { ...MediaListEntryCore }
+    relations {
+      edges {
+        relationType(version: 2)
+        node { ...MediaCard }
+      }
+    }
+    characters(sort: [ROLE, RELEVANCE, ID], perPage: 12) {
+      edges {
+        role
+        node { ...CharacterLite }
+        voiceActors(language: JAPANESE, sort: [RELEVANCE, ID]) { ...StaffLite }
+      }
+    }
+    staff(sort: [RELEVANCE, ID], perPage: 8) {
+      edges {
+        role
+        node { ...StaffLite }
+      }
+    }
+    stats {
+      statusDistribution { status amount }
+      scoreDistribution { score amount }
+    }
+    recommendations(sort: [RATING_DESC, ID], perPage: 10) {
+      nodes {
+        id
+        rating
+        mediaRecommendation { ...MediaCard }
+      }
+    }
+  }
+  following: Page(perPage: 10) @include(if: $loggedIn) {
+    mediaList(mediaId: $id, isFollowing: true, sort: [UPDATED_TIME_DESC]) {
+      id
+      status
+      score
+      progress
+      user { ...UserLite }
+    }
+  }
+}
+
+# "See all" on the characters section (paged).
+query MediaCharacters($id: Int!, $page: Int!) {
+  Media(id: $id) {
+    id
+    characters(sort: [ROLE, RELEVANCE, ID], page: $page, perPage: 25) {
+      pageInfo { hasNextPage }
+      edges {
+        role
+        node { ...CharacterLite }
+        voiceActors(language: JAPANESE, sort: [RELEVANCE, ID]) { ...StaffLite }
+      }
+    }
+  }
+}
+
+# Heart on media, character and staff pages. Pass exactly one id.
+mutation ToggleFavourite($animeId: Int, $mangaId: Int, $characterId: Int, $staffId: Int) {
+  ToggleFavourite(animeId: $animeId, mangaId: $mangaId, characterId: $characterId, staffId: $staffId) {
+    __typename
+  }
+}

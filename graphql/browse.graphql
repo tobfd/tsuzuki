@@ -1,0 +1,62 @@
+# Browse idle state: two rows in ONE request.
+query BrowseHome($type: MediaType!, $isAdult: Boolean = false) {
+  trending: Page(perPage: 12) {
+    media(type: $type, sort: [TRENDING_DESC, POPULARITY_DESC], isAdult: $isAdult) { ...MediaCard }
+  }
+  newlyAdded: Page(perPage: 12) {
+    media(type: $type, sort: [ID_DESC], isAdult: $isAdult) { ...MediaCard }
+  }
+}
+
+# Search and filters (Paging 3). Quick chips are presets of these variables:
+#   Trending    sort TRENDING_DESC
+#   Top 100     sort SCORE_DESC
+#   This season season = current season, seasonYear = current year, sort POPULARITY_DESC (anime only)
+#   Top movies  format_in [MOVIE], sort SCORE_DESC
+#   Top manhwa  type MANGA, countryOfOrigin "KR", sort SCORE_DESC
+# Leave `search` null when the field is empty; with a search term, sort SEARCH_MATCH first.
+query SearchMedia(
+  $page: Int!
+  $type: MediaType!
+  $search: String
+  $format_in: [MediaFormat]
+  $status_in: [MediaStatus]
+  $season: MediaSeason
+  $seasonYear: Int
+  $genre_in: [String]
+  $tag_in: [String]
+  $countryOfOrigin: CountryCode
+  $sort: [MediaSort] = [POPULARITY_DESC]
+  $isAdult: Boolean = false
+) {
+  Page(page: $page, perPage: 20) {
+    pageInfo { hasNextPage }
+    media(
+      type: $type
+      search: $search
+      format_in: $format_in
+      status_in: $status_in
+      season: $season
+      seasonYear: $seasonYear
+      genre_in: $genre_in
+      tag_in: $tag_in
+      countryOfOrigin: $countryOfOrigin
+      sort: $sort
+      isAdult: $isAdult
+    ) {
+      ...MediaCard
+      mediaListEntry { id status }
+    }
+  }
+}
+
+# Filter sheet options. Cache for 7 days; they rarely change.
+query GenresAndTags {
+  GenreCollection
+  MediaTagCollection {
+    id
+    name
+    category
+    isAdult
+  }
+}

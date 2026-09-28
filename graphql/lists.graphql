@@ -1,0 +1,56 @@
+# Full list sync into Room. Call once per type (ANIME, MANGA).
+# Large lists come in chunks: repeat with chunk + 1 while hasNextChunk is true (each chunk is one request).
+query MediaListCollection($userId: Int!, $type: MediaType!, $chunk: Int, $perChunk: Int = 500) {
+  MediaListCollection(userId: $userId, type: $type, chunk: $chunk, perChunk: $perChunk, forceSingleCompletedList: true) {
+    hasNextChunk
+    lists {
+      name
+      status
+      isCustomList
+      isSplitCompletedList
+      entries { ...MediaListEntryFull }
+    }
+  }
+}
+
+# Create or update an entry. Pass `id` to update, `mediaId` to create.
+# Only send the fields that changed (Apollo Optional.Absent for the rest).
+mutation SaveMediaListEntry(
+  $id: Int
+  $mediaId: Int
+  $status: MediaListStatus
+  $scoreRaw: Int
+  $progress: Int
+  $progressVolumes: Int
+  $repeat: Int
+  $private: Boolean
+  $notes: String
+  $hiddenFromStatusLists: Boolean
+  $customLists: [String]
+  $startedAt: FuzzyDateInput
+  $completedAt: FuzzyDateInput
+) {
+  SaveMediaListEntry(
+    id: $id
+    mediaId: $mediaId
+    status: $status
+    scoreRaw: $scoreRaw
+    progress: $progress
+    progressVolumes: $progressVolumes
+    repeat: $repeat
+    private: $private
+    notes: $notes
+    hiddenFromStatusLists: $hiddenFromStatusLists
+    customLists: $customLists
+    startedAt: $startedAt
+    completedAt: $completedAt
+  ) {
+    ...MediaListEntryFull
+  }
+}
+
+mutation DeleteMediaListEntry($id: Int!) {
+  DeleteMediaListEntry(id: $id) {
+    deleted
+  }
+}

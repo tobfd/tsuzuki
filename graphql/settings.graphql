@@ -1,0 +1,8 @@
+# Settings synced with AniList. Only send what changed.
+mutation UpdateUserOptions($titleLanguage: UserTitleLanguage, $displayAdultContent: Boolean, $scoreFormat: ScoreFormat) {
+  UpdateUser(titleLanguage: $titleLanguage, displayAdultContent: $displayAdultContent, scoreFormat: $scoreFormat) {
+    id
+    options { titleLanguage displayAdultContent }
+    mediaListOptions { scoreFormat }
+  }
+}

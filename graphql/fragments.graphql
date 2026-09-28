@@ -1,0 +1,65 @@
+# Shared fragments. Keep them small: every field here is fetched on every screen that uses the fragment.
+
+# Minimal media data for covers, rows and cards.
+fragment MediaCard on Media {
+  id
+  type
+  format
+  status
+  episodes
+  chapters
+  volumes
+  isAdult
+  averageScore
+  seasonYear
+  startDate { year month day }
+  title { userPreferred romaji english native }
+  coverImage { large medium color }
+  nextAiringEpisode { episode airingAt timeUntilAiring }
+}
+
+# A list entry without its media (used inside Media.mediaListEntry).
+# `score` comes in the viewer's score format; `scoreRaw` is always 0-100 and is what we store in Room.
+fragment MediaListEntryCore on MediaList {
+  id
+  mediaId
+  status
+  score
+  scoreRaw: score(format: POINT_100)
+  progress
+  progressVolumes
+  repeat
+  priority
+  private
+  notes
+  hiddenFromStatusLists
+  customLists(asArray: true)
+  startedAt { year month day }
+  completedAt { year month day }
+  createdAt
+  updatedAt
+}
+
+# A list entry with the media it belongs to (Lists tab, Home "In Progress").
+fragment MediaListEntryFull on MediaList {
+  ...MediaListEntryCore
+  media { ...MediaCard }
+}
+
+fragment UserLite on User {
+  id
+  name
+  avatar { medium }
+}
+
+fragment CharacterLite on Character {
+  id
+  name { userPreferred }
+  image { medium }
+}
+
+fragment StaffLite on Staff {
+  id
+  name { userPreferred }
+  image { medium }
+}

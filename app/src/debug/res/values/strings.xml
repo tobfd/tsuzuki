@@ -22,9 +22,9 @@
     <string name="catalog_section_empty_state" translatable="false">EmptyState</string>
     <string name="catalog_section_error_state" translatable="false">ErrorState</string>
 
-    <string name="catalog_plus_one_standard" translatable="false">48 dp</string>
+    <string name="catalog_plus_one_standard" translatable="false">Standard 48 dp</string>
     <string name="catalog_plus_one_dense" translatable="false">Dense 40 dp</string>
-    <string name="catalog_plus_one_disabled" translatable="false">Disabled</string>
+    <string name="catalog_plus_one_disabled" translatable="false">Disabled (no action)</string>
     <string name="catalog_progress" translatable="false">%1$d / %2$d</string>
     <string name="catalog_score_format" translatable="false">%1$s:</string>
 

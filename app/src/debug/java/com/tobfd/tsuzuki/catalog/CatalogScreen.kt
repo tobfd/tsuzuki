@@ -294,30 +294,43 @@ private fun ShapeSamples() {
 @Composable
 private fun PlusOneSamples() {
     var progress by rememberSaveable { mutableIntStateOf(SAMPLE_PROGRESS) }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.large),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.catalog_progress, progress, FRIEREN_EPISODES),
-            style = MaterialTheme.typography.titleMedium
-        )
-        PlusOneButton(
-            onClick = { progress = if (progress >= FRIEREN_EPISODES) 0 else progress + 1 },
-            completesEntry = progress + 1 == FRIEREN_EPISODES
-        )
-        PlusOneButton(onClick = {}, dense = true)
-        PlusOneButton(onClick = {}, enabled = false)
-    }
+    val increment = { progress = if (progress >= FRIEREN_EPISODES) 0 else progress + 1 }
+    val completes = progress + 1 == FRIEREN_EPISODES
     Text(
-        text = listOf(
-            stringResource(R.string.catalog_plus_one_standard),
-            stringResource(R.string.catalog_plus_one_dense),
-            stringResource(R.string.catalog_plus_one_disabled)
-        ).joinToString(" · "),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        text = stringResource(R.string.catalog_progress, progress, FRIEREN_EPISODES),
+        style = MaterialTheme.typography.titleMedium
     )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.extraLarge),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        // Both enabled variants count up; only the disabled one ignores taps.
+        LabeledVariant(R.string.catalog_plus_one_standard) {
+            PlusOneButton(onClick = increment, completesEntry = completes)
+        }
+        LabeledVariant(R.string.catalog_plus_one_dense) {
+            PlusOneButton(onClick = increment, dense = true, completesEntry = completes)
+        }
+        LabeledVariant(R.string.catalog_plus_one_disabled) {
+            PlusOneButton(onClick = {}, enabled = false)
+        }
+    }
+}
+
+/** A component sample with its variant name underneath. */
+@Composable
+private fun LabeledVariant(label: Int, content: @Composable () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.extraSmall)
+    ) {
+        content()
+        Text(
+            text = stringResource(label),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
 
 @Composable

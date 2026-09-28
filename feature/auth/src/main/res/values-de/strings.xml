@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_tagline">Behalte im Blick, was als Nächstes kommt. Dein AniList, gemacht für Android.</string>
+    <string name="auth_log_in">Mit AniList anmelden</string>
+    <string name="auth_logging_in">Anmeldung läuft…</string>
+    <string name="auth_browse_as_guest">Ohne Konto stöbern</string>
+    <string name="auth_unofficial_note">Inoffizielle App für AniList. Nicht mit AniList verbunden.</string>
+    <string name="auth_reason_expired">Deine AniList-Anmeldung ist abgelaufen. Melde dich erneut an, um weiterzumachen.</string>
+    <string name="auth_reason_unauthorized">AniList hat deine Sitzung beendet. Melde dich erneut an, um weiterzumachen.</string>
+    <string name="auth_error_denied">Die Anmeldung wurde bei AniList abgebrochen.</string>
+    <string name="auth_error_invalid_redirect">AniList hat keine Anmeldung zurückgeschickt. Versuch es erneut.</string>
+    <string name="auth_error_no_browser">Kein Browser gefunden, um die AniList-Anmeldung zu öffnen.</string>
+</resources>

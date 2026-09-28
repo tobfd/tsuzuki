@@ -7,8 +7,8 @@ import org.gradle.kotlin.dsl.dependencies
 
 /**
  * `tsuzuki.android.feature`: a module under `feature` with Compose, Hilt, ViewModels and
- * Navigation 3 route keys (`@Serializable`). Features see the design system and the shared UI
- * (which brings `core/model`); further `core` modules are added here as they are created.
+ * Navigation 3 route keys (`@Serializable`). Features see the design system, the shared UI (which
+ * brings `core/model`), `core/common` and the repositories in `core/data`; tests get `core/testing`.
  */
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -19,8 +19,11 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply(libs.pluginId("kotlin-serialization"))
 
             dependencies {
+                "implementation"(project(":core:common"))
+                "implementation"(project(":core:data"))
                 "implementation"(project(":core:designsystem"))
                 "implementation"(project(":core:ui"))
+                "testImplementation"(project(":core:testing"))
 
                 "implementation"(libs.library("androidx-compose-material3"))
                 "implementation"(libs.library("androidx-hilt-lifecycle-viewmodel-compose"))

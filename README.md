@@ -2,7 +2,7 @@
 
 An unofficial, native Android client for [AniList](https://anilist.co), built with Kotlin, Jetpack Compose and Material 3. Not affiliated with AniList.
 
-**Status:** M1 (design system) done; next is M2, network and login (see `docs/ROADMAP.md`).
+**Status:** M2 (network and login) in progress (see `docs/ROADMAP.md`).
 
 ## Getting started
 
@@ -36,7 +36,7 @@ An unofficial, native Android client for [AniList](https://anilist.co), built wi
 - `app`: the application module.
 - `build-logic`: Gradle convention plugins (`tsuzuki.android.application`, `tsuzuki.android.library`, `tsuzuki.android.compose`, `tsuzuki.android.feature`, `tsuzuki.hilt`, `tsuzuki.room`, `tsuzuki.jvm.library`). New modules apply these instead of configuring Android, Kotlin, Compose, Hilt or Room themselves.
 - `gradle/libs.versions.toml`: every dependency and plugin version.
-- `core/model` (plain Kotlin models), `core/designsystem` (theme, tokens, icons, base components), `core/ui` (shared composables that know the models, e.g. `MediaCover`, `ScoreText`). Further `core/*` and `feature/*` modules are added by the milestone that needs them (see `CLAUDE.md`).
+- `core/model` (plain Kotlin models), `core/common` (`AppError`, dispatchers), `core/network` (Apollo, AniList schema and operations, auth and rate-limit interceptors), `core/datastore` (encrypted token and session), `core/data` (repositories), `core/designsystem` (theme, tokens, icons, base components), `core/ui` (shared composables that know the models, e.g. `MediaCover`, `ScoreText`), `core/testing` (fakes and test rules), `feature/auth` (login). Further modules are added by the milestone that needs them (see `CLAUDE.md`).
 - Debug builds add a second launcher entry, **Tsuzuki Catalog**, with every design system component in both color sources, light and dark.
 
 ## CI

@@ -7,7 +7,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - One endpoint: `POST https://graphql.anilist.co`, JSON body `{ "query": ..., "variables": ... }`, headers `Content-Type: application/json`, `Accept: application/json`.
 - Authenticated requests add `Authorization: Bearer <token>`. Guest requests send no header.
 - Schema: download via Apollo introspection (`./gradlew :core:network:downloadAnilistApolloSchemaFromIntrospection`) and commit `schema.graphqls`. Refresh it when a query needs a new field.
-- Operations live in `core/network/src/main/graphql/com/tobfd/tsuzuki/core/network/`. The handoff's `graphql/` folder has 22 starting operations (queries, mutations, fragments) that were validated against the schema on 2026-09-28; Apollo codegen re-validates them on every build.
+- Operations live in `core/network/src/main/graphql/com/tobfd/tsuzuki/core/network/` (moved there from the handoff's `graphql/` folder in M2), next to `schema.graphqls` and `extra.graphqls`. Apollo codegen validates them on every build. Known warning: `User.stats` (activity history in `UserProfile`) is deprecated in the schema; it stays until M9, which checks for a replacement (roadmap item).
 
 ## Login (OAuth implicit grant)
 
@@ -74,6 +74,8 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 All of them are optimistic in the UI and rolled back on error. List mutations go through the offline queue (see `CLAUDE.md`).
 
 ## Caching (Apollo normalized cache)
+
+The cache is the `com.apollographql.cache` library (memory in front of SQLite `apollo.db`). `extra.graphqls` gives `Media`, `MediaList`, `User`, `Character` and `Staff` an `id`-based cache key (`@typePolicy`), so one record per object is shared by every query; the compiler plugin generates the `Cache` object that `NetworkModule` installs. Logout clears the whole cache.
 
 | Data | Fetch policy | Max age |
 |---|---|---|

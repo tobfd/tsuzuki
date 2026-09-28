@@ -25,4 +25,15 @@
     <string name="ui_media_status_not_yet_released">Angekündigt</string>
     <string name="ui_media_status_cancelled">Abgesetzt</string>
     <string name="ui_media_status_hiatus">Unterbrochen</string>
+
+    <string name="ui_error_offline">Du bist offline. Prüf deine Verbindung und versuch es erneut.</string>
+    <plurals name="ui_error_rate_limited">
+        <item quantity="one">AniList ist gerade ausgelastet. Versuch es in %d Sekunde erneut.</item>
+        <item quantity="other">AniList ist gerade ausgelastet. Versuch es in %d Sekunden erneut.</item>
+    </plurals>
+    <string name="ui_error_api_unavailable">Die AniList-API ist vorübergehend nicht erreichbar. Versuch es später erneut.</string>
+    <string name="ui_error_unauthorized">AniList hat die Anmeldung nicht akzeptiert. Melde dich erneut an.</string>
+    <string name="ui_error_validation">AniList hat die Änderung abgelehnt.</string>
+    <string name="ui_error_not_found">AniList konnte das nicht finden.</string>
+    <string name="ui_error_unknown">Etwas ist schiefgelaufen. Versuch es erneut.</string>
 </resources>

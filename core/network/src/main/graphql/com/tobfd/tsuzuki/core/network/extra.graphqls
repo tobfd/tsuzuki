@@ -1,0 +1,10 @@
+# Client-side schema extensions for the Apollo normalized cache (not sent to AniList).
+# Objects with an id are stored once per id, so every query that returns the same Media, User,
+# list entry, character or staff updates one shared record.
+extend schema @link(url: "https://specs.apollo.dev/cache/v0.3", import: ["@typePolicy"])
+
+extend type Media @typePolicy(keyFields: "id")
+extend type MediaList @typePolicy(keyFields: "id")
+extend type User @typePolicy(keyFields: "id")
+extend type Character @typePolicy(keyFields: "id")
+extend type Staff @typePolicy(keyFields: "id")

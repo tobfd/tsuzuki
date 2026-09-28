@@ -37,15 +37,15 @@ Before M0, Tobias does two things by hand:
 
 ## M2 · Network and login
 
-- [ ] Apollo in `core/network`: `service("anilist")` with introspection of `https://graphql.anilist.co` (task `downloadAnilistApolloSchemaFromIntrospection`), codegen package `com.tobfd.tsuzuki.core.network`, normalized cache (memory + SQLite).
-- [ ] Move `graphql/*.graphql` from the handoff into `core/network/src/main/graphql/...` and make them compile.
-- [ ] `AuthInterceptor` (Bearer token when logged in), `RateLimitInterceptor` (see `docs/ANILIST_API.md`), `AppError` mapping incl. HTTP-200 errors, 403 "API disabled", 429.
-- [ ] Encrypted token store (DataStore + Tink/Keystore). JWT payload parser for `sub` and `exp`.
-- [ ] Login: Custom Tab to the authorize URL, `tsuzuki://auth` intent filter on `MainActivity` (`singleTask`), parse the URL fragment, store token, fetch `Viewer`, cache viewer id, name, avatar and options.
-- [ ] Login screen as designed; "Browse without an account" = guest mode.
-- [ ] Logout clears token, Room, Apollo cache and settings that came from AniList.
-- [ ] Expiry handling: warning banner 14 days before `exp`; on expiry or 401 → login screen with a short explanation.
-- [ ] Tests: fragment parser, JWT parser, rate limiter, error mapper, login ViewModel.
+- [x] Apollo in `core/network`: `service("anilist")` with introspection of `https://graphql.anilist.co` (task `downloadAnilistApolloSchemaFromIntrospection`), codegen package `com.tobfd.tsuzuki.core.network`, normalized cache (memory + SQLite).
+- [x] Move `graphql/*.graphql` from the handoff into `core/network/src/main/graphql/...` and make them compile.
+- [x] `AuthInterceptor` (Bearer token when logged in), `RateLimitInterceptor` (see `docs/ANILIST_API.md`), `AppError` mapping incl. HTTP-200 errors, 403 "API disabled", 429.
+- [x] Encrypted token store (DataStore + Tink/Keystore). JWT payload parser for `sub` and `exp`.
+- [x] Login: Custom Tab to the authorize URL, `tsuzuki://auth` intent filter on `MainActivity` (`singleTask`), parse the URL fragment, store token, fetch `Viewer`, cache viewer id, name, avatar and options.
+- [x] Login screen as designed; "Browse without an account" = guest mode.
+- [x] Logout clears token, Room, Apollo cache and settings that came from AniList. (Room does not exist yet; M4 adds clearing it to `SessionRepository.logOut`.)
+- [x] Expiry handling: warning banner 14 days before `exp`; on expiry or 401 → login screen with a short explanation.
+- [x] Tests: fragment parser, JWT parser, rate limiter, error mapper, login ViewModel.
 
 **Done when:** Tobias can log in on his Pixel, the app shows "Logged in as tobfd" somewhere temporary, and he stays logged in after the app is killed and restarted.
 
@@ -120,6 +120,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Own profile (Profile tab) and other users (route `UserRoute(name)`).
 - [ ] Banner, avatar, name, stats (total anime, episodes watched, days watched, mean score), tabs Overview / Favourites / Stats / Social.
 - [ ] Overview: activity history heatmap (12 weeks, `User.stats.activityHistory`), recent activity.
+- [ ] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided by Tobias, 2026-09-28).
 - [ ] Favourites: anime, manga, characters, staff; empty state.
 - [ ] Stats: anime by status, score overview.
 - [ ] Social: following / followers (first page); follow / unfollow on other profiles.

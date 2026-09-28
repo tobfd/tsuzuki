@@ -28,4 +28,15 @@
     <string name="ui_media_status_not_yet_released">Not yet released</string>
     <string name="ui_media_status_cancelled">Cancelled</string>
     <string name="ui_media_status_hiatus">Hiatus</string>
+
+    <string name="ui_error_offline">You\'re offline. Check your connection and try again.</string>
+    <plurals name="ui_error_rate_limited">
+        <item quantity="one">AniList is busy. Try again in %d second.</item>
+        <item quantity="other">AniList is busy. Try again in %d seconds.</item>
+    </plurals>
+    <string name="ui_error_api_unavailable">The AniList API is temporarily unavailable. Try again later.</string>
+    <string name="ui_error_unauthorized">AniList didn\'t accept the login. Log in again.</string>
+    <string name="ui_error_validation">AniList rejected the change.</string>
+    <string name="ui_error_not_found">AniList couldn\'t find this.</string>
+    <string name="ui_error_unknown">Something went wrong. Try again.</string>
 </resources>

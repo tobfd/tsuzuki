@@ -13,6 +13,11 @@ object TsuzukiIcons {
 
     @DrawableRes val Inbox: Int = R.drawable.ic_inbox
 
+    @DrawableRes val Info: Int = R.drawable.ic_info
+
+    /** The 続 logo glyph (not a Material Symbol); use through `TsuzukiLogo`. */
+    @DrawableRes val LogoGlyph: Int = R.drawable.ic_logo_glyph
+
     @DrawableRes val Notifications: Int = R.drawable.ic_notifications
 
     @DrawableRes val SentimentDissatisfied: Int = R.drawable.ic_sentiment_dissatisfied

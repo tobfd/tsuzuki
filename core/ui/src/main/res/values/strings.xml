@@ -40,4 +40,19 @@
     <string name="ui_error_not_found">AniList couldn\'t find this.</string>
     <string name="ui_error_unknown">Something went wrong. Try again.</string>
     <string name="ui_placeholder_open">Open %1$s</string>
+    <string name="ui_format_tv" translatable="false">TV</string>
+    <string name="ui_format_tv_short">TV Short</string>
+    <string name="ui_format_movie">Movie</string>
+    <string name="ui_format_special">Special</string>
+    <string name="ui_format_ova" translatable="false">OVA</string>
+    <string name="ui_format_ona" translatable="false">ONA</string>
+    <string name="ui_format_music">Music</string>
+    <string name="ui_format_manga" translatable="false">Manga</string>
+    <string name="ui_format_novel" translatable="false">Light Novel</string>
+    <string name="ui_format_one_shot">One Shot</string>
+    <string name="ui_progress" translatable="false">%1$d / %2$d</string>
+    <string name="ui_progress_unknown_total" translatable="false">%1$d / ?</string>
+    <string name="ui_list_start">Start</string>
+    <string name="ui_list_edit_entry">Edit entry</string>
+    <string name="ui_open_details">Open details</string>
 </resources>

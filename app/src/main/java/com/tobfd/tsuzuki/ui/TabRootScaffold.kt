@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
@@ -39,6 +40,7 @@ fun TabRootScaffold(
     onAvatarClick: () -> Unit,
     onRenewLogin: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (contentPadding: PaddingValues) -> Unit
 ) {
     val chrome = LocalShellChrome.current
@@ -51,7 +53,8 @@ fun TabRootScaffold(
                 unreadNotificationCount = if (viewer != null) chrome.unreadNotificationCount else null,
                 onNotificationsClick = onNotificationsClick,
                 avatar = viewer?.let { { UserAvatar(avatarUrl = it.avatarUrl, name = it.name) } },
-                onAvatarClick = onAvatarClick
+                onAvatarClick = onAvatarClick,
+                actions = actions
             )
         }
     ) { innerPadding ->

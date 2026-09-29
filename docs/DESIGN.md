@@ -101,8 +101,9 @@ Centered stack on surface: 続 logo tile (primaryContainer, 28 dp radius), "Tsuz
 Top bar "Home" + bell + avatar. Scrolling column:
 1. **In Progress**: section header with "See all" (→ Lists). Horizontal row of 144 dp cards: cover with "EP x / y" badge and progress bar, title (2 lines, fixed 48 dp height), then a row with "x / y" and the +1 button (or "Completed" chip).
 2. **Up next from Planning**: up to 3 rows (40 × 56 cover, title, meta like "TV · 12 episodes · Airing"), trailing tonal "Start". Hidden when Planning is empty.
-3. **Following**: header with a Following / Global segmented toggle, then `ActivityCard`s (paged).
-4. **Trending now**: horizontal row of 120 dp covers with title and meta.
+3. **Trending now**: horizontal row of 120 dp covers with title and meta (above the feed, which pages on without end).
+4. **Activity**: header with a Following / Global segmented toggle (guests: Global only, no toggle), then `ActivityCard`s (paged). Likes change at once and go back if AniList refuses.
+- Tapping an In Progress card opens the list editor; +1 reaching the total offers Undo like on Lists.
 
 ### Lists (tab)
 
@@ -129,6 +130,9 @@ Top bar "Home" + bell + avatar. Scrolling column:
 - Stats: status distribution as a stacked bar + legend with user counts (status colors), score distribution bars.
 - Social: Following list (avatar, name, status, score).
 - Recommendations: horizontal covers with "+votes".
+- Once the header scrolls away, the tab row stays pinned at the top and takes the back and share buttons.
+- On expanded widths (tablets, phones in landscape) the detail page opens beside Lists or Browse.
+- **Share as image**: the share button opens a preview dialog with a Story (9:16) / Square (1:1) toggle. The card (always rendered at 360 dp width, fixed dark colors): gradient from the cover color to near black, cover, title (bold, centered), "Watching · 18 / 28" in a light cover tint, the viewer's score in their format, then avatar + name and the 続 logo with "Tsuzuki". It is shared as a PNG with the AniList link as text. Guests and media not on the list share the link only.
 
 ### Browse (tab)
 

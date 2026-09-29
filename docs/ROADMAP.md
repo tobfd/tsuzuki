@@ -86,25 +86,25 @@ Before M0, Tobias does two things by hand:
 
 ## M5 · Home
 
-- [ ] "In Progress" carousel from Room (current entries, sorted by last updated), +1 on each card, "See all" → Lists tab.
-- [ ] "Up next from Planning": up to 3 planning entries (prefer already released or airing, then most recently added) with Start.
-- [ ] Activity feed with Following / Global toggle (Paging 3, `Page.activities`), list and text activities, like toggle (optimistic), relative time, tap on media → detail, tap on user → profile.
-- [ ] Trending row (anime) → detail.
-- [ ] One network query for the feed page + trending; the rest comes from Room.
+- [x] "In Progress" carousel from Room (current entries, sorted by last updated), +1 on each card, "See all" → Lists tab. (Tapping a card opens the list editor.)
+- [x] "Up next from Planning": up to 3 planning entries (prefer already released or airing, then most recently added) with Start. (Room keeps no "added" date, so the newest by `updatedAt`, which for planned entries is usually when they were added.)
+- [x] Activity feed with Following / Global toggle (Paging 3, `Page.activities`), list and text activities, like toggle (optimistic), relative time, tap on media → detail, tap on user → profile. (Guests see the Global feed only.)
+- [x] Trending row (anime) → detail. (Above the feed, since the feed pages on without end.)
+- [x] One network query for the feed page + trending; the rest comes from Room. (The first page and trending show from the Apollo cache at once, then one `Home` request refreshes both.)
 
 **Done when:** Home loads from cache instantly and refreshes with at most 2 requests.
 
 ## M6 · Media detail
 
-- [ ] One `MediaDetail` query per open; normalized cache makes reopening free.
-- [ ] Header: banner, cover, title in the user's language + native title, format · episodes · status, average score, top ranking, list button (status + progress, opens editor; "Add to list" when not on the list; login prompt for guests), favourite toggle, share (`siteUrl`).
-- [ ] Anchored tabs: Overview, Characters, Stats, Social, Recommendations.
-- [ ] Description as rich text (AniList HTML subset: `<br>`, `<i>`, `<b>`, links, `~!spoiler!~`) with "Read more".
-- [ ] Genres, tags with rank % (spoiler tags hidden behind "Show spoiler tags"), info grid, where to watch (external links of type STREAMING), trailer (YouTube intent), relations, characters with Japanese VA, staff, status distribution, score distribution, following (friends' status + score), recommendations with rating.
-- [ ] Character and staff lists open the people screens (M8).
-- [ ] Two-pane layout on expanded widths when opened from Lists or Browse.
-- [ ] Shared element transition cover → header if cheap.
-- [ ] "Share as image" (added by Tobias, 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing.
+- [x] One `MediaDetail` query per open; normalized cache makes reopening free. (A cached page shows at once and is fetched again only when older than an hour.)
+- [x] Header: banner, cover, title in the user's language + native title, format · episodes · status, average score, top ranking, list button (status + progress, opens editor; "Add to list" when not on the list; login prompt for guests), favourite toggle, share (`siteUrl`). (The list button reads the entry from Room. "Add to list" adds the media as Planning right away, online only, and opens the editor.)
+- [x] Anchored tabs: Overview, Characters, Stats, Social, Recommendations.
+- [x] Description as rich text (AniList HTML subset: `<br>`, `<i>`, `<b>`, links, `~!spoiler!~`) with "Read more".
+- [x] Genres, tags with rank % (spoiler tags hidden behind "Show spoiler tags"), info grid, where to watch (external links of type STREAMING), trailer (YouTube intent), relations, characters with Japanese VA, staff, status distribution, score distribution, following (friends' status + score), recommendations with rating.
+- [x] Character and staff lists open the people screens (M8).
+- [x] Two-pane layout on expanded widths when opened from Lists or Browse. (`ListDetailSceneStrategy` from material3-adaptive-navigation3; phones in landscape count as expanded.)
+- [ ] Shared element transition cover → header if cheap. (Not cheap: every tab has its own decorated entries and the back gesture draws its own animation; left for M12.)
+- [x] "Share as image" (added by Tobias, 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing. (Guests and media not on the list share the link only.)
 
 **Done when:** the Frieren page (id 154587) matches the design and needs exactly one request.
 

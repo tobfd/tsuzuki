@@ -67,6 +67,19 @@ class TopLevelNavigator(
         scrollToTopRequests.getValue(tab).request()
     }
 
+    /**
+     * Closes [key] if it is the screen on top of the current tab, e.g. a sheet that closes itself.
+     * Unlike [back], it does nothing when [key] is already gone, so closing twice (a swipe and a
+     * save finishing at the same time) never leaves the tab.
+     */
+    fun dismiss(key: NavKey) {
+        val stack = stacks.getValue(currentTab)
+        if (stack.size > 1 && stack.last() == key) {
+            lastTransition = NavigationTransition.Backward
+            stack.removeAt(stack.lastIndex)
+        }
+    }
+
     /** Handles back; returns false when there is nothing left to go back to. */
     fun back(): Boolean {
         val stack = stacks.getValue(currentTab)

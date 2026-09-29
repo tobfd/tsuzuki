@@ -66,6 +66,7 @@ import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.PreviewListEntries
+import com.tobfd.tsuzuki.core.ui.R as UiR
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
@@ -78,7 +79,6 @@ import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
-import com.tobfd.tsuzuki.core.ui.R as UiR
 
 /**
  * The list editor for the viewer's entry of a media. The app shows it in a bottom sheet
@@ -96,6 +96,7 @@ fun ListEditorSheet(mediaId: Int, onDismiss: () -> Unit, onOpenDetails: (mediaId
     LaunchedEffect(viewModel) { viewModel.close.collect { onDismiss() } }
     when (val current = state) {
         ListEditorUiState.Loading -> Box(Modifier.fillMaxWidth().heightIn(min = 200.dp))
+
         is ListEditorUiState.Editing -> ListEditorContent(
             state = current,
             actions = ListEditorActions(
@@ -173,7 +174,13 @@ fun ListEditorContent(state: ListEditorUiState.Editing, actions: ListEditorActio
 
             NumberStepper(
                 label = stringResource(
-                    if (type == MediaType.ANIME) R.string.lists_editor_progress_episodes else R.string.lists_editor_progress_chapters
+                    if (type ==
+                        MediaType.ANIME
+                    ) {
+                        R.string.lists_editor_progress_episodes
+                    } else {
+                        R.string.lists_editor_progress_chapters
+                    }
                 ),
                 value = form.progress,
                 total = entry.media.total,
@@ -220,7 +227,11 @@ fun ListEditorContent(state: ListEditorUiState.Editing, actions: ListEditorActio
                 Text(stringResource(R.string.lists_editor_remove))
             }
             Box(Modifier.weight(1f))
-            Button(onClick = actions.onSave, enabled = !state.saving && state.errors.values.none { it is FieldError.TooHigh }) {
+            Button(
+                onClick = actions.onSave,
+                enabled =
+                    !state.saving && state.errors.values.none { it is FieldError.TooHigh }
+            ) {
                 if (state.saving) {
                     val savingLabel = stringResource(R.string.lists_editor_saving)
                     CircularProgressIndicator(
@@ -262,7 +273,10 @@ fun ListEditorContent(state: ListEditorUiState.Editing, actions: ListEditorActio
 @Composable
 private fun Header(state: ListEditorUiState.Editing, onOpenDetails: () -> Unit) {
     val media = state.entry.media
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)
+    ) {
         MediaCover(
             imageUrl = media.coverUrl,
             contentDescription = null,
@@ -314,7 +328,10 @@ private fun NumberStepper(label: String, value: Int, total: Int?, onValueChange:
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = label, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             IconButton(onClick = { onValueChange(value - 1) }, enabled = value > 0) {
-                Icon(painterResource(TsuzukiIcons.Remove), contentDescription = stringResource(R.string.lists_editor_decrease))
+                Icon(
+                    painterResource(TsuzukiIcons.Remove),
+                    contentDescription = stringResource(R.string.lists_editor_decrease)
+                )
             }
             var text by remember(value) { mutableStateOf(value.toString()) }
             OutlinedTextField(
@@ -341,7 +358,10 @@ private fun NumberStepper(label: String, value: Int, total: Int?, onValueChange:
                 )
             }
             IconButton(onClick = { onValueChange(value + 1) }, enabled = total == null || value < total) {
-                Icon(painterResource(TsuzukiIcons.Add), contentDescription = stringResource(R.string.lists_editor_increase))
+                Icon(
+                    painterResource(TsuzukiIcons.Add),
+                    contentDescription = stringResource(R.string.lists_editor_increase)
+                )
             }
         }
         FieldErrorText(error)
@@ -350,14 +370,37 @@ private fun NumberStepper(label: String, value: Int, total: Int?, onValueChange:
 
 private const val MAX_DIGITS = 5
 
+private class Smiley(val value: Int, val icon: Int, val label: Int)
+
+private val SMILEYS = listOf(
+    Smiley(1, TsuzukiIcons.SentimentDissatisfied, UiR.string.ui_score_disliked),
+    Smiley(2, TsuzukiIcons.SentimentNeutral, UiR.string.ui_score_neutral),
+    Smiley(3, TsuzukiIcons.SentimentSatisfied, UiR.string.ui_score_liked)
+)
+
 /** The score control for the viewer's format (docs/DESIGN.md, "List editor"). */
 @Composable
 private fun ScoreControl(format: ScoreFormat, score: Double, onScoreChange: (Double) -> Unit) {
     when (format) {
-        ScoreFormat.POINT_100 -> ScoreSlider(score, max = 100f, steps = 99, format = format, onScoreChange = onScoreChange)
+        ScoreFormat.POINT_100 -> ScoreSlider(
+            score,
+            max = 100f,
+            steps = 99,
+            format = format,
+            onScoreChange = onScoreChange
+        )
+
         ScoreFormat.POINT_10 -> ScoreSlider(score, max = 10f, steps = 9, format = format, onScoreChange = onScoreChange)
+
         // Half points, as designed; finer scores set on the website stay until the slider is moved.
-        ScoreFormat.POINT_10_DECIMAL -> ScoreSlider(score, max = 10f, steps = 19, format = format, onScoreChange = onScoreChange)
+        ScoreFormat.POINT_10_DECIMAL -> ScoreSlider(
+            score,
+            max = 10f,
+            steps = 19,
+            format = format,
+            onScoreChange = onScoreChange
+        )
+
         ScoreFormat.POINT_5 -> Row {
             (1..5).forEach { star ->
                 val filled = score >= star
@@ -370,19 +413,18 @@ private fun ScoreControl(format: ScoreFormat, score: Double, onScoreChange: (Dou
                     Icon(
                         painter = painterResource(if (filled) TsuzukiIcons.StarFilled else TsuzukiIcons.Star),
                         contentDescription = null,
-                        tint = if (filled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = activeTint(filled)
                     )
                 }
             }
         }
+
         ScoreFormat.POINT_3 -> Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
-            listOf(
-                Triple(1, TsuzukiIcons.SentimentDissatisfied, UiR.string.ui_score_disliked),
-                Triple(2, TsuzukiIcons.SentimentNeutral, UiR.string.ui_score_neutral),
-                Triple(3, TsuzukiIcons.SentimentSatisfied, UiR.string.ui_score_liked)
-            ).forEach { (value, icon, label) ->
+            SMILEYS.forEach { smiley ->
+                val value = smiley.value
+                val icon = smiley.icon
                 val selected = score.roundToInt() == value
-                val description = stringResource(label)
+                val description = stringResource(smiley.label)
                 IconToggleButton(
                     checked = selected,
                     onCheckedChange = { onScoreChange(if (selected) 0.0 else value.toDouble()) },
@@ -391,13 +433,17 @@ private fun ScoreControl(format: ScoreFormat, score: Double, onScoreChange: (Dou
                     Icon(
                         painter = painterResource(icon),
                         contentDescription = null,
-                        tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = activeTint(selected)
                     )
                 }
             }
         }
     }
 }
+
+@Composable
+private fun activeTint(active: Boolean) =
+    if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
 @Composable
 private fun ScoreSlider(score: Double, max: Float, steps: Int, format: ScoreFormat, onScoreChange: (Double) -> Unit) {
@@ -438,7 +484,10 @@ private fun MoreToggle(expanded: Boolean, onToggle: () -> Unit) {
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.weight(1f)
         )
-        Icon(painterResource(if (expanded) TsuzukiIcons.ExpandLess else TsuzukiIcons.ExpandMore), contentDescription = null)
+        Icon(
+            painterResource(if (expanded) TsuzukiIcons.ExpandLess else TsuzukiIcons.ExpandMore),
+            contentDescription = null
+        )
     }
 }
 
@@ -460,7 +509,13 @@ private fun MoreSection(state: ListEditorUiState.Editing, actions: ListEditorAct
         )
         NumberStepper(
             label = stringResource(
-                if (state.entry.type == MediaType.ANIME) R.string.lists_editor_rewatches else R.string.lists_editor_rereads
+                if (state.entry.type ==
+                    MediaType.ANIME
+                ) {
+                    R.string.lists_editor_rewatches
+                } else {
+                    R.string.lists_editor_rereads
+                }
             ),
             value = form.repeat,
             total = null,
@@ -560,7 +615,9 @@ private fun DateField(label: String, date: FuzzyDate?, onDateChange: (FuzzyDate?
 @Composable
 private fun formatFuzzyDate(date: FuzzyDate): String {
     val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
-    date.toLocalDateOrNull()?.let { return it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)) }
+    date.toLocalDateOrNull()?.let {
+        return it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale))
+    }
     val year = date.year ?: return "?"
     val month = date.month ?: return year.toString()
     return java.time.YearMonth.of(year, month).format(DateTimeFormatter.ofPattern("MMM yyyy", locale))
@@ -576,7 +633,11 @@ private fun SwitchRow(title: String, hint: String, checked: Boolean, onCheckedCh
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            Text(text = hint, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = hint,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         Switch(checked = checked, onCheckedChange = null)
     }

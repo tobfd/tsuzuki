@@ -52,7 +52,9 @@ class FakeListRepository(
         rejected.value = rejected.value.filterNot { it.entryId == entryId }
     }
 
-    override val queuedChangeCount: Flow<Int> = MutableStateFlow(0)
+    val queued = MutableStateFlow(0)
+
+    override val queuedChangeCount: Flow<Int> = queued
 
     override suspend fun refresh(force: Boolean): Result<Unit> {
         refreshCalls += force

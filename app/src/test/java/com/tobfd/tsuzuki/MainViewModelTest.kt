@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki
 
 import com.tobfd.tsuzuki.core.model.LogoutReason
 import com.tobfd.tsuzuki.core.model.SessionState
+import com.tobfd.tsuzuki.core.testing.FakeListRepository
 import com.tobfd.tsuzuki.core.testing.FakeNotificationsRepository
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
@@ -21,10 +22,11 @@ class MainViewModelTest {
 
     private val sessionRepository = FakeSessionRepository()
     private val notificationsRepository = FakeNotificationsRepository(initialCount = 3)
+    private val listRepository = FakeListRepository()
 
     /** 100 days before the sample token expires, so no warning unless a test moves the clock. */
     private fun viewModel(now: Instant = SampleData.tokenExpiry - Duration.ofDays(100)) =
-        MainViewModel(sessionRepository, notificationsRepository, Clock.fixed(now, ZoneOffset.UTC))
+        MainViewModel(sessionRepository, notificationsRepository, listRepository, Clock.fixed(now, ZoneOffset.UTC))
 
     private val loggedIn = SessionState.LoggedIn(SampleData.viewer, SampleData.tokenExpiry)
 
@@ -109,10 +111,32 @@ class MainViewModelTest {
     }
 
     @Test
+    fun login_syncsTheListsAndSchedulesBackgroundSync() {
+        viewModel()
+        assertEquals(emptyList<Boolean>(), listRepository.refreshCalls)
+
+        sessionRepository.sessionState.value = loggedIn
+
+        assertEquals(listOf(false), listRepository.refreshCalls)
+        assertEquals(true, listRepository.backgroundSyncScheduled)
+    }
+
+    @Test
+    fun appResumedWhileLoggedIn_syncsTheListsWithTheFifteenMinuteRule() {
+        sessionRepository.sessionState.value = loggedIn
+        val viewModel = viewModel()
+
+        viewModel.onAppResumed()
+
+        assertEquals(listOf(false, false), listRepository.refreshCalls)
+    }
+
+    @Test
     fun appResumedAsGuest_makesNoRequest() {
         sessionRepository.sessionState.value = SessionState.Guest
         viewModel().onAppResumed()
         assertEquals(emptyList<Boolean>(), notificationsRepository.refreshCalls)
+        assertEquals(emptyList<Boolean>(), listRepository.refreshCalls)
     }
 
     @Test

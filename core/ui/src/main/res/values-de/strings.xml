@@ -45,4 +45,19 @@
     <string name="ui_list_start">Starten</string>
     <string name="ui_list_edit_entry">Eintrag bearbeiten</string>
     <string name="ui_open_details">Details öffnen</string>
+    <string name="ui_activity_watched_episode">%1$s hat Folge %2$s von %3$s geschaut</string>
+    <string name="ui_activity_rewatched_episode">%1$s hat Folge %2$s von %3$s erneut geschaut</string>
+    <string name="ui_activity_read_chapter">%1$s hat Kapitel %2$s von %3$s gelesen</string>
+    <string name="ui_activity_reread_chapter">%1$s hat Kapitel %2$s von %3$s erneut gelesen</string>
+    <string name="ui_activity_completed">%1$s hat %2$s abgeschlossen</string>
+    <string name="ui_activity_rewatched">%1$s hat %2$s erneut geschaut</string>
+    <string name="ui_activity_reread">%1$s hat %2$s erneut gelesen</string>
+    <string name="ui_activity_plans_to_watch">%1$s will %2$s schauen</string>
+    <string name="ui_activity_plans_to_read">%1$s will %2$s lesen</string>
+    <string name="ui_activity_dropped">%1$s hat %2$s abgebrochen</string>
+    <string name="ui_activity_paused">%1$s hat %2$s pausiert</string>
+    <string name="ui_activity_like">Gefällt mir</string>
+    <string name="ui_activity_unlike">Gefällt mir nicht mehr</string>
+    <string name="ui_activity_replies">Antworten</string>
+    <string name="ui_activity_open_profile">Profil öffnen</string>
 </resources>

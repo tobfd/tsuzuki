@@ -15,6 +15,8 @@ object TsuzukiIcons {
 
     @DrawableRes val CalendarToday: Int = R.drawable.ic_calendar_today
 
+    @DrawableRes val ChatBubble: Int = R.drawable.ic_chat_bubble
+
     @DrawableRes val Check: Int = R.drawable.ic_check
 
     @DrawableRes val Close: Int = R.drawable.ic_close
@@ -30,6 +32,10 @@ object TsuzukiIcons {
     @DrawableRes val Explore: Int = R.drawable.ic_explore
 
     @DrawableRes val ExploreFilled: Int = R.drawable.ic_explore_filled
+
+    @DrawableRes val Favorite: Int = R.drawable.ic_favorite
+
+    @DrawableRes val FavoriteFilled: Int = R.drawable.ic_favorite_filled
 
     @DrawableRes val Home: Int = R.drawable.ic_home
 
@@ -48,9 +54,15 @@ object TsuzukiIcons {
 
     @DrawableRes val Notifications: Int = R.drawable.ic_notifications
 
+    @DrawableRes val OpenInNew: Int = R.drawable.ic_open_in_new
+
     @DrawableRes val Person: Int = R.drawable.ic_person
 
     @DrawableRes val PersonFilled: Int = R.drawable.ic_person_filled
+
+    @DrawableRes val PlayArrow: Int = R.drawable.ic_play_arrow
+
+    @DrawableRes val PlaylistAdd: Int = R.drawable.ic_playlist_add
 
     @DrawableRes val Remove: Int = R.drawable.ic_remove
 
@@ -64,9 +76,13 @@ object TsuzukiIcons {
 
     @DrawableRes val Settings: Int = R.drawable.ic_settings
 
+    @DrawableRes val Share: Int = R.drawable.ic_share
+
     @DrawableRes val Sort: Int = R.drawable.ic_sort
 
     @DrawableRes val Star: Int = R.drawable.ic_star
 
     @DrawableRes val StarFilled: Int = R.drawable.ic_star_filled
+
+    @DrawableRes val TrendingUp: Int = R.drawable.ic_trending_up
 }

@@ -1,6 +1,7 @@
 # First load of Home: trending row + first feed page in ONE request.
 # "In Progress" and "Up next from Planning" come from Room, not from here.
-query Home($isFollowing: Boolean = true, $isAdult: Boolean = false) {
+# For the Global feed pass isFollowing = false and hasRepliesOrTypeText = true (see ActivityFeed).
+query Home($isFollowing: Boolean = true, $hasRepliesOrTypeText: Boolean, $isAdult: Boolean = false) {
   trending: Page(perPage: 10) {
     media(type: ANIME, sort: [TRENDING_DESC, POPULARITY_DESC], isAdult: $isAdult) {
       ...MediaCard
@@ -8,7 +9,12 @@ query Home($isFollowing: Boolean = true, $isAdult: Boolean = false) {
   }
   feed: Page(page: 1, perPage: 20) {
     pageInfo { hasNextPage }
-    activities(isFollowing: $isFollowing, type_in: [ANIME_LIST, MANGA_LIST, TEXT], sort: [ID_DESC]) {
+    activities(
+      isFollowing: $isFollowing
+      hasRepliesOrTypeText: $hasRepliesOrTypeText
+      type_in: [ANIME_LIST, MANGA_LIST, TEXT]
+      sort: [ID_DESC]
+    ) {
       ...FeedActivity
     }
   }

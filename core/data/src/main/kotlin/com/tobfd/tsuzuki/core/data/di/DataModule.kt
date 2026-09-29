@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.core.data.di
 
+import com.tobfd.tsuzuki.core.data.home.DefaultHomeRepository
+import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ConnectivityNetworkMonitor
 import com.tobfd.tsuzuki.core.data.list.DatabaseUserDataCleaner
 import com.tobfd.tsuzuki.core.data.list.DefaultListRepository
@@ -30,6 +32,9 @@ internal interface DataModule {
 
     @Binds
     fun notificationsRepository(impl: DefaultNotificationsRepository): NotificationsRepository
+
+    @Binds
+    fun homeRepository(impl: DefaultHomeRepository): HomeRepository
 
     @Binds
     fun listRepository(impl: DefaultListRepository): ListRepository

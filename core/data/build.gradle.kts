@@ -15,6 +15,8 @@ android {
 dependencies {
     api(project(":core:common"))
     api(project(":core:model"))
+    // Repositories hand out paged feeds (Flow<PagingData>).
+    api(libs.androidx.paging.runtime)
 
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))

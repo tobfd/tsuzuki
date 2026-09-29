@@ -55,4 +55,19 @@
     <string name="ui_list_start">Start</string>
     <string name="ui_list_edit_entry">Edit entry</string>
     <string name="ui_open_details">Open details</string>
+    <string name="ui_activity_watched_episode">%1$s watched episode %2$s of %3$s</string>
+    <string name="ui_activity_rewatched_episode">%1$s rewatched episode %2$s of %3$s</string>
+    <string name="ui_activity_read_chapter">%1$s read chapter %2$s of %3$s</string>
+    <string name="ui_activity_reread_chapter">%1$s reread chapter %2$s of %3$s</string>
+    <string name="ui_activity_completed">%1$s completed %2$s</string>
+    <string name="ui_activity_rewatched">%1$s rewatched %2$s</string>
+    <string name="ui_activity_reread">%1$s reread %2$s</string>
+    <string name="ui_activity_plans_to_watch">%1$s plans to watch %2$s</string>
+    <string name="ui_activity_plans_to_read">%1$s plans to read %2$s</string>
+    <string name="ui_activity_dropped">%1$s dropped %2$s</string>
+    <string name="ui_activity_paused">%1$s paused %2$s</string>
+    <string name="ui_activity_like">Like</string>
+    <string name="ui_activity_unlike">Unlike</string>
+    <string name="ui_activity_replies">Replies</string>
+    <string name="ui_activity_open_profile">Open profile</string>
 </resources>

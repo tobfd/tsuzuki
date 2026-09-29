@@ -90,6 +90,19 @@ class FakeListRepository(
         entries.value = entries.value.filterNot { it.id == entryId }
     }
 
+    /** What [add] returns; null adds [addEntry] (or fails when that is null too). */
+    var addResult: Result<MediaListEntry>? = null
+    var addEntry: MediaListEntry? = null
+    val added = mutableListOf<Int>()
+
+    override suspend fun add(mediaId: Int): Result<MediaListEntry> {
+        added += mediaId
+        addResult?.let { return it }
+        val entry = addEntry ?: return Result.failure(IllegalStateException("No entry to add"))
+        entries.value = entries.value + entry
+        return Result.success(entry)
+    }
+
     override fun observeChange(changeId: Long): Flow<ChangeState> = changeStates.getValue(changeId)
 
     override fun scheduleBackgroundSync() {

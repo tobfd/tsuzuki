@@ -24,8 +24,10 @@ import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.network.MediaListCollectionQuery
+import com.tobfd.tsuzuki.core.network.SaveMediaListEntryMutation
 import com.tobfd.tsuzuki.core.network.error.appErrorOrNull
 import com.tobfd.tsuzuki.core.network.error.toAppError
+import com.tobfd.tsuzuki.core.network.type.MediaListStatus as NetworkMediaListStatus
 import com.tobfd.tsuzuki.core.network.type.MediaType as NetworkMediaType
 import java.time.Clock
 import java.time.Duration
@@ -180,6 +182,26 @@ internal class DefaultListRepository @Inject constructor(
             )
         }
         scheduler.sendQueuedChanges()
+    }
+
+    override suspend fun add(mediaId: Int): Result<MediaListEntry> {
+        val mutation = SaveMediaListEntryMutation(
+            mediaId = Optional.present(mediaId),
+            status = Optional.present(NetworkMediaListStatus.PLANNING)
+        )
+        val response = try {
+            apolloClient.mutation(mutation).execute()
+        } catch (e: ApolloException) {
+            return Result.failure(e.toAppError())
+        }
+        response.appErrorOrNull()?.let { return Result.failure(it) }
+        val (entry, media) = response.data?.SaveMediaListEntry?.mediaListEntryFull?.toEntities(syncRun = 0)
+            ?: return Result.failure(AppError.Unknown("AniList returned no entry"))
+        listDao.upsertMedia(listOf(media))
+        listDao.upsertEntry(entry)
+        val model =
+            media.toModel()?.let { entry.toModel(it) } ?: return Result.failure(AppError.Unknown("Unknown media"))
+        return Result.success(model)
     }
 
     override fun observeChange(changeId: Long): Flow<ChangeState> = mutationDao.observe(changeId).map { row ->

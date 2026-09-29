@@ -60,4 +60,5 @@
     <string name="ui_activity_unlike">Gefällt mir nicht mehr</string>
     <string name="ui_activity_replies">Antworten</string>
     <string name="ui_activity_open_profile">Profil öffnen</string>
+    <string name="ui_just_now">Gerade eben</string>
 </resources>

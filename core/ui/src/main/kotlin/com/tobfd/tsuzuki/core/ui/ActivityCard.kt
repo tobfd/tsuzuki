@@ -149,14 +149,15 @@ private fun ActivityFooter(activity: Activity, onLikeClick: () -> Unit) {
     }
 }
 
-/** "5 minutes ago", "Yesterday", in the app language. */
+/** "Just now", "5 minutes ago", "Yesterday", in the app language. */
 @Composable
-fun relativeTime(instant: Instant): String = DateUtils.getRelativeTimeSpanString(
-    instant.toEpochMilli(),
-    System.currentTimeMillis(),
-    DateUtils.MINUTE_IN_MILLIS,
-    DateUtils.FORMAT_ABBREV_RELATIVE
-).toString()
+fun relativeTime(instant: Instant): String {
+    val now = System.currentTimeMillis()
+    val then = instant.toEpochMilli()
+    if (now - then < DateUtils.MINUTE_IN_MILLIS) return stringResource(R.string.ui_just_now)
+    return DateUtils.getRelativeTimeSpanString(then, now, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
+        .toString()
+}
 
 @Composable
 private fun bold(text: String): AnnotatedString = buildAnnotatedString {

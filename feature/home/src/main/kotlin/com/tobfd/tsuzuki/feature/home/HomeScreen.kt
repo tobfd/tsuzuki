@@ -216,70 +216,64 @@ private fun HomeList(
         verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap),
         modifier = Modifier.fillMaxSize()
     ) {
-        if (state.inProgress.isNotEmpty()) {
-            item(key = "inProgressHeader") {
-                SectionHeader(
-                    title = stringResource(R.string.home_in_progress),
-                    onSeeAllClick = onSeeAllLists,
-                    modifier = horizontal
-                )
-            }
-            item(key = "inProgress") {
-                LazyRow(
-                    contentPadding = PaddingValues(start = start, end = end),
-                    horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
-                ) {
-                    items(state.inProgress, key = { it.id }) { entry ->
-                        InProgressCard(
+        // One item for everything above the feed: sections that fill in later (Room, the trending
+        // row) then grow the list at the top instead of pushing the first visible item away.
+        item(key = "top") {
+            Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+                if (state.inProgress.isNotEmpty()) {
+                    SectionHeader(
+                        title = stringResource(R.string.home_in_progress),
+                        onSeeAllClick = onSeeAllLists,
+                        modifier = horizontal
+                    )
+                    LazyRow(
+                        contentPadding = PaddingValues(start = start, end = end),
+                        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+                    ) {
+                        items(state.inProgress, key = { it.id }) { entry ->
+                            InProgressCard(
+                                entry = entry,
+                                onClick = { onEditEntry(entry.mediaId) },
+                                onPlusOne = { onPlusOne(entry.id) },
+                                modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
+                }
+                if (state.upNext.isNotEmpty()) {
+                    SectionHeader(
+                        title = stringResource(R.string.home_up_next),
+                        modifier = horizontal.padding(top = TsuzukiSpacing.large)
+                    )
+                    state.upNext.forEach { entry ->
+                        UpNextRow(
                             entry = entry,
-                            onClick = { onEditEntry(entry.mediaId) },
-                            onPlusOne = { onPlusOne(entry.id) },
-                            modifier = Modifier.animateItem()
+                            onClick = { onOpenMedia(entry.mediaId) },
+                            onStart = { onStart(entry.id) },
+                            modifier = horizontal
                         )
                     }
                 }
-            }
-        }
-        if (state.upNext.isNotEmpty()) {
-            item(key = "upNextHeader") {
-                SectionHeader(
-                    title = stringResource(R.string.home_up_next),
-                    modifier = horizontal.padding(top = TsuzukiSpacing.large)
-                )
-            }
-            items(state.upNext, key = { "upNext-${it.id}" }) { entry ->
-                UpNextRow(
-                    entry = entry,
-                    onClick = { onOpenMedia(entry.mediaId) },
-                    onStart = { onStart(entry.id) },
-                    modifier = horizontal.animateItem()
-                )
-            }
-        }
-        if (state.trending.isNotEmpty()) {
-            item(key = "trendingHeader") {
-                SectionHeader(
-                    title = stringResource(R.string.home_trending),
-                    modifier = horizontal.padding(top = TsuzukiSpacing.large)
-                )
-            }
-            item(key = "trending") {
-                LazyRow(
-                    contentPadding = PaddingValues(start = start, end = end),
-                    horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
-                ) {
-                    items(state.trending, key = { it.id }) { media ->
-                        MediaCoverCard(media = media, onClick = { onOpenMedia(media.id) })
+                if (state.trending.isNotEmpty()) {
+                    SectionHeader(
+                        title = stringResource(R.string.home_trending),
+                        modifier = horizontal.padding(top = TsuzukiSpacing.large)
+                    )
+                    LazyRow(
+                        contentPadding = PaddingValues(start = start, end = end),
+                        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+                    ) {
+                        items(state.trending, key = { it.id }) { media ->
+                            MediaCoverCard(media = media, onClick = { onOpenMedia(media.id) })
+                        }
                     }
                 }
+                FeedHeader(
+                    state = state,
+                    onFeedScopeSelected = onFeedScopeSelected,
+                    modifier = horizontal.padding(top = TsuzukiSpacing.large)
+                )
             }
-        }
-        item(key = "feedHeader") {
-            FeedHeader(
-                state = state,
-                onFeedScopeSelected = onFeedScopeSelected,
-                modifier = horizontal.padding(top = TsuzukiSpacing.large)
-            )
         }
         items(count = feed.itemCount, key = feed.itemKey { "activity-${it.id}" }) { index ->
             val activity = feed[index] ?: return@items

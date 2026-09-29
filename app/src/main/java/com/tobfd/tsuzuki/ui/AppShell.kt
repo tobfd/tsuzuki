@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -75,6 +78,8 @@ import com.tobfd.tsuzuki.navigation.TopLevelTab
  * Back stacks and the selected tab survive rotation, resizing and process death. Each tab's entries
  * get their own saveable state and ViewModel stores, so switching tabs keeps everything.
  */
+// The list-detail scene strategy (material3-adaptive-navigation3) is still experimental.
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Modifier) {
     val isGuest = chrome.viewer == null
@@ -92,7 +97,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 )
             }
         }
-        entry<ListsRoute> {
+        entry<ListsRoute>(metadata = ListDetailSceneStrategy.listPane()) {
             ListsRoute(
                 isGuest = isGuest,
                 onLogIn = onLogOut,
@@ -113,7 +118,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 }
             )
         }
-        entry<BrowseRoute> {
+        entry<BrowseRoute>(metadata = ListDetailSceneStrategy.listPane()) {
             TabRoot(TopLevelTab.Browse, navigator, onRenewLogin = onLogOut) { padding ->
                 BrowseScreen(onOpenMedia = { navigator.navigate(MediaRoute(it)) }, contentPadding = padding)
             }
@@ -129,7 +134,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 )
             }
         }
-        entry<MediaRoute> { route ->
+        entry<MediaRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             MediaScreen(
                 mediaId = route.id,
                 onBack = { navigator.back() },
@@ -171,7 +176,11 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
     }
 
     val reducedMotion = rememberReducedMotion()
-    val sceneStrategies = remember { listOf(BottomSheetSceneStrategy<NavKey>(), SinglePaneSceneStrategy()) }
+    // Sheets over everything; on expanded widths Lists or Browse with the detail page beside them.
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    val sceneStrategies = remember(listDetailStrategy) {
+        listOf(BottomSheetSceneStrategy(), listDetailStrategy, SinglePaneSceneStrategy())
+    }
     val predictiveBack = rememberPredictiveBackState()
     val navigationEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
     if (navigationEventDispatcher != null) {

@@ -223,7 +223,7 @@ internal class DefaultListRepository @Inject constructor(
         return Change(id, before)
     }
 
-    private fun today(): LocalDate = LocalDate.ofInstant(clock.instant(), ZoneId.systemDefault())
+    private fun today(): LocalDate = clock.instant().atZone(ZoneId.systemDefault()).toLocalDate()
 }
 
 internal fun PendingMutationEntity.toRejectedChange() = RejectedChange(

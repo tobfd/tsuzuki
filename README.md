@@ -2,7 +2,7 @@
 
 An unofficial, native Android client for [AniList](https://anilist.co), built with Kotlin, Jetpack Compose and Material 3. Not affiliated with AniList.
 
-**Status:** M3 (app shell and navigation) done; next is M4, the lists (see `docs/ROADMAP.md`).
+**Status:** M4 (lists, offline first) done; next are M5 and M6, Home and the detail page (see `docs/ROADMAP.md`).
 
 ## Getting started
 

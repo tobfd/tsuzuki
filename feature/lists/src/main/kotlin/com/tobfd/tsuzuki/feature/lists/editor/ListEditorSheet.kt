@@ -77,7 +77,6 @@ import com.tobfd.tsuzuki.feature.lists.R
 import com.tobfd.tsuzuki.feature.lists.STATUS_TAB_ORDER
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -630,7 +629,7 @@ private fun DateField(label: String, date: FuzzyDate?, onDateChange: (FuzzyDate?
 /** A full date in the locale's medium style; partial AniList dates as far as they are known. */
 @Composable
 private fun formatFuzzyDate(date: FuzzyDate): String {
-    val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
+    val locale = LocalConfiguration.current.locales[0]
     date.toLocalDateOrNull()?.let {
         return it.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale))
     }

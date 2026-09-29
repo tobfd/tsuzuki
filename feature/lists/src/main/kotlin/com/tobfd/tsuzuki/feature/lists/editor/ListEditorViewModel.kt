@@ -268,7 +268,7 @@ class ListEditorViewModel @AssistedInject constructor(
         }
     }
 
-    private fun today(): LocalDate = LocalDate.ofInstant(clock.instant(), ZoneId.systemDefault())
+    private fun today(): LocalDate = clock.instant().atZone(ZoneId.systemDefault()).toLocalDate()
 }
 
 /** Progress and volumes can't go past the known totals. */

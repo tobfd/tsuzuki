@@ -59,7 +59,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |
 | DI | Hilt (KSP) | `hilt-navigation-compose` or the Nav3 ViewModel integration for scoped ViewModels. |
-| Local data | Room 3 (`androidx.room3`, KSP) | Own lists (offline first) and the pending-mutation queue. Room 3 is the current stable major: package `androidx.room3`, Kotlin codegen only, DAOs are `suspend` or return `Flow`. |
+| Local data | Room 3 (`androidx.room3`, KSP) with the framework SQLite driver (`androidx.sqlite:sqlite-framework`, decided by Tobias) | Own lists (offline first) and the pending-mutation queue. Room 3 is the current stable major: package `androidx.room3`, Kotlin codegen only, DAOs are `suspend` or return `Flow`. |
 | Settings | DataStore (Preferences) | App settings. |
 | Token storage | DataStore + Tink AEAD with an Android Keystore master key | `EncryptedSharedPreferences` is deprecated; do not use it. |
 | Background | WorkManager (+ Hilt worker factory) | Flush queued mutations, periodic list sync. |
@@ -126,6 +126,8 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - Navigation 3 keeps entries across recompositions, so entry content must not capture changing values: shell data (viewer, unread count, expiry) comes from `LocalShellChrome`.
 - Reselecting the current tab pops it to its root and sets a `ScrollToTopRequest`; root screens with a list call `ScrollToTopOnTabReselect(listState)`.
 - Screens not built yet use `PlaceholderContent` from `core/ui`; each feature replaces it in its milestone.
+- Bottom sheets that other features open (the list editor, `ListEditorRoute(mediaId)`) are routes with `BottomSheetSceneStrategy.bottomSheet()` metadata. A sheet that closes itself calls `TopLevelNavigator.dismiss(key)`, which never pops more than that sheet.
+- A tab root can put its own actions into the tab's top bar through `TabRoot(actions = ...)` (Lists: search and sort).
 
 ### Offline first for the user's own lists
 
@@ -133,6 +135,7 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - Lists tab and Home "In Progress" read **only** from Room, so they render instantly and offline.
 - Every change (+1, status, score, editor save, delete) is written to Room immediately (optimistic), then appended to a `pending_mutation` table. A WorkManager job (network constraint, exponential backoff) sends them in order. On a validation error the local change is rolled back and the user sees why.
 - Full list refresh (`MediaListCollection`) on app start if older than 15 minutes, on pull to refresh, and via a periodic worker (every 6 hours, unmetered not required).
+- In code (since M4): `ListRepository` in `core/data` is the only entry point. `ListMutationSender` sends the queue oldest first, all queued changes of one entry as one `SaveMediaListEntry` (a +1 undone before sending sends nothing) and rolls rejected ones back from the `previous` snapshot stored with each change. `ListWorkScheduler` runs it through WorkManager (`ListMutationWorker`, `ListSyncWorker`, Hilt worker factory in `TsuzukiApplication`). A sync never overwrites entries whose changes are still queued. Logout clears the whole database (`UserDataCleaner`).
 
 ### AniList specifics that must hold everywhere
 
@@ -166,6 +169,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Unit tests for every ViewModel (state transitions with Turbine), every repository (with fake Apollo responses / in-memory Room), mappers, score format conversion, JWT and redirect parsing, the rate limiter and the mutation queue.
 - Compose UI tests for the list editor sheet, +1 with undo, and login redirect handling.
 - Test names describe behavior: `plusOne_whenReachingTotal_marksCompletedAndOffersUndo`.
+- Room is tested with an in-memory database on Robolectric (`@Config(sdk = [35])`: Robolectric's SDK 36 setup fails on the JDK 25 test runtime). Apollo responses in these tests are parsed from JSON (`ListTestData.kt`), shaped like AniList's.
 - `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design), `MainDispatcherRule`, fakes like `FakeSessionRepository`, and `InMemoryDataStore`. Unit tests never use the file-backed DataStore: it can't replace its file on Windows JVMs, so such tests fail locally while CI (Linux) passes.
 
 ## Don'ts

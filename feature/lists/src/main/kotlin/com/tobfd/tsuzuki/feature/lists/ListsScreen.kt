@@ -39,8 +39,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -128,7 +128,7 @@ internal fun ListsContent(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     // Refresh errors need the error's text, which is resolved in composition.
     var refreshError by remember { mutableStateOf<AppError?>(null) }
@@ -137,7 +137,7 @@ internal fun ListsContent(
             when (event) {
                 is ListsEvent.Completed -> launch {
                     val before = event.before
-                    val message = context.getString(
+                    val message = resources.getString(
                         if (before.type ==
                             MediaType.ANIME
                         ) {
@@ -149,7 +149,7 @@ internal fun ListsContent(
                     )
                     val result = snackbarHostState.showSnackbar(
                         message = message,
-                        actionLabel = context.getString(R.string.lists_undo),
+                        actionLabel = resources.getString(R.string.lists_undo),
                         duration = SnackbarDuration.Long
                     )
                     if (result == SnackbarResult.ActionPerformed) viewModel.onUndo(before)

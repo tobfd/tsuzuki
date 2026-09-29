@@ -106,11 +106,17 @@ Top bar "Home" + bell + avatar. Scrolling column:
 
 ### Lists (tab)
 
-- Top bar "Lists" with search and sort actions. Below: Anime / Manga segmented toggle (full width), then scrollable status tabs with counts ("Watching 1", "Planning 3", "Completed", "Paused", "Dropped", "Rewatching", then custom lists). Manga uses Reading / Rereading.
+- Top bar "Lists" with search and sort actions. Below: Anime / Manga segmented toggle (full width), then scrollable status tabs with counts ("Watching 1", "Planning 3", "Completed", "Paused", "Dropped", "Rewatching", then custom lists). Manga uses Reading / Rereading. Status tabs leave out entries hidden from status lists; custom list tabs show them.
+- Search opens a pill field below the toggle; while it has text, the tabs hide and the results come from the whole list (every title language). Sort menu: Title, Score, Progress, Last updated (default), Start date; the current one has a check mark.
+- Changes that wait longer than 3 seconds to be sent (e.g. offline) show a quiet hint under the tabs: cloud icon and "2 changes wait to be sent".
 - Content: `MediaListRow`s. Planning rows show "Start" instead of +1.
-- +1 reaching the total → entry moves to Completed, snackbar "Frieren marked as completed" with Undo.
+- +1 reaching the total → entry moves to Completed, snackbar "Frieren marked as completed" with Undo (German: "als gesehen / gelesen markiert").
+- A change AniList rejects is rolled back and explained in a snackbar: "Couldn't save Frieren: <AniList's reason>", "Frieren is no longer on your list." (removed elsewhere), or "Couldn't save Frieren. Your change was undone."
 - Empty tab: icon, "Nothing here yet", text, tonal button "Browse" (→ Browse tab).
 - **List editor** (bottom sheet, opened by tapping a row, the detail list button, or "Add to list"): header with cover, title, "Details" link (→ detail). Sections: Status (chips for all six statuses with status colors), Episode progress (− value / total +; manga adds volumes), Score (control per score format; slider 0–10 step 0.5 for POINT_10_DECIMAL, labeled "Not scored" at 0), then collapsible "More" with start/finish dates, rewatches, notes, private, hide from status lists, custom lists. Footer: text button "Remove" (error color, confirm dialog) and filled "Save".
+  - Score controls: slider 0–100 (POINT_100), 0–10 in whole points (POINT_10), 0–10 in half points (POINT_10_DECIMAL), five stars (POINT_5), three smileys (POINT_3); tapping the selected star or smiley clears the score. An unchanged score keeps its exact raw value.
+  - Like AniList, choosing Completed fills in the total and today's finish date, and starting a planned entry sets today's start date, where none is set.
+  - Progress above the total shows "Can't be more than 28" and disables Save; AniList's own field errors show under the matching field.
 
 ### Media detail
 

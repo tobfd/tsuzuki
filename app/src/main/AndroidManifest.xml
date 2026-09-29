@@ -37,6 +37,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Share as image: the detail page shares its card from cache/shared/. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- WorkManager is configured by TsuzukiApplication (Hilt workers), not by its own initializer. -->
         <provider
             android:name="androidx.startup.InitializationProvider"

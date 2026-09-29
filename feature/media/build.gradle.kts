@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.tobfd.tsuzuki.feature.media"
 }
+
+dependencies {
+    implementation(libs.coil.compose)
+}

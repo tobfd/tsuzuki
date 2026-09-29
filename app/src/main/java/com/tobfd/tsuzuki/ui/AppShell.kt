@@ -133,8 +133,11 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             MediaScreen(
                 mediaId = route.id,
                 onBack = { navigator.back() },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
                 onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
-                onOpenStaff = { navigator.navigate(StaffRoute(it)) }
+                onOpenStaff = { navigator.navigate(StaffRoute(it)) },
+                onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
+                onLogIn = onLogOut
             )
         }
         entry<CharacterRoute> { route ->

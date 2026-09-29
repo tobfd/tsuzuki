@@ -86,6 +86,8 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 HomeScreen(
                     onOpenMedia = { navigator.navigate(MediaRoute(it)) },
                     onOpenUser = { navigator.navigate(UserRoute(it)) },
+                    onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
+                    onSeeAllLists = { navigator.selectTab(TopLevelTab.Lists) },
                     contentPadding = padding
                 )
             }

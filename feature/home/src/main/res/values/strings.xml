@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_placeholder">Home arrives in M5: In Progress, Up next from Planning, the activity feed and trending anime.</string>
+    <string name="home_in_progress">In Progress</string>
+    <string name="home_up_next">Up next from Planning</string>
+    <string name="home_trending">Trending now</string>
+    <string name="home_activity">Activity</string>
+    <string name="home_following">Following</string>
+    <string name="home_global">Global</string>
+    <string name="home_feed_empty_following">Nothing here yet. Follow people on AniList to see what they watch and read.</string>
+    <string name="home_feed_empty_global">No activity right now.</string>
+    <string name="home_retry">Retry</string>
+    <string name="home_badge_episode">EP %1$s</string>
+    <string name="home_badge_chapter">CH %1$s</string>
+    <string name="home_completed_chip">Completed</string>
+    <string name="home_completed_anime">%1$s marked as completed</string>
+    <string name="home_completed_manga">%1$s marked as completed</string>
+    <string name="home_undo">Undo</string>
+    <plurals name="home_episodes">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
+    <plurals name="home_chapters">
+        <item quantity="one">%d chapter</item>
+        <item quantity="other">%d chapters</item>
+    </plurals>
 </resources>

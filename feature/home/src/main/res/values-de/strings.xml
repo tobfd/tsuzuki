@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_placeholder">Die Startseite kommt in M5: Weiterschauen, Als Nächstes aus „Geplant“, der Aktivitäten-Feed und Trends.</string>
+    <string name="home_in_progress">Aktuell dabei</string>
+    <string name="home_up_next">Als Nächstes aus „Geplant“</string>
+    <string name="home_trending">Gerade angesagt</string>
+    <string name="home_activity">Aktivitäten</string>
+    <string name="home_following">Gefolgt</string>
+    <string name="home_global">Alle</string>
+    <string name="home_feed_empty_following">Hier ist noch nichts. Folge Leuten auf AniList, um zu sehen, was sie schauen und lesen.</string>
+    <string name="home_feed_empty_global">Gerade keine Aktivitäten.</string>
+    <string name="home_retry">Erneut versuchen</string>
+    <string name="home_badge_episode">F. %1$s</string>
+    <string name="home_badge_chapter">K. %1$s</string>
+    <string name="home_completed_chip">Fertig</string>
+    <string name="home_completed_anime">%1$s als gesehen markiert</string>
+    <string name="home_completed_manga">%1$s als gelesen markiert</string>
+    <string name="home_undo">Rückgängig</string>
+    <plurals name="home_episodes">
+        <item quantity="one">%d Folge</item>
+        <item quantity="other">%d Folgen</item>
+    </plurals>
+    <plurals name="home_chapters">
+        <item quantity="one">%d Kapitel</item>
+        <item quantity="other">%d Kapitel</item>
+    </plurals>
 </resources>

@@ -104,6 +104,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Character and staff lists open the people screens (M8).
 - [ ] Two-pane layout on expanded widths when opened from Lists or Browse.
 - [ ] Shared element transition cover → header if cheap.
+- [ ] "Share as image" (added by Tobias, 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing.
 
 **Done when:** the Frieren page (id 154587) matches the design and needs exactly one request.
 
@@ -152,6 +153,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally.
 - [ ] Account: avatar, name, log out (confirm).
 - [ ] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen.
+- [ ] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog.
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 

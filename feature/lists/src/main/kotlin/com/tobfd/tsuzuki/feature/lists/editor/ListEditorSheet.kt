@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -161,7 +162,8 @@ fun ListEditorContent(state: ListEditorUiState.Editing, actions: ListEditorActio
             modifier = Modifier
                 .weight(1f, fill = false)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = TsuzukiSpacing.screenMargin),
+                .padding(horizontal = TsuzukiSpacing.screenMargin)
+                .padding(bottom = TsuzukiSpacing.large),
             verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.large)
         ) {
             Header(state, actions.onOpenDetails)
@@ -223,9 +225,11 @@ fun ListEditorContent(state: ListEditorUiState.Editing, actions: ListEditorActio
         }
 
         HorizontalDivider()
+        // The sheet reaches the bottom edge; keep the buttons clear of the gesture bar.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .padding(horizontal = TsuzukiSpacing.screenMargin, vertical = TsuzukiSpacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {

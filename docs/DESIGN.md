@@ -55,12 +55,12 @@ List status (the user's entry, `MediaListStatus`) and release status (the series
 
 | `MediaListStatus` | English anime / manga | German anime | German manga |
 |---|---|---|---|
-| CURRENT | Watching / Reading | Schaue ich | Lese ich |
+| CURRENT | Watching / Reading | Am Schauen | Am Lesen |
 | PLANNING | Planning | Geplant | Geplant |
 | COMPLETED | Completed | Gesehen | Gelesen |
 | PAUSED | Paused | Pausiert | Pausiert |
 | DROPPED | Dropped | Abgebrochen | Abgebrochen |
-| REPEATING | Rewatching / Rereading | Schaue ich erneut | Lese ich erneut |
+| REPEATING | Rewatching / Rereading | Erneut am Schauen | Erneut am Lesen |
 
 | `MediaStatus` | English | German |
 |---|---|---|

@@ -13,6 +13,8 @@ android {
 }
 
 dependencies {
+    // TsuzukiDatabase is a RoomDatabase; core/data runs transactions and clears it.
+    api(libs.androidx.room.runtime)
     implementation(libs.androidx.sqlite.framework)
 
     testImplementation(libs.androidx.test.core)

@@ -13,6 +13,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.flow.Flow
 
@@ -26,13 +27,19 @@ internal class TestApollo {
 
     /** Requests that reached the network, so tests can assert "no request". */
     val requests: Int get() = transport.requests.get()
+
+    val operations: List<Operation<*>> get() = transport.operations.toList()
 }
 
 internal class CountingNetworkTransport(private val delegate: NetworkTransport) : NetworkTransport {
     val requests = AtomicInteger()
 
+    /** Every operation that reached the network, in order. */
+    val operations: MutableList<Operation<*>> = Collections.synchronizedList(mutableListOf())
+
     override fun <D : Operation.Data> execute(request: ApolloRequest<D>): Flow<ApolloResponse<D>> {
         requests.incrementAndGet()
+        operations += request.operation
         return delegate.execute(request)
     }
 

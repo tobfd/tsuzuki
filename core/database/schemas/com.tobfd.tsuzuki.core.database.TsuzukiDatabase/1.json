@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "43ed80977012b19e93c2d166898713d4",
+    "identityHash": "cc584956443ba7a0efe74fe5b49cd09a",
     "entities": [
       {
         "tableName": "media_list_entry",
@@ -284,7 +284,7 @@
       },
       {
         "tableName": "pending_mutation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry_id` INTEGER NOT NULL, `media_id` INTEGER NOT NULL, `kind` TEXT NOT NULL, `changes` TEXT, `previous` TEXT NOT NULL, `title` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `attempts` INTEGER NOT NULL, `failure_message` TEXT, `failure_fields` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry_id` INTEGER NOT NULL, `media_id` INTEGER NOT NULL, `kind` TEXT NOT NULL, `changes` TEXT, `previous` TEXT NOT NULL, `title` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `attempts` INTEGER NOT NULL, `failure_reason` TEXT, `failure_detail` TEXT, `failure_fields` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -340,8 +340,13 @@
             "notNull": true
           },
           {
-            "fieldPath": "failureMessage",
-            "columnName": "failure_message",
+            "fieldPath": "failureReason",
+            "columnName": "failure_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "failureDetail",
+            "columnName": "failure_detail",
             "affinity": "TEXT"
           },
           {
@@ -401,7 +406,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '43ed80977012b19e93c2d166898713d4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cc584956443ba7a0efe74fe5b49cd09a')"
     ]
   }
 }

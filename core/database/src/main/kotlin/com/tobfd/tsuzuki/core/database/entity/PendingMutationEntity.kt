@@ -24,8 +24,13 @@ data class PendingMutationEntity(
     val title: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     val attempts: Int = 0,
-    /** Set when AniList rejected the change; the row stays until the user has seen the message. */
-    @ColumnInfo(name = "failure_message") val failureMessage: String? = null,
+    /**
+     * Set when AniList rejected the change (`VALIDATION`, `NOT_FOUND` or `OTHER`); the row stays
+     * until the user has seen why.
+     */
+    @ColumnInfo(name = "failure_reason") val failureReason: String? = null,
+    /** AniList's own message, if it sent one. */
+    @ColumnInfo(name = "failure_detail") val failureDetail: String? = null,
     /** Field errors from AniList as JSON, for the list editor. */
     @ColumnInfo(name = "failure_fields") val failureFields: String? = null
 )

@@ -22,6 +22,9 @@ interface SessionRepository {
 
     suspend fun continueAsGuest()
 
-    /** Clears the token, the cached viewer and AniList options, and the Apollo cache. */
+    /**
+     * Clears the token, the cached viewer and AniList options, the Apollo cache, and the lists in
+     * Room with their unsent changes; background list work stops.
+     */
     suspend fun logOut()
 }

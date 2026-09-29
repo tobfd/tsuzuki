@@ -9,6 +9,7 @@ import com.apollographql.cache.normalized.fetchPolicy
 import com.benasher44.uuid.uuid4
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.TestApollo
+import com.tobfd.tsuzuki.core.data.list.UserDataCleaner
 import com.tobfd.tsuzuki.core.datastore.SessionStore
 import com.tobfd.tsuzuki.core.datastore.TokenEncryption
 import com.tobfd.tsuzuki.core.model.LogoutReason
@@ -50,6 +51,7 @@ class DefaultSessionRepositoryTest {
     private val queue = apollo.queue
     private val apolloClient = apollo.client
     private val authEvents = AuthEvents()
+    private val userDataCleaner = FakeUserDataCleaner()
     private val store = SessionStore(InMemoryDataStore(emptyPreferences()), FakeTokenEncryption)
 
     private val tobfd = Viewer(
@@ -70,7 +72,7 @@ class DefaultSessionRepositoryTest {
     }
 
     private fun TestScope.repository() =
-        DefaultSessionRepository(store, apolloClient, clock, authEvents, appScope = backgroundScope)
+        DefaultSessionRepository(store, apolloClient, clock, userDataCleaner, authEvents, appScope = backgroundScope)
 
     // --- logIn ---
 
@@ -260,7 +262,7 @@ class DefaultSessionRepositoryTest {
     }
 
     @Test
-    fun logOut_clearsTheSessionAndTheApolloCache() = runTest {
+    fun logOut_clearsTheSessionTheApolloCacheAndTheLists() = runTest {
         enqueueViewer()
         val repository = repository()
         repository.logIn(validToken)
@@ -271,6 +273,7 @@ class DefaultSessionRepositoryTest {
         assertEquals(SessionState.LoggedOut(reason = null), repository.session.first())
         assertNull(store.accessToken())
         assertNull(cachedViewer())
+        assertEquals(1, userDataCleaner.clears)
     }
 
     @Test
@@ -333,5 +336,15 @@ class DefaultSessionRepositoryTest {
 
         override fun decrypt(ciphertext: String): String? =
             ciphertext.takeIf { it.startsWith(PREFIX) }?.removePrefix(PREFIX)
+    }
+}
+
+/** Counts how often the lists were cleared. */
+private class FakeUserDataCleaner : UserDataCleaner {
+    var clears = 0
+        private set
+
+    override suspend fun clear() {
+        clears++
     }
 }

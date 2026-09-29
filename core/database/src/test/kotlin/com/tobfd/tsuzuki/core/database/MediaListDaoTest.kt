@@ -146,11 +146,11 @@ class MediaListDaoTest {
     fun mutations_areSentOldestFirstAndFailuresStayApart() = runTest {
         val first = mutations.insert(mutation(entryId = 1))
         val second = mutations.insert(mutation(entryId = 2))
-        mutations.markFailed(listOf(second), "Progress too high", null)
+        mutations.markFailed(listOf(second), "VALIDATION", "Progress too high", null)
 
         assertEquals(listOf(first), mutations.pending().map { it.id })
         assertEquals(1, mutations.observePendingCount().first())
-        assertEquals(listOf("Progress too high"), mutations.observeFailed().first().map { it.failureMessage })
+        assertEquals(listOf("Progress too high"), mutations.observeFailed().first().map { it.failureDetail })
 
         mutations.dismissFailures(entryId = 2)
         assertEquals(emptyList<PendingMutationEntity>(), mutations.observeFailed().first())

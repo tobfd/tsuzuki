@@ -1,6 +1,7 @@
 package com.tobfd.tsuzuki.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -39,6 +40,7 @@ private const val MAX_BADGE_COUNT = 99
  * @param unreadNotificationCount null hides the bell (guest mode).
  * @param avatar content of the 32 dp avatar circle, e.g. [InitialAvatar] or a loaded image; null
  *   hides it.
+ * @param actions the screen's own actions (e.g. search and sort on Lists), before the bell.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,12 +51,14 @@ fun TsuzukiTopBar(
     onNotificationsClick: () -> Unit = {},
     avatar: (@Composable () -> Unit)? = null,
     onAvatarClick: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
 ) {
     TopAppBar(
         title = { Text(title) },
         modifier = modifier,
         actions = {
+            actions()
             if (unreadNotificationCount != null) {
                 NotificationBell(unreadCount = unreadNotificationCount, onClick = onNotificationsClick)
             }

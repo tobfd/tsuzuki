@@ -52,7 +52,7 @@ Before M0, Tobias does two things by hand:
 - [x] Encrypted token store (DataStore + Tink/Keystore). JWT payload parser for `sub` and `exp`.
 - [x] Login: Custom Tab to the authorize URL, `tsuzuki://auth` intent filter on `MainActivity` (`singleTask`), parse the URL fragment, store token, fetch `Viewer`, cache viewer id, name, avatar and options.
 - [x] Login screen as designed; "Browse without an account" = guest mode.
-- [x] Logout clears token, Room, Apollo cache and settings that came from AniList. (Room does not exist yet; M4 adds clearing it to `SessionRepository.logOut`.)
+- [x] Logout clears token, Room, Apollo cache and settings that came from AniList. (Room came in M4; logout clears all its tables and stops the list work.)
 - [x] Expiry handling: warning banner 14 days before `exp`; on expiry or 401 → login screen with a short explanation.
 - [x] Tests: fragment parser, JWT parser, rate limiter, error mapper, login ViewModel.
 
@@ -71,16 +71,16 @@ Before M0, Tobias does two things by hand:
 
 ## M4 · Lists (offline first)
 
-- [ ] Room: `media_list_entry`, `media_lite`, `custom_list`, `pending_mutation`; DAOs with Flows.
-- [ ] Sync from `MediaListCollection` (anime and manga) incl. custom lists; refresh rules from `CLAUDE.md`.
-- [ ] Lists screen: Anime/Manga toggle, status tabs with counts (Watching/Reading, Planning, Completed, Paused, Dropped, Rewatching/Rereading, then custom lists), sort (title, score, progress, last updated, start date), search within the list.
-- [ ] Row: cover, title (user's title language), format + year, progress `x / y` (or `x / ?`), score in the user's format, +1 button (current/repeating) or Start (planning).
-- [ ] +1: optimistic, haptic, queued mutation; reaching the total sets COMPLETED (and completedAt) and shows a snackbar with Undo.
-- [ ] Start: sets CURRENT, progress 0, startedAt today.
-- [ ] List editor bottom sheet: status chips, progress stepper (+ volumes for manga), score control per score format, start/finish date pickers, rewatches, notes, private, hidden from status lists, custom list toggles, Remove (with confirm), Save. Validation errors from the API shown inline.
-- [ ] `pending_mutation` worker: in-order sending, retries with backoff, rollback + message on validation errors.
-- [ ] Empty states per tab; pull to refresh.
-- [ ] Tests: sync mapper, mutation queue, +1/undo logic, score format conversion, editor ViewModel.
+- [x] Room: `media_list_entry`, `media_lite`, `custom_list`, `pending_mutation`; DAOs with Flows. (New module `core/database`, framework SQLite driver as Tobias decided; a small `list_sync` table keeps the 15-minute rule.)
+- [x] Sync from `MediaListCollection` (anime and manga) incl. custom lists; refresh rules from `CLAUDE.md`. (On login, app start and every return to the foreground if older than 15 minutes, on pull to refresh, and every 6 hours in the background. The sync skips the Apollo cache and never overwrites entries whose changes are still queued.)
+- [x] Lists screen: Anime/Manga toggle, status tabs with counts (Watching/Reading, Planning, Completed, Paused, Dropped, Rewatching/Rereading, then custom lists), sort (title, score, progress, last updated, start date), search within the list. (Search opens a field below the toggle and searches the whole list in every title language.)
+- [x] Row: cover, title (user's title language), format + year, progress `x / y` (or `x / ?`), score in the user's format, +1 button (current/repeating) or Start (planning).
+- [x] +1: optimistic, haptic, queued mutation; reaching the total sets COMPLETED (and completedAt) and shows a snackbar with Undo.
+- [x] Start: sets CURRENT, progress 0, startedAt today.
+- [x] List editor bottom sheet: status chips, progress stepper (+ volumes for manga), score control per score format, start/finish date pickers, rewatches, notes, private, hidden from status lists, custom list toggles, Remove (with confirm), Save. Validation errors from the API shown inline. (A route, `ListEditorRoute(mediaId)`, shown as a bottom sheet scene, so the detail page opens it the same way in M6. Online, Save waits up to 10 s for AniList so its errors show inline; offline it closes and the change is sent later.)
+- [x] `pending_mutation` worker: in-order sending, retries with backoff, rollback + message on validation errors. (All queued changes of one entry go out as one request; a +1 undone before sending sends nothing; after 5 unexpected errors a change is rolled back and reported.)
+- [x] Empty states per tab; pull to refresh.
+- [x] Tests: sync mapper, mutation queue, +1/undo logic, score format conversion, editor ViewModel.
 
 **Done when:** Tobias uses the Lists tab instead of the website for a day, including in airplane mode, and nothing gets lost.
 
@@ -104,6 +104,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Character and staff lists open the people screens (M8).
 - [ ] Two-pane layout on expanded widths when opened from Lists or Browse.
 - [ ] Shared element transition cover → header if cheap.
+- [ ] "Share as image" (added by Tobias, 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing.
 
 **Done when:** the Frieren page (id 154587) matches the design and needs exactly one request.
 
@@ -152,6 +153,7 @@ Before M0, Tobias does two things by hand:
 - [ ] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally.
 - [ ] Account: avatar, name, log out (confirm).
 - [ ] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen.
+- [ ] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog.
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 

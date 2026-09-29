@@ -36,6 +36,18 @@
                     android:scheme="tsuzuki" />
             </intent-filter>
         </activity>
+
+        <!-- WorkManager is configured by TsuzukiApplication (Hilt workers), not by its own initializer. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>

@@ -10,4 +10,5 @@
     <string name="designsystem_profile">Profil</string>
     <string name="designsystem_plus_one_description">Fortschritt um eins erhöhen</string>
     <string name="designsystem_back">Zurück</string>
+    <string name="designsystem_search_close">Suche schließen</string>
 </resources>

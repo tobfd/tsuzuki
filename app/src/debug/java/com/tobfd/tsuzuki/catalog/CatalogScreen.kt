@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +50,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.StatusDot
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBackTopBar
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBanner
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiLogo
+import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiTopBar
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
@@ -58,10 +60,16 @@ import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.ui.MediaCover
+import com.tobfd.tsuzuki.core.ui.MediaListRow
+import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
 import com.tobfd.tsuzuki.core.ui.statusColor
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorActions
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorContent
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorUiState
 import kotlinx.collections.immutable.persistentListOf
 
 // Sample data from AniList (Frieren, id 154587), as used across docs/DESIGN.md.
@@ -111,6 +119,9 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_section_header) { SectionHeaderSamples() } }
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
+            item { CatalogSection(R.string.catalog_section_media_list_row) { MediaListRowSamples() } }
+            item { CatalogSection(R.string.catalog_section_search_field) { SearchFieldSamples() } }
+            item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
             item { CatalogSection(R.string.catalog_section_top_bar) { TopBarSamples() } }
             item {
                 CatalogSection(R.string.catalog_section_logo) {
@@ -400,6 +411,56 @@ private fun ScoreSamples() {
 private fun SectionHeaderSamples() {
     SectionHeader(title = stringResource(R.string.catalog_header_in_progress), onSeeAllClick = {})
     SectionHeader(title = stringResource(R.string.catalog_header_planning))
+}
+
+@Composable
+private fun MediaListRowSamples() {
+    Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        PreviewListEntries.all.forEach { entry ->
+            MediaListRow(
+                entry = entry,
+                scoreFormat = ScoreFormat.POINT_10_DECIMAL,
+                onClick = {},
+                onLongClick = {},
+                onPlusOne = {},
+                onStart = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchFieldSamples() {
+    var query by remember { mutableStateOf("fri") }
+    TsuzukiSearchField(
+        query = query,
+        onQueryChange = { query = it },
+        placeholder = stringResource(R.string.catalog_search_placeholder),
+        onClose = { query = "" }
+    )
+}
+
+/** The list editor as it shows in its bottom sheet, with a Frieren entry. */
+@Composable
+private fun ListEditorSample() {
+    val entry = PreviewListEntries.frieren
+    // A fixed height like the sheet's: the editor scrolls its sections above a fixed footer.
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = MaterialTheme.shapes.extraLarge,
+        modifier = Modifier.height(720.dp)
+    ) {
+        ListEditorContent(
+            state = ListEditorUiState.Editing(
+                entry = entry,
+                form = ListEditorForm.of(entry, ScoreFormat.POINT_10_DECIMAL),
+                scoreFormat = ScoreFormat.POINT_10_DECIMAL,
+                customListNames = persistentListOf("Favs")
+            ),
+            actions = ListEditorActions(),
+            modifier = Modifier.padding(vertical = TsuzukiSpacing.large)
+        )
+    }
 }
 
 @Composable

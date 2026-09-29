@@ -40,7 +40,7 @@ Decided with Tobias during planning (2026-09-28). Changing any of these needs hi
 ## Ideas parked for later
 
 - Shared element transition from cover to detail (nice in v1 if cheap).
-- AMOLED black option.
+- AMOLED black option (now planned in M11, asked for by Tobias on 2026-09-29).
 - Full AniList markdown renderer (spoilers, images, embeds) once activity texts, reviews or bios are shown in full.
 
 ## Reference

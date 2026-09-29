@@ -123,6 +123,28 @@ class TopLevelNavigatorTest {
     }
 
     @Test
+    fun dismiss_closesTheScreenOnTopOnlyOnce() {
+        navigator.selectTab(TopLevelTab.Lists)
+        navigator.navigate(MediaRoute(1))
+
+        navigator.dismiss(MediaRoute(1))
+        navigator.dismiss(MediaRoute(1))
+
+        assertEquals(listOf<NavKey>(ListsRoute), navigator.stackOf(TopLevelTab.Lists))
+        assertEquals(TopLevelTab.Lists, navigator.currentTab)
+    }
+
+    @Test
+    fun dismiss_ignoresAScreenThatIsNotOnTop() {
+        navigator.navigate(MediaRoute(1))
+        navigator.navigate(CharacterRoute(2))
+
+        navigator.dismiss(MediaRoute(1))
+
+        assertEquals(listOf(HomeRoute, MediaRoute(1), CharacterRoute(2)), navigator.stackOf(TopLevelTab.Home))
+    }
+
+    @Test
     fun openingAScreen_isAForwardTransition() {
         navigator.navigate(MediaRoute(1))
         assertEquals(NavigationTransition.Forward, navigator.lastTransition)

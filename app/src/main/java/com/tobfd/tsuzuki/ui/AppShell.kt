@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.ui
 
 import android.os.SystemClock
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -25,6 +26,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEvent
@@ -43,7 +45,8 @@ import com.tobfd.tsuzuki.feature.browse.BrowseScreen
 import com.tobfd.tsuzuki.feature.home.HomeRoute
 import com.tobfd.tsuzuki.feature.home.HomeScreen
 import com.tobfd.tsuzuki.feature.lists.ListsRoute
-import com.tobfd.tsuzuki.feature.lists.ListsScreen
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorRoute
+import com.tobfd.tsuzuki.feature.lists.editor.ListEditorSheet
 import com.tobfd.tsuzuki.feature.media.MediaRoute
 import com.tobfd.tsuzuki.feature.media.MediaScreen
 import com.tobfd.tsuzuki.feature.notifications.NotificationsRoute
@@ -58,6 +61,7 @@ import com.tobfd.tsuzuki.feature.profile.UserRoute
 import com.tobfd.tsuzuki.feature.profile.UserScreen
 import com.tobfd.tsuzuki.feature.settings.SettingsRoute
 import com.tobfd.tsuzuki.feature.settings.SettingsScreen
+import com.tobfd.tsuzuki.navigation.BottomSheetSceneStrategy
 import com.tobfd.tsuzuki.navigation.LocalShellChrome
 import com.tobfd.tsuzuki.navigation.NavigationTransition
 import com.tobfd.tsuzuki.navigation.ShellChrome
@@ -87,14 +91,25 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             }
         }
         entry<ListsRoute> {
-            TabRoot(TopLevelTab.Lists, navigator, onRenewLogin = onLogOut) { padding ->
-                ListsScreen(
-                    isGuest = isGuest,
-                    onLogIn = onLogOut,
-                    onOpenMedia = { navigator.navigate(MediaRoute(it)) },
-                    contentPadding = padding
-                )
+            ListsRoute(
+                isGuest = isGuest,
+                onLogIn = onLogOut,
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
+                onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
+                onBrowse = { navigator.selectTab(TopLevelTab.Browse) }
+            ) { actions, content ->
+                TabRoot(TopLevelTab.Lists, navigator, onRenewLogin = onLogOut, actions = actions, content = content)
             }
+        }
+        entry<ListEditorRoute>(metadata = BottomSheetSceneStrategy.bottomSheet()) { route ->
+            ListEditorSheet(
+                mediaId = route.mediaId,
+                onDismiss = { navigator.dismiss(route) },
+                onOpenDetails = { mediaId ->
+                    navigator.dismiss(route)
+                    navigator.navigate(MediaRoute(mediaId))
+                }
+            )
         }
         entry<BrowseRoute> {
             TabRoot(TopLevelTab.Browse, navigator, onRenewLogin = onLogOut) { padding ->
@@ -151,6 +166,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
     }
 
     val reducedMotion = rememberReducedMotion()
+    val sceneStrategies = remember { listOf(BottomSheetSceneStrategy<NavKey>(), SinglePaneSceneStrategy()) }
     val predictiveBack = rememberPredictiveBackState()
     val navigationEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
     if (navigationEventDispatcher != null) {
@@ -212,6 +228,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             val slideDistancePx = with(LocalDensity.current) { TsuzukiTransitions.SharedAxisSlideDistance.roundToPx() }
             NavDisplay(
                 entries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) },
+                sceneStrategies = sceneStrategies,
                 // Tab switches fade through; opening screens, the back arrow and back without the
                 // gesture use shared axis X.
                 transitionSpec = {
@@ -288,6 +305,7 @@ private fun TabRoot(
     tab: TopLevelTab,
     navigator: TopLevelNavigator,
     onRenewLogin: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (contentPadding: PaddingValues) -> Unit
 ) {
     CompositionLocalProvider(LocalScrollToTopRequest provides navigator.scrollToTopRequests.getValue(tab)) {
@@ -296,6 +314,7 @@ private fun TabRoot(
             onNotificationsClick = { navigator.navigate(NotificationsRoute) },
             onAvatarClick = { navigator.selectTab(TopLevelTab.Profile) },
             onRenewLogin = onRenewLogin,
+            actions = actions,
             content = content
         )
     }

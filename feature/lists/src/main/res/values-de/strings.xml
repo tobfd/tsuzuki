@@ -1,7 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="lists_placeholder">Deine Anime- und Manga-Listen kommen in M4, auch offline nutzbar.</string>
     <string name="lists_guest_title">Melde dich an, um deine Listen zu sehen</string>
     <string name="lists_guest_message">Deine Listen liegen in deinem AniList-Konto. Entdecken und Details funktionieren auch ohne.</string>
     <string name="lists_log_in">Anmelden</string>
+    <string name="lists_search">Liste durchsuchen</string>
+    <string name="lists_search_placeholder">In deiner Liste suchen</string>
+    <string name="lists_sort">Sortieren</string>
+    <string name="lists_sort_title">Titel</string>
+    <string name="lists_sort_score">Bewertung</string>
+    <string name="lists_sort_progress">Fortschritt</string>
+    <string name="lists_sort_last_updated">Zuletzt geändert</string>
+    <string name="lists_sort_start_date">Startdatum</string>
+    <string name="lists_empty_title">Hier ist noch nichts</string>
+    <string name="lists_empty_message">Such dir in Entdecken etwas aus und setz es auf deine Liste.</string>
+    <string name="lists_empty_browse">Entdecken</string>
+    <string name="lists_search_empty_title">Keine Treffer</string>
+    <string name="lists_search_empty_message">Nichts auf deiner Liste passt zu „%1$s“.</string>
+    <string name="lists_error_title">Deine Liste konnte nicht geladen werden</string>
+    <string name="lists_completed_anime">%1$s als gesehen markiert</string>
+    <string name="lists_completed_manga">%1$s als gelesen markiert</string>
+    <string name="lists_undo">Rückgängig</string>
+    <string name="lists_rejected_validation">%1$s konnte nicht gespeichert werden: %2$s</string>
+    <string name="lists_rejected_generic">%1$s konnte nicht gespeichert werden. Deine Änderung wurde zurückgenommen.</string>
+    <string name="lists_rejected_not_found">%1$s ist nicht mehr auf deiner Liste.</string>
+    <plurals name="lists_waiting_changes">
+        <item quantity="one">%d Änderung wartet auf das Senden</item>
+        <item quantity="other">%d Änderungen warten auf das Senden</item>
+    </plurals>
+    <string name="lists_editor_details">Details</string>
+    <string name="lists_editor_status">Status</string>
+    <string name="lists_editor_progress_episodes">Episoden</string>
+    <string name="lists_editor_progress_chapters">Kapitel</string>
+    <string name="lists_editor_volumes">Bände</string>
+    <string name="lists_editor_score">Bewertung</string>
+    <string name="lists_editor_not_scored">Nicht bewertet</string>
+    <string name="lists_editor_more">Mehr</string>
+    <string name="lists_editor_less">Weniger</string>
+    <string name="lists_editor_start_date">Startdatum</string>
+    <string name="lists_editor_finish_date">Enddatum</string>
+    <string name="lists_editor_date_not_set">Nicht gesetzt</string>
+    <string name="lists_editor_date_remove">Datum entfernen</string>
+    <string name="lists_editor_date_ok">OK</string>
+    <string name="lists_editor_cancel">Abbrechen</string>
+    <string name="lists_editor_rewatches">Wiederholungen</string>
+    <string name="lists_editor_rereads">Wiederholungen</string>
+    <string name="lists_editor_notes">Notizen</string>
+    <string name="lists_editor_private">Privat</string>
+    <string name="lists_editor_private_hint">Nur du siehst diesen Eintrag.</string>
+    <string name="lists_editor_hidden">In Statuslisten ausblenden</string>
+    <string name="lists_editor_hidden_hint">Erscheint nur in deinen eigenen Listen.</string>
+    <string name="lists_editor_custom_lists">Eigene Listen</string>
+    <string name="lists_editor_remove">Entfernen</string>
+    <string name="lists_editor_save">Speichern</string>
+    <string name="lists_editor_saving">Wird gespeichert…</string>
+    <string name="lists_editor_remove_title">%1$s entfernen?</string>
+    <string name="lists_editor_remove_message">Fortschritt, Bewertung und Notizen dazu werden von deiner Liste gelöscht.</string>
+    <string name="lists_editor_increase">Erhöhen</string>
+    <string name="lists_editor_decrease">Verringern</string>
+    <string name="lists_editor_too_high">Darf höchstens %1$d sein</string>
+    <plurals name="lists_editor_stars">
+        <item quantity="one">%d Stern</item>
+        <item quantity="other">%d Sterne</item>
+    </plurals>
 </resources>

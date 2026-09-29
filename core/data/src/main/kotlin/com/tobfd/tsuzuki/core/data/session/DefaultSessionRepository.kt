@@ -7,6 +7,7 @@ import com.apollographql.cache.normalized.apolloStore
 import com.apollographql.cache.normalized.fetchPolicy
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.common.ApplicationScope
+import com.tobfd.tsuzuki.core.data.list.UserDataCleaner
 import com.tobfd.tsuzuki.core.data.mapper.toViewer
 import com.tobfd.tsuzuki.core.datastore.SessionStore
 import com.tobfd.tsuzuki.core.datastore.StoredSession
@@ -35,6 +36,7 @@ class DefaultSessionRepository @Inject constructor(
     private val store: SessionStore,
     private val apolloClient: ApolloClient,
     private val clock: Clock,
+    private val userDataCleaner: UserDataCleaner,
     authEvents: AuthEvents,
     @ApplicationScope appScope: CoroutineScope
 ) : SessionRepository {
@@ -110,6 +112,7 @@ class DefaultSessionRepository @Inject constructor(
     private suspend fun endSession(reason: LogoutReason?) {
         store.clear(reason)
         apolloClient.apolloStore.clearAll()
+        userDataCleaner.clear()
     }
 
     private fun StoredSession.toSessionState(): SessionState {

@@ -9,9 +9,23 @@ import com.tobfd.tsuzuki.core.designsystem.R
  * (`symbols/android/<name>/materialsymbolsrounded/<name>_24px.xml`) without the `android:tint` line.
  */
 object TsuzukiIcons {
+    @DrawableRes val Add: Int = R.drawable.ic_add
+
     @DrawableRes val ArrowBack: Int = R.drawable.ic_arrow_back
 
+    @DrawableRes val CalendarToday: Int = R.drawable.ic_calendar_today
+
+    @DrawableRes val Check: Int = R.drawable.ic_check
+
+    @DrawableRes val Close: Int = R.drawable.ic_close
+
     @DrawableRes val CloudOff: Int = R.drawable.ic_cloud_off
+
+    @DrawableRes val CloudUpload: Int = R.drawable.ic_cloud_upload
+
+    @DrawableRes val ExpandLess: Int = R.drawable.ic_expand_less
+
+    @DrawableRes val ExpandMore: Int = R.drawable.ic_expand_more
 
     @DrawableRes val Explore: Int = R.drawable.ic_explore
 
@@ -27,16 +41,20 @@ object TsuzukiIcons {
 
     @DrawableRes val List: Int = R.drawable.ic_format_list_bulleted
 
-    @DrawableRes val Logout: Int = R.drawable.ic_logout
-
     /** The 続 logo glyph (not a Material Symbol); use through `TsuzukiLogo`. */
     @DrawableRes val LogoGlyph: Int = R.drawable.ic_logo_glyph
+
+    @DrawableRes val Logout: Int = R.drawable.ic_logout
 
     @DrawableRes val Notifications: Int = R.drawable.ic_notifications
 
     @DrawableRes val Person: Int = R.drawable.ic_person
 
     @DrawableRes val PersonFilled: Int = R.drawable.ic_person_filled
+
+    @DrawableRes val Remove: Int = R.drawable.ic_remove
+
+    @DrawableRes val Search: Int = R.drawable.ic_search
 
     @DrawableRes val SentimentDissatisfied: Int = R.drawable.ic_sentiment_dissatisfied
 
@@ -45,4 +63,10 @@ object TsuzukiIcons {
     @DrawableRes val SentimentSatisfied: Int = R.drawable.ic_sentiment_satisfied
 
     @DrawableRes val Settings: Int = R.drawable.ic_settings
+
+    @DrawableRes val Sort: Int = R.drawable.ic_sort
+
+    @DrawableRes val Star: Int = R.drawable.ic_star
+
+    @DrawableRes val StarFilled: Int = R.drawable.ic_star_filled
 }

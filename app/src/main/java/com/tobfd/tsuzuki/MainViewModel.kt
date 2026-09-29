@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tobfd.tsuzuki.core.data.list.ListRepository
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.expiryWarningDays
@@ -36,6 +37,7 @@ sealed interface MainUiState {
 class MainViewModel @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val notificationsRepository: NotificationsRepository,
+    private val listRepository: ListRepository,
     private val clock: Clock
 ) : ViewModel() {
     // Eager, so the splash screen condition can read it before Compose collects.
@@ -60,20 +62,29 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { sessionRepository.validate() }
-        // A new login (or app start while logged in) gets a fresh badge count right away.
+        // A new login (or app start while logged in) gets a fresh badge count right away, and the lists
+        // sync (unless they did within 15 minutes) and keep syncing in the background.
         viewModelScope.launch {
             sessionRepository.session
                 .map { (it as? SessionState.LoggedIn)?.viewer?.id }
                 .distinctUntilChanged()
                 .filterNotNull()
-                .collect { notificationsRepository.refreshUnreadCount(force = true) }
+                .collect {
+                    listRepository.scheduleBackgroundSync()
+                    launch { listRepository.refresh(force = false) }
+                    notificationsRepository.refreshUnreadCount(force = true)
+                }
         }
     }
 
-    /** Called when the app comes to the foreground; refreshes the badge at most every 5 minutes. */
+    /**
+     * Called when the app comes to the foreground: refreshes the badge at most every 5 minutes and the
+     * lists at most every 15. Failures (e.g. offline) are fine here: the lists work from Room.
+     */
     fun onAppResumed() {
         if (uiState.value !is MainUiState.LoggedIn) return
         viewModelScope.launch { notificationsRepository.refreshUnreadCount() }
+        viewModelScope.launch { listRepository.refresh(force = false) }
     }
 
     /** Also used to leave guest mode and to renew an expiring login: both go back to the login screen. */

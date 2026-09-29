@@ -59,6 +59,10 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - An entry appears in every custom list it belongs to plus its status list: dedupe by entry `id` when writing to Room.
 - `score` returns the viewer's score format; request `scoreRaw: score(format: POINT_100)` and store that, convert for display. Save with `scoreRaw` (0-100) so the format never matters when writing.
 - `Media.mediaListEntry` needs auth; it is `null` for guests and for media not on the list.
+- `customLists(asArray: true)` lists **every** custom list of the list type with `enabled` for this entry, in the viewer's order: it gives both the membership and the names for the editor. Saving sends the names of the lists the entry should be on.
+- Scores in other formats are derived from `scoreRaw` the way AniList shows them: POINT_10_DECIMAL = raw / 10, POINT_10 and POINT_5 rounded (raw / 10, raw / 20), POINT_3 = 1 up to 35, 2 up to 60, else 3. Writing: stars × 20, smileys 35 / 60 / 85.
+- The list sync runs with `doNotStore(true)`: the lists live in Room only, not also in the Apollo cache.
+- A removed date is sent as a `FuzzyDateInput` with all parts `null`.
 
 ## Mutations used in v1
 

@@ -10,15 +10,15 @@
     <string name="ui_score_liked">Gemocht</string>
     <string name="ui_score_none_description">Nicht bewertet</string>
 
-    <string name="ui_list_status_watching">Schaue ich</string>
-    <string name="ui_list_status_reading">Lese ich</string>
+    <string name="ui_list_status_watching">Am Schauen</string>
+    <string name="ui_list_status_reading">Am Lesen</string>
     <string name="ui_list_status_planning">Geplant</string>
     <string name="ui_list_status_completed_anime">Gesehen</string>
     <string name="ui_list_status_completed_manga">Gelesen</string>
     <string name="ui_list_status_paused">Pausiert</string>
     <string name="ui_list_status_dropped">Abgebrochen</string>
-    <string name="ui_list_status_rewatching">Schaue ich erneut</string>
-    <string name="ui_list_status_rereading">Lese ich erneut</string>
+    <string name="ui_list_status_rewatching">Erneut am Schauen</string>
+    <string name="ui_list_status_rereading">Erneut am Lesen</string>
 
     <string name="ui_media_status_releasing">Läuft</string>
     <string name="ui_media_status_finished">Beendet</string>
@@ -37,4 +37,12 @@
     <string name="ui_error_not_found">AniList konnte das nicht finden.</string>
     <string name="ui_error_unknown">Etwas ist schiefgelaufen. Versuch es erneut.</string>
     <string name="ui_placeholder_open">%1$s öffnen</string>
+    <string name="ui_format_tv_short">TV-Kurzserie</string>
+    <string name="ui_format_movie">Film</string>
+    <string name="ui_format_special">Special</string>
+    <string name="ui_format_music">Musik</string>
+    <string name="ui_format_one_shot">One-Shot</string>
+    <string name="ui_list_start">Starten</string>
+    <string name="ui_list_edit_entry">Eintrag bearbeiten</string>
+    <string name="ui_open_details">Details öffnen</string>
 </resources>

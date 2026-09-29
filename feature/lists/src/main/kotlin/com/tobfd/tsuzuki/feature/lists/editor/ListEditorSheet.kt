@@ -27,6 +27,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -89,9 +91,18 @@ data class ListEditorRoute(val mediaId: Int) : NavKey
 
 @Composable
 fun ListEditorSheet(mediaId: Int, onDismiss: () -> Unit, onOpenDetails: (mediaId: Int) -> Unit) {
-    val viewModel = hiltViewModel<ListEditorViewModel, ListEditorViewModel.Factory>(
-        creationCallback = { factory -> factory.create(mediaId) }
+    ListEditorScreen(
+        viewModel = hiltViewModel<ListEditorViewModel, ListEditorViewModel.Factory>(
+            creationCallback = { factory -> factory.create(mediaId) }
+        ),
+        onDismiss = onDismiss,
+        onOpenDetails = { onOpenDetails(mediaId) }
     )
+}
+
+/** The editor around [viewModel]; closes through [onDismiss] once saved or removed. */
+@Composable
+internal fun ListEditorScreen(viewModel: ListEditorViewModel, onDismiss: () -> Unit, onOpenDetails: () -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) { viewModel.close.collect { onDismiss() } }
     when (val current = state) {
@@ -113,7 +124,7 @@ fun ListEditorSheet(mediaId: Int, onDismiss: () -> Unit, onOpenDetails: (mediaId
                 onCustomListToggle = viewModel::onCustomListToggle,
                 onSave = viewModel::onSave,
                 onRemove = viewModel::onRemove,
-                onOpenDetails = { onOpenDetails(mediaId) }
+                onOpenDetails = onOpenDetails
             )
         )
     }
@@ -463,7 +474,12 @@ private fun ScoreSlider(score: Double, max: Float, steps: Int, format: ScoreForm
             value = score.toFloat().coerceIn(0f, max),
             onValueChange = { onScoreChange(roundToStep(it.toDouble(), max / (steps + 1))) },
             valueRange = 0f..max,
-            steps = steps
+            steps = steps,
+            // Up to 99 steps: tick marks would only add noise.
+            colors = SliderDefaults.colors(
+                activeTickColor = Color.Transparent,
+                inactiveTickColor = Color.Transparent
+            )
         )
     }
 }

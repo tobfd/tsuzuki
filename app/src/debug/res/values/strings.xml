@@ -52,4 +52,8 @@
     <string name="catalog_banner_message" translatable="false">Your AniList login expires in 5 days. Log in again to renew it.</string>
     <string name="catalog_banner_action" translatable="false">Log in again</string>
     <string name="catalog_banner_message_short" translatable="false">AniList is busy. Retrying in 30 seconds.</string>
+    <string name="catalog_section_media_list_row" translatable="false">MediaListRow</string>
+    <string name="catalog_section_search_field" translatable="false">TsuzukiSearchField</string>
+    <string name="catalog_section_list_editor" translatable="false">List editor</string>
+    <string name="catalog_search_placeholder" translatable="false">Search your list</string>
 </resources>

@@ -108,8 +108,24 @@ fun ListsRoute(
         }
         return
     }
+    ListsContent(
+        viewModel = hiltViewModel(),
+        onOpenMedia = onOpenMedia,
+        onEditEntry = onEditEntry,
+        onBrowse = onBrowse,
+        frame = frame
+    )
+}
 
-    val viewModel: ListsViewModel = hiltViewModel()
+/** The logged-in Lists tab around [viewModel]: snackbars for Undo and errors, then [ListsScreen]. */
+@Composable
+internal fun ListsContent(
+    viewModel: ListsViewModel,
+    onOpenMedia: (mediaId: Int) -> Unit,
+    onEditEntry: (mediaId: Int) -> Unit,
+    onBrowse: () -> Unit,
+    frame: @Composable (actions: @Composable RowScope.() -> Unit, content: @Composable (PaddingValues) -> Unit) -> Unit
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current

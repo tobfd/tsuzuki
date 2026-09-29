@@ -8,13 +8,16 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -39,6 +42,8 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -46,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -130,25 +136,17 @@ private fun ShareDialog(state: MediaDetailUiState.Content, entry: MediaListEntry
                     onSelect = { format = ShareFormat.entries[it] },
                     modifier = Modifier.fillMaxWidth()
                 )
-                // The preview is recorded into a layer, which becomes the shared image.
-                Box(
+                ScaledShareCard(
+                    state = state,
+                    entry = entry,
+                    viewer = viewer,
+                    format = format,
+                    layer = layer,
+                    onCoverLoaded = { coverLoaded = true },
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .aspectRatio(format.ratio)
-                        .clip(RoundedCornerShape(16.dp))
-                        .drawWithContent {
-                            layer.record { this@drawWithContent.drawContent() }
-                            drawLayer(layer)
-                        }
-                ) {
-                    ShareCard(
-                        state = state,
-                        entry = entry,
-                        viewer = viewer,
-                        square = format == ShareFormat.Square,
-                        onCoverLoaded = { coverLoaded = true }
-                    )
-                }
+                )
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDone) { Text(stringResource(R.string.media_share_cancel)) }
                     Button(
@@ -172,6 +170,49 @@ private fun ShareDialog(state: MediaDetailUiState.Content, entry: MediaListEntry
     }
 }
 
+/** Logical size of the card; the shared image is this size in pixels of the screen's density. */
+private val CardWidth = 360.dp
+
+/**
+ * The card at its fixed size, scaled down to fit [modifier]'s bounds. [layer] records the card
+ * unscaled, so the shared image is always 360 dp wide whatever the preview size.
+ */
+@Composable
+private fun ScaledShareCard(
+    state: MediaDetailUiState.Content,
+    entry: MediaListEntry,
+    viewer: Viewer,
+    format: ShareFormat,
+    layer: GraphicsLayer?,
+    onCoverLoaded: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cardHeight = CardWidth / format.ratio
+    BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
+        val scale = minOf(maxWidth / CardWidth, maxHeight / cardHeight)
+        Box(
+            modifier = Modifier
+                .requiredSize(CardWidth, cardHeight)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .then(
+                    if (layer == null) {
+                        Modifier
+                    } else {
+                        Modifier.drawWithContent {
+                            layer.record { this@drawWithContent.drawContent() }
+                            drawLayer(layer)
+                        }
+                    }
+                )
+        ) {
+            ShareCard(state, entry, viewer, square = format == ShareFormat.Square, onCoverLoaded = onCoverLoaded)
+        }
+    }
+}
+
 /**
  * The card: cover, title, status with progress, the viewer's score, avatar and name, and the
  * Tsuzuki logo, on a gradient from the cover's color. Fixed dark colors, so it looks the same
@@ -191,6 +232,7 @@ internal fun ShareCard(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .clip(RoundedCornerShape(16.dp))
             .background(Brush.verticalGradient(listOf(lerp(accent, CardBase, 0.35f), CardBase)))
             .padding(if (square) 20.dp else 24.dp)
     ) {
@@ -199,22 +241,26 @@ internal fun ShareCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(if (square) 10.dp else 16.dp)
         ) {
-            AsyncImage(
-                model = state.detail.coverUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                onSuccess = { onCoverLoaded() },
-                modifier = Modifier
-                    .weight(1f, fill = false)
-                    .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(accent)
-            )
+            // The cover takes the height the text below leaves, keeping 2:3.
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                AsyncImage(
+                    model = state.detail.coverUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    onSuccess = { onCoverLoaded() },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .aspectRatio(2f / 3f, matchHeightConstraintsFirst = true)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(accent)
+                )
+            }
             Text(
                 text = media.title.userPreferred,
                 color = CardInk,
                 fontSize = if (square) 18.sp else 22.sp,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -234,26 +280,26 @@ internal fun ShareCard(
                     style = MaterialTheme.typography.headlineSmall
                 )
             }
-            Spacer(Modifier.size(if (square) 0.dp else 8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                UserAvatar(avatarUrl = viewer.avatarUrl, name = viewer.name, size = 32.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                UserAvatar(avatarUrl = viewer.avatarUrl, name = viewer.name, size = 28.dp)
                 Text(
                     text = viewer.name,
                     color = CardInk,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.widthIn(max = NameMaxWidth)
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.width(8.dp))
-                TsuzukiLogo(size = 28.dp)
-                Text(text = "Tsuzuki", color = CardInk, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                TsuzukiLogo(size = 24.dp)
+                Text(text = "Tsuzuki", color = CardInk, fontSize = 12.sp, fontWeight = FontWeight.Medium, maxLines = 1)
             }
         }
     }
 }
-
-private val NameMaxWidth = 120.dp
 
 /** Writes the card to the app's cache (shared through the FileProvider, see the manifest). */
 private fun writeShareImage(context: Context, bitmap: Bitmap): Uri {
@@ -275,3 +321,51 @@ private fun shareImageIntent(uri: Uri, link: String?, title: String): Intent = I
     },
     title
 )
+
+/** The share card with a Frieren entry, for the component catalog. */
+@androidx.compose.runtime.Composable
+fun ShareCardSample(square: Boolean, coverUrl: String?, modifier: Modifier = Modifier) {
+    val entry = com.tobfd.tsuzuki.core.ui.PreviewListEntries.frieren
+    val viewer = Viewer(
+        id = 1,
+        name = "tobfd",
+        avatarUrl = null,
+        options = com.tobfd.tsuzuki.core.model.ViewerOptions(
+            titleLanguage = com.tobfd.tsuzuki.core.model.TitleLanguage.ROMAJI,
+            staffNameLanguage = com.tobfd.tsuzuki.core.model.StaffNameLanguage.ROMAJI,
+            displayAdultContent = false,
+            scoreFormat = ScoreFormat.POINT_10_DECIMAL
+        )
+    )
+    val detail = com.tobfd.tsuzuki.core.model.MediaDetail(
+        media = entry.media,
+        bannerUrl = null,
+        coverUrl = coverUrl,
+        descriptionHtml = null,
+        genres = emptyList(),
+        tags = emptyList(),
+        info = com.tobfd.tsuzuki.core.model.MediaInfo(null, null, null, null, null, emptyList(), null, null, null),
+        isFavourite = false,
+        siteUrl = null,
+        rankings = emptyList(),
+        streamingLinks = emptyList(),
+        trailer = null,
+        relations = emptyList(),
+        characters = emptyList(),
+        staff = emptyList(),
+        statusDistribution = emptyMap(),
+        scoreDistribution = emptyList(),
+        recommendations = emptyList(),
+        following = emptyList()
+    )
+    val format = if (square) ShareFormat.Square else ShareFormat.Story
+    ScaledShareCard(
+        state = MediaDetailUiState.Content(detail = detail, entry = entry, viewer = viewer, isFavourite = false),
+        entry = entry,
+        viewer = viewer,
+        format = format,
+        layer = null,
+        onCoverLoaded = {},
+        modifier = modifier.aspectRatio(format.ratio)
+    )
+}

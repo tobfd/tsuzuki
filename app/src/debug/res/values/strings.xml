@@ -56,4 +56,7 @@
     <string name="catalog_section_search_field" translatable="false">TsuzukiSearchField</string>
     <string name="catalog_section_list_editor" translatable="false">List editor</string>
     <string name="catalog_search_placeholder" translatable="false">Search your list</string>
+    <string name="catalog_section_activity_card" translatable="false">ActivityCard</string>
+    <string name="catalog_section_cover_card" translatable="false">MediaCoverCard</string>
+    <string name="catalog_section_share_card" translatable="false">Share card (9:16 and 1:1)</string>
 </resources>

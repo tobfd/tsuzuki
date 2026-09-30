@@ -13,5 +13,6 @@
     <string name="designsystem_plus_one_description">Increase progress by one</string>
     <string name="designsystem_back">Back</string>
     <string name="designsystem_search_close">Close search</string>
+    <string name="designsystem_search_clear">Clear search</string>
     <string name="designsystem_loading">Loading</string>
 </resources>

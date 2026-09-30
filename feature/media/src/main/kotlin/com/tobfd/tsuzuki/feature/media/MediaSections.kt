@@ -49,8 +49,11 @@ import com.tobfd.tsuzuki.core.model.MediaDetail
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.PersonLite
+import com.tobfd.tsuzuki.core.ui.AniListHtmlText
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.UserAvatar
+import com.tobfd.tsuzuki.core.ui.characterRoleLabel
+import com.tobfd.tsuzuki.core.ui.formatDate
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.progressText
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
@@ -88,7 +91,7 @@ private val horizontalMargin = Modifier.padding(horizontal = TsuzukiSpacing.scre
 internal fun OverviewSection(detail: MediaDetail, onOpenMedia: (Int) -> Unit) {
     val uriHandler = LocalUriHandler.current
     Section(stringResource(R.string.media_tab_overview)) {
-        detail.descriptionHtml?.let { Description(html = it, modifier = horizontalMargin) }
+        detail.descriptionHtml?.let { AniListHtmlText(html = it, modifier = horizontalMargin) }
         if (detail.genres.isNotEmpty()) {
             FlowRow(modifier = horizontalMargin, horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
                 detail.genres.forEach { SuggestionChip(onClick = {}, label = { Text(it) }) }
@@ -207,7 +210,7 @@ private fun InfoGrid(detail: MediaDetail, modifier: Modifier = Modifier) {
         info.endDate?.let { stringResource(R.string.media_info_end) to formatDate(it) },
         info.season?.let { season ->
             stringResource(R.string.media_info_season) to
-                listOfNotNull(seasonLabel(season), media.year?.toString()).joinToString(" ")
+                listOfNotNull(stringResource(season.labelRes()), media.year?.toString()).joinToString(" ")
         },
         info.studios.takeIf { it.isNotEmpty() }?.let {
             stringResource(R.string.media_info_studio) to

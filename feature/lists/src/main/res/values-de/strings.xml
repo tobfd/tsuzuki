@@ -62,4 +62,13 @@
         <item quantity="one">%d Stern</item>
         <item quantity="other">%d Sterne</item>
     </plurals>
+    <string name="lists_user_title_anime">Anime-Liste von %1$s</string>
+    <string name="lists_user_title_manga">Manga-Liste von %1$s</string>
+    <string name="lists_user_search_placeholder">Diese Liste durchsuchen</string>
+    <string name="lists_user_error_title">Liste konnte nicht geladen werden</string>
+    <string name="lists_user_private_title">Diese Liste ist privat</string>
+    <string name="lists_user_private_message">Nur %1$s kann sie sehen.</string>
+    <string name="lists_user_empty_title">Nichts hier</string>
+    <string name="lists_user_empty_message">In diesem Teil der Liste ist noch nichts.</string>
+    <string name="lists_user_search_empty_message">Nichts auf dieser Liste passt zu „%1$s“.</string>
 </resources>

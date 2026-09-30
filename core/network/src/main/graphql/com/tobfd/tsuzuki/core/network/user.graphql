@@ -1,4 +1,6 @@
 # Profile (own and others) in ONE request: user data + first page of their activity.
+# `stats.activityHistory` is deprecated in the schema without a replacement in `statistics`
+# (checked 2026-09-30); Tobias decided to keep using it (docs/ROADMAP.md, M9).
 query UserProfile($id: Int!) {
   User(id: $id) {
     id
@@ -10,8 +12,8 @@ query UserProfile($id: Int!) {
     isFollowing
     isFollower
     statistics {
-      anime { count episodesWatched minutesWatched meanScore statuses { status count } }
-      manga { count chaptersRead volumesRead meanScore statuses { status count } }
+      anime { count episodesWatched minutesWatched meanScore standardDeviation statuses { status count } }
+      manga { count chaptersRead volumesRead meanScore standardDeviation statuses { status count } }
     }
     stats {
       activityHistory { date amount level }
@@ -31,18 +33,18 @@ query UserProfile($id: Int!) {
   }
 }
 
-# Social tab (paged).
+# Social tab: the first page of each list (docs/ROADMAP.md, M9). `isFollower` = follows the viewer.
 query UserFollowing($id: Int!, $page: Int!) {
   Page(page: $page, perPage: 25) {
     pageInfo { hasNextPage }
-    following(userId: $id, sort: [USERNAME]) { ...UserLite }
+    following(userId: $id, sort: [USERNAME]) { ...UserLite isFollower }
   }
 }
 
 query UserFollowers($id: Int!, $page: Int!) {
   Page(page: $page, perPage: 25) {
     pageInfo { hasNextPage }
-    followers(userId: $id, sort: [USERNAME]) { ...UserLite }
+    followers(userId: $id, sort: [USERNAME]) { ...UserLite isFollower }
   }
 }
 

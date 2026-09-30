@@ -2,6 +2,27 @@
 <resources>
     <string name="people_character_title">Character</string>
     <string name="people_staff_title">Staff</string>
-    <string name="people_character_placeholder">Character pages arrive in M8. This is AniList id %1$d.</string>
-    <string name="people_staff_placeholder">Staff pages arrive in M8. This is AniList id %1$d.</string>
+    <string name="people_error_title">Couldn\'t load this page</string>
+    <string name="people_favourite">Add to favourites</string>
+    <string name="people_unfavourite">Remove from favourites</string>
+    <plurals name="people_favourites">
+        <item quantity="one">%s favourite</item>
+        <item quantity="other">%s favourites</item>
+    </plurals>
+    <string name="people_log_in_to_use">Log in to keep favourites.</string>
+    <string name="people_log_in">Log in</string>
+    <string name="people_open_on_anilist">Open on AniList</string>
+    <string name="people_info_gender">Gender</string>
+    <string name="people_info_age">Age</string>
+    <string name="people_info_birthday">Birthday</string>
+    <string name="people_info_blood_type">Blood type</string>
+    <string name="people_info_hometown">Hometown</string>
+    <string name="people_info_years_active">Years active</string>
+    <string name="people_years_since">Since %1$d</string>
+    <string name="people_years_range">%1$d–%2$d</string>
+    <string name="people_appearances">Appearances</string>
+    <string name="people_no_appearances">No appearances listed.</string>
+    <string name="people_characters_voiced">Characters voiced</string>
+    <string name="people_production_roles">Production roles</string>
+    <string name="people_load_more">Load more</string>
 </resources>

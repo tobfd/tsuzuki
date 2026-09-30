@@ -50,6 +50,8 @@ import com.tobfd.tsuzuki.feature.browse.BrowseScreen
 import com.tobfd.tsuzuki.feature.home.HomeRoute
 import com.tobfd.tsuzuki.feature.home.HomeScreen
 import com.tobfd.tsuzuki.feature.lists.ListsRoute
+import com.tobfd.tsuzuki.feature.lists.UserListRoute
+import com.tobfd.tsuzuki.feature.lists.UserListScreen
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorRoute
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorSheet
 import com.tobfd.tsuzuki.feature.media.MediaRoute
@@ -60,8 +62,10 @@ import com.tobfd.tsuzuki.feature.people.CharacterRoute
 import com.tobfd.tsuzuki.feature.people.CharacterScreen
 import com.tobfd.tsuzuki.feature.people.StaffRoute
 import com.tobfd.tsuzuki.feature.people.StaffScreen
+import com.tobfd.tsuzuki.feature.profile.ProfileNavigation
 import com.tobfd.tsuzuki.feature.profile.ProfileRoute
 import com.tobfd.tsuzuki.feature.profile.ProfileScreen
+import com.tobfd.tsuzuki.feature.profile.ProfileSettingsAction
 import com.tobfd.tsuzuki.feature.profile.UserRoute
 import com.tobfd.tsuzuki.feature.profile.UserScreen
 import com.tobfd.tsuzuki.feature.settings.SettingsRoute
@@ -92,7 +96,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             TabRoot(TopLevelTab.Home, navigator, onRenewLogin = onLogOut) { padding ->
                 HomeScreen(
                     onOpenMedia = { navigator.navigate(MediaRoute(it)) },
-                    onOpenUser = { navigator.navigate(UserRoute(it)) },
+                    onOpenUser = { id, name -> navigator.navigate(UserRoute(id, name)) },
                     onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
                     onSeeAllLists = { navigator.selectTab(TopLevelTab.Lists) },
                     contentPadding = padding
@@ -126,12 +130,15 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             }
         }
         entry<ProfileRoute> {
-            TabRoot(TopLevelTab.Profile, navigator, onRenewLogin = onLogOut) { padding ->
+            TabRoot(
+                TopLevelTab.Profile,
+                navigator,
+                onRenewLogin = onLogOut,
+                actions = { ProfileSettingsAction(onClick = { navigator.navigate(SettingsRoute) }) }
+            ) { padding ->
                 ProfileScreen(
-                    isGuest = isGuest,
-                    onLogIn = onLogOut,
-                    onOpenSettings = { navigator.navigate(SettingsRoute) },
-                    onOpenUser = { navigator.navigate(UserRoute(it)) },
+                    viewerId = LocalShellChrome.current.viewer?.id,
+                    navigation = profileNavigation(navigator, onLogOut),
                     contentPadding = padding
                 )
             }
@@ -152,18 +159,34 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 characterId = route.id,
                 onBack = { navigator.back() },
                 onOpenMedia = { navigator.navigate(MediaRoute(it)) },
-                onOpenStaff = { navigator.navigate(StaffRoute(it)) }
+                onLogIn = onLogOut
             )
         }
         entry<StaffRoute> { route ->
             StaffScreen(
                 staffId = route.id,
                 onBack = { navigator.back() },
-                onOpenCharacter = { navigator.navigate(CharacterRoute(it)) }
+                onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
+                onLogIn = onLogOut
             )
         }
         entry<UserRoute> { route ->
-            UserScreen(userName = route.name, onBack = { navigator.back() })
+            UserScreen(
+                userId = route.id,
+                userName = route.name,
+                onBack = { navigator.back() },
+                navigation = profileNavigation(navigator, onLogOut)
+            )
+        }
+        entry<UserListRoute>(metadata = ListDetailSceneStrategy.listPane()) { route ->
+            UserListScreen(
+                userId = route.userId,
+                userName = route.userName,
+                type = route.type,
+                onBack = { navigator.back() },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) }
+            )
         }
         entry<NotificationsRoute> {
             NotificationsScreen(onBack = { navigator.back() }, onOpenMedia = { navigator.navigate(MediaRoute(it)) })
@@ -325,6 +348,16 @@ private fun rememberTopLevelNavigator(): TopLevelNavigator {
     return remember(selectedTab, stacks) { TopLevelNavigator(selectedTab, stacks) }
 }
 
+/** Where a profile's links lead. */
+private fun profileNavigation(navigator: TopLevelNavigator, onLogIn: () -> Unit) = ProfileNavigation(
+    onOpenMedia = { navigator.navigate(MediaRoute(it)) },
+    onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
+    onOpenStaff = { navigator.navigate(StaffRoute(it)) },
+    onOpenUser = { id, name -> navigator.navigate(UserRoute(id, name)) },
+    onOpenList = { userId, userName, type -> navigator.navigate(UserListRoute(userId, userName, type)) },
+    onLogIn = onLogIn
+)
+
 /** A tab's root screen: the shell's top bar and banner around [content], plus the scroll-to-top request. */
 @Composable
 private fun TabRoot(
@@ -340,6 +373,8 @@ private fun TabRoot(
             onNotificationsClick = { navigator.navigate(NotificationsRoute) },
             onAvatarClick = { navigator.selectTab(TopLevelTab.Profile) },
             onRenewLogin = onRenewLogin,
+            // The Profile tab is the avatar's destination, so it shows settings instead.
+            showAvatar = tab != TopLevelTab.Profile,
             actions = actions,
             content = content
         )

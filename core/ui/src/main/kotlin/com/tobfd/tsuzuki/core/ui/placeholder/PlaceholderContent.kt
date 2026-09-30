@@ -57,15 +57,10 @@ fun PlaceholderContent(
     }
 }
 
-/** Real AniList ids used by the placeholder links (Frieren and people from it). */
+/** Real AniList ids used by the placeholder links. */
 object PlaceholderSamples {
     const val FRIEREN_MEDIA_ID = 154_587
     const val FRIEREN_TITLE = "Sousou no Frieren"
-    const val FRIEREN_CHARACTER_ID = 176_754
-    const val FRIEREN_CHARACTER_NAME = "Frieren"
-    const val FRIEREN_VOICE_ACTOR_ID = 112_215
-    const val FRIEREN_VOICE_ACTOR_NAME = "Atsumi Tanezaki"
-    const val OTHER_USER_NAME = "GeckoTV"
 }
 
 @ThemePreviews

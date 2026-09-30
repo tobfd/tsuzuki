@@ -89,14 +89,15 @@ The cache is the `com.apollographql.cache` library (memory in front of SQLite `a
 | Media detail | CacheAndNetwork (show cache, refresh) | 1 h (network refresh only if older) |
 | Home trending / Browse rows | CacheFirst | 30 min |
 | Search results | NetworkFirst | none |
-| Genres and tags | CacheFirst | 7 days |
+| Genres and tags | NetworkFirst once per app run (first filter sheet), then from memory | app run |
+| Character / staff page | CacheFirst while fresh, else NetworkFirst | 1 h |
 | Notifications, feeds | NetworkFirst, cache as offline fallback | none |
 
 Own lists are not read from Apollo but from Room (offline first).
 
 ## Adult content and user options
 
-- Always pass `isAdult: false` unless the user's AniList option `displayAdultContent` is true. Guests never see adult content.
+- Always pass `isAdult: false` unless the user's AniList option `displayAdultContent` is true; then leave the `isAdult` variable out (the queries declare it without a default, so it is not set). Never send `true`, which returns adult media only, and never an explicit `null`: AniList filters on it and returns nothing (checked against the live API, 2026-09-30). Guests never see adult content. Connections without an `isAdult` argument (character appearances, staff roles) are filtered on the client.
 - "Ecchi" is **not** adult on AniList; don't try to reclassify it, just respect the flag.
 - User-generated text (activities, bios) may contain anything; show it as text, never auto-load embedded images in v1.
 - Title language: use `title.userPreferred` (AniList already applies the user's choice). For guests, use the app setting (Romaji default) and pick `romaji` / `english` / `native` locally.

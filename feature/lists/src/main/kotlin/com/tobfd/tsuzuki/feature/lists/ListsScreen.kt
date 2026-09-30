@@ -215,7 +215,7 @@ private fun RejectedChange.message(): String = when (reason) {
 }
 
 @Composable
-private fun ListsTopBarActions(sort: ListSort, onSearch: () -> Unit, onSortSelected: (ListSort) -> Unit) {
+internal fun ListsTopBarActions(sort: ListSort, onSearch: () -> Unit, onSortSelected: (ListSort) -> Unit) {
     IconButton(onClick = onSearch) {
         Icon(painterResource(TsuzukiIcons.Search), contentDescription = stringResource(R.string.lists_search))
     }
@@ -294,7 +294,13 @@ fun ListsScreen(
                 )
             }
             if (!searching && state.tabs.isNotEmpty()) {
-                ListTabs(state = state, onTabSelected = onTabSelected, edgePadding = start)
+                ListTabs(
+                    tabs = state.tabs,
+                    selectedTab = state.selectedTab,
+                    type = state.type,
+                    onTabSelected = onTabSelected,
+                    edgePadding = start
+                )
             }
             if (state.waitingChanges > 0) {
                 WaitingChangesHint(
@@ -335,17 +341,23 @@ fun ListsScreen(
 }
 
 @Composable
-private fun ListTabs(state: ListsUiState, onTabSelected: (ListTabKey) -> Unit, edgePadding: Dp) {
-    val selectedIndex = state.tabs.indexOfFirst { it.key == state.selectedTab }.coerceAtLeast(0)
+internal fun ListTabs(
+    tabs: List<ListTab>,
+    selectedTab: ListTabKey,
+    type: MediaType,
+    onTabSelected: (ListTabKey) -> Unit,
+    edgePadding: Dp
+) {
+    val selectedIndex = tabs.indexOfFirst { it.key == selectedTab }.coerceAtLeast(0)
     PrimaryScrollableTabRow(
         selectedTabIndex = selectedIndex,
         edgePadding = edgePadding,
         containerColor = MaterialTheme.colorScheme.surface,
         modifier = Modifier.padding(top = TsuzukiSpacing.small)
     ) {
-        state.tabs.forEachIndexed { index, tab ->
+        tabs.forEachIndexed { index, tab ->
             val label = when (val key = tab.key) {
-                is ListTabKey.Status -> stringResource(key.status.labelRes(state.type))
+                is ListTabKey.Status -> stringResource(key.status.labelRes(type))
                 is ListTabKey.Custom -> key.name
             }
             Tab(
@@ -449,7 +461,7 @@ private fun ListBody(
 
 /** Empty and error states scroll, so pull to refresh works on them too. */
 @Composable
-private fun ScrollableState(contentPadding: PaddingValues, content: @Composable () -> Unit) {
+internal fun ScrollableState(contentPadding: PaddingValues, content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()

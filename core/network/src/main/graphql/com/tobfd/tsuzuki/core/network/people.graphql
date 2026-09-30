@@ -1,3 +1,5 @@
+# Character page in ONE request: the character and the first page of appearances.
+# These connections have no isAdult argument; core/data drops adult media unless the viewer allows them.
 query CharacterDetail($id: Int!, $page: Int = 1) {
   Character(id: $id) {
     id
@@ -12,16 +14,32 @@ query CharacterDetail($id: Int!, $page: Int = 1) {
     isFavourite
     siteUrl
     media(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
-      pageInfo { hasNextPage }
-      edges {
-        characterRole
-        node { ...MediaCard }
-        voiceActors(language: JAPANESE) { ...StaffLite }
-      }
+      ...CharacterAppearances
     }
   }
 }
 
+# More appearances ("Load more").
+query CharacterMedia($id: Int!, $page: Int!) {
+  Character(id: $id) {
+    id
+    media(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
+      ...CharacterAppearances
+    }
+  }
+}
+
+fragment CharacterAppearances on MediaConnection {
+  pageInfo { hasNextPage }
+  edges {
+    id
+    characterRole
+    node { ...MediaCard }
+    voiceActors(language: JAPANESE) { ...StaffLite }
+  }
+}
+
+# Staff page in ONE request: the person, the first page of characters voiced and of production roles.
 query StaffDetail($id: Int!, $page: Int = 1) {
   Staff(id: $id) {
     id
@@ -38,19 +56,49 @@ query StaffDetail($id: Int!, $page: Int = 1) {
     isFavourite
     siteUrl
     characters(page: $page, perPage: 25, sort: [FAVOURITES_DESC]) {
-      pageInfo { hasNextPage }
-      edges {
-        role
-        node { ...CharacterLite }
-        media { ...MediaCard }
-      }
+      ...StaffCharacters
     }
     staffMedia(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
-      pageInfo { hasNextPage }
-      edges {
-        staffRole
-        node { ...MediaCard }
-      }
+      ...StaffRoles
     }
+  }
+}
+
+# More characters voiced ("Load more").
+query StaffCharacterPage($id: Int!, $page: Int!) {
+  Staff(id: $id) {
+    id
+    characters(page: $page, perPage: 25, sort: [FAVOURITES_DESC]) {
+      ...StaffCharacters
+    }
+  }
+}
+
+# More production roles ("Load more").
+query StaffMediaPage($id: Int!, $page: Int!) {
+  Staff(id: $id) {
+    id
+    staffMedia(page: $page, perPage: 25, sort: [POPULARITY_DESC]) {
+      ...StaffRoles
+    }
+  }
+}
+
+fragment StaffCharacters on CharacterConnection {
+  pageInfo { hasNextPage }
+  edges {
+    id
+    role
+    node { ...CharacterLite }
+    media { ...MediaCard }
+  }
+}
+
+fragment StaffRoles on MediaConnection {
+  pageInfo { hasNextPage }
+  edges {
+    id
+    staffRole
+    node { ...MediaCard }
   }
 }

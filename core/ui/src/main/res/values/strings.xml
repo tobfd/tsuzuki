@@ -71,4 +71,22 @@
     <string name="ui_activity_replies">Replies</string>
     <string name="ui_activity_open_profile">Open profile</string>
     <string name="ui_just_now">Just now</string>
+    <string name="ui_spoiler">Spoiler</string>
+    <string name="ui_show_spoilers">Show spoilers</string>
+    <string name="ui_hide_spoilers">Hide spoilers</string>
+    <string name="ui_read_more">Read more</string>
+    <string name="ui_read_less">Show less</string>
+    <string name="ui_season_winter">Winter</string>
+    <string name="ui_season_spring">Spring</string>
+    <string name="ui_season_summer">Summer</string>
+    <string name="ui_season_fall">Fall</string>
+    <string name="ui_role_main">Main</string>
+    <string name="ui_role_supporting">Supporting</string>
+    <string name="ui_role_background">Background</string>
+    <string name="ui_average_score">%1$d%%</string>
+    <string name="ui_image_link">[Image]</string>
+    <plurals name="ui_heatmap_description">
+        <item quantity="one">Activity history: %1$d activity in the last %2$d weeks</item>
+        <item quantity="other">Activity history: %1$d activities in the last %2$d weeks</item>
+    </plurals>
 </resources>

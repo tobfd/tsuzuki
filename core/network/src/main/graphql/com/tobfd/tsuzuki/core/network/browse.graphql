@@ -1,5 +1,7 @@
+# `$isAdult` has no default on purpose: core/data sends `false`, or leaves it out when the viewer
+# allows adult content. Left out means "no filter"; an explicit `null` makes AniList return nothing.
 # Browse idle state: two rows in ONE request.
-query BrowseHome($type: MediaType!, $isAdult: Boolean = false) {
+query BrowseHome($type: MediaType!, $isAdult: Boolean) {
   trending: Page(perPage: 12) {
     media(type: $type, sort: [TRENDING_DESC, POPULARITY_DESC], isAdult: $isAdult) { ...MediaCard }
   }
@@ -15,6 +17,8 @@ query BrowseHome($type: MediaType!, $isAdult: Boolean = false) {
 #   Top movies  format_in [MOVIE], sort SCORE_DESC
 #   Top manhwa  type MANGA, countryOfOrigin "KR", sort SCORE_DESC
 # Leave `search` null when the field is empty; with a search term, sort SEARCH_MATCH first.
+# A year filters anime by `seasonYear` and manga by start date (`startDate_greater` / `_lesser`,
+# FuzzyDateInt YYYYMMDD), like anilist.co.
 query SearchMedia(
   $page: Int!
   $type: MediaType!
@@ -23,11 +27,13 @@ query SearchMedia(
   $status_in: [MediaStatus]
   $season: MediaSeason
   $seasonYear: Int
+  $startDate_greater: FuzzyDateInt
+  $startDate_lesser: FuzzyDateInt
   $genre_in: [String]
   $tag_in: [String]
   $countryOfOrigin: CountryCode
   $sort: [MediaSort] = [POPULARITY_DESC]
-  $isAdult: Boolean = false
+  $isAdult: Boolean
 ) {
   Page(page: $page, perPage: 20) {
     pageInfo { hasNextPage }
@@ -38,6 +44,8 @@ query SearchMedia(
       status_in: $status_in
       season: $season
       seasonYear: $seasonYear
+      startDate_greater: $startDate_greater
+      startDate_lesser: $startDate_lesser
       genre_in: $genre_in
       tag_in: $tag_in
       countryOfOrigin: $countryOfOrigin

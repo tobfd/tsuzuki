@@ -25,7 +25,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 
 - **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
 - **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **Work in packages** (decided by Tobias, 2026-09-28): M4 alone, then M5+M6, then M7+M8+M9, then M10+M11+M12. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and M13 added 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11+M12, then M13 (widgets, after v1). One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
 - **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`). Conventional Commits (`feat(lists): add +1 with undo`).
 - **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
 - **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
@@ -141,6 +141,8 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 
 Details in `docs/ANILIST_API.md`. The short version:
 
+- Debug builds log every AniList request under the logcat tag `AniListRequest` (operation, variables, HTTP status, GraphQL errors; never headers, so never the token): `adb logcat -s AniListRequest`.
+- `isAdult`: send `false`, or leave the variable out when the viewer allows adult content. Never `true` (adult only) and never an explicit `null` (AniList returns nothing).
 - **Rate limit is 30 requests/min right now** (normally 90) plus a burst limiter. Every request goes through the rate-limit interceptor. Aim for **one query per screen**, debounce search (400 ms, min 2 chars), never prefetch in bulk, never loop over pages in the background.
 - GraphQL errors can arrive with HTTP 200. Always check `errors`.
 - For pagination only `pageInfo.hasNextPage` is reliable. No "page X of Y", no totals from `Page`.
@@ -171,6 +173,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Compose UI tests for the list editor sheet, +1 with undo, and login redirect handling.
 - Test names describe behavior: `plusOne_whenReachingTotal_marksCompletedAndOffersUndo`.
 - Room is tested with an in-memory database on Robolectric (`@Config(sdk = [35])`: Robolectric's SDK 36 setup fails on the JDK 25 test runtime). Apollo responses in these tests are parsed from JSON (`ListTestData.kt`), shaped like AniList's.
+- Compose UI tests (`connectedDebugAndroidTest`) run on the emulator (API 36) only. On Android 17 (API 37) every one fails inside Espresso 3.7.0 (`NoSuchMethodException: InputManager.getInstance`); as of 2026-09-30 there is no newer stable Espresso / androidx.test release. Update and retry on the Pixel once one ships.
 - `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design), `MainDispatcherRule`, fakes like `FakeSessionRepository`, and `InMemoryDataStore`. Unit tests never use the file-backed DataStore: it can't replace its file on Windows JVMs, so such tests fail locally while CI (Linux) passes.
 
 ## Don'ts

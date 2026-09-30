@@ -58,14 +58,20 @@ import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.model.Activity
+import com.tobfd.tsuzuki.core.model.ActivityDay
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
+import com.tobfd.tsuzuki.core.model.PersonLite
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.ui.ActivityCard
+import com.tobfd.tsuzuki.core.ui.ActivityHeatmap
+import com.tobfd.tsuzuki.core.ui.HEATMAP_WEEKS
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.MediaListRow
+import com.tobfd.tsuzuki.core.ui.MediaResultRow
+import com.tobfd.tsuzuki.core.ui.PersonCoverCard
 import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
@@ -77,6 +83,7 @@ import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorUiState
 import com.tobfd.tsuzuki.feature.media.ShareCardSample
 import java.time.Instant
+import java.time.LocalDate
 import kotlinx.collections.immutable.persistentListOf
 
 // Sample data from AniList (Frieren, id 154587), as used across docs/DESIGN.md.
@@ -132,6 +139,9 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
             item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
             item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_result_row) { ResultRowSamples() } }
+            item { CatalogSection(R.string.catalog_section_person_card) { PersonCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_heatmap) { HeatmapSample() } }
             item { CatalogSection(R.string.catalog_section_share_card) { ShareCardSamples() } }
             item { CatalogSection(R.string.catalog_section_top_bar) { TopBarSamples() } }
             item {
@@ -510,6 +520,35 @@ private fun CoverCardSamples() {
         MediaCoverCard(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER), onClick = {})
         MediaCoverCard(media = PreviewListEntries.dandadan.media, onClick = {}, label = "Sequel")
     }
+}
+
+@Composable
+private fun ResultRowSamples() {
+    Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        MediaResultRow(
+            media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER),
+            listStatus = MediaListStatus.CURRENT,
+            onClick = {}
+        )
+        MediaResultRow(media = PreviewListEntries.dandadan.media, listStatus = null, onClick = {})
+    }
+}
+
+@Composable
+private fun PersonCardSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+        PersonCoverCard(PersonLite(176_754, "Frieren", null), onClick = {}, detail = "Sousou no Frieren")
+        PersonCoverCard(PersonLite(112_215, "Atsumi Tanezaki", null), onClick = {})
+    }
+}
+
+@Composable
+private fun HeatmapSample() {
+    val today = LocalDate.of(2026, 9, 30)
+    ActivityHeatmap(
+        days = (0 until HEATMAP_WEEKS * 7 step 2).map { ActivityDay(today.minusDays(it.toLong()), it % 9) },
+        today = today
+    )
 }
 
 /** The share card in both formats, with the Frieren cover. */

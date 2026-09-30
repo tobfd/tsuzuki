@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.core.designsystem.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -24,9 +26,11 @@ import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
 
 /**
- * Pill-shaped search field with a leading search icon and a trailing close button (Lists search;
- * Browse uses it in M7).
+ * Pill-shaped search field with a leading search icon and a trailing close button (Lists search,
+ * Browse).
  *
+ * @param onClose the trailing button; null hides it (Browse shows it only while there is text).
+ * @param closeLabel what TalkBack says for the trailing button.
  * @param focusOnStart moves the focus (and the keyboard) into the field when it first appears.
  */
 @Composable
@@ -34,11 +38,13 @@ fun TsuzukiSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String,
-    onClose: () -> Unit,
+    onClose: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    closeLabel: String = stringResource(R.string.designsystem_search_close),
     focusOnStart: Boolean = false
 ) {
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -47,17 +53,18 @@ fun TsuzukiSearchField(
             .focusRequester(focusRequester),
         placeholder = { Text(placeholder) },
         leadingIcon = { Icon(painterResource(TsuzukiIcons.Search), contentDescription = null) },
-        trailingIcon = {
-            IconButton(onClick = onClose) {
-                Icon(
-                    painterResource(TsuzukiIcons.Close),
-                    contentDescription = stringResource(R.string.designsystem_search_close)
-                )
+        trailingIcon = onClose?.let {
+            {
+                IconButton(onClick = onClose) {
+                    Icon(painterResource(TsuzukiIcons.Close), contentDescription = closeLabel)
+                }
             }
         },
         singleLine = true,
         shape = CircleShape,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        // Results update while typing; the search key only puts the keyboard away.
+        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,

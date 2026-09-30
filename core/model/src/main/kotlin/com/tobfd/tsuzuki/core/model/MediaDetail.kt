@@ -28,10 +28,10 @@ data class MediaDetail(
 
 data class MediaTag(val name: String, val rank: Int?, val isSpoiler: Boolean)
 
-/** The facts in the info grid. Season and source are AniList's names, e.g. `FALL`, `LIGHT_NOVEL`. */
+/** The facts in the info grid. Source is AniList's name, e.g. `LIGHT_NOVEL`. */
 data class MediaInfo(
     val episodeDuration: Int?,
-    val season: String?,
+    val season: MediaSeason?,
     val source: String?,
     val startDate: FuzzyDate?,
     val endDate: FuzzyDate?,

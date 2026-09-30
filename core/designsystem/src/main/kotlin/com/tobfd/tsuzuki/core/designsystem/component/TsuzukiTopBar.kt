@@ -90,6 +90,7 @@ fun TsuzukiBackTopBar(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
 ) {
     TopAppBar(
@@ -103,6 +104,7 @@ fun TsuzukiBackTopBar(
                 )
             }
         },
+        actions = actions,
         windowInsets = windowInsets
     )
 }

@@ -43,11 +43,6 @@
     <string name="media_social_empty">None of the people you follow have this on their list.</string>
     <string name="media_no_recommendations">No recommendations yet.</string>
     <string name="media_recommendation_votes">+%1$d</string>
-    <string name="media_spoiler">Spoiler</string>
-    <string name="media_show_spoilers">Show spoilers</string>
-    <string name="media_hide_spoilers">Hide spoilers</string>
-    <string name="media_read_more">Read more</string>
-    <string name="media_read_less">Show less</string>
     <string name="media_rank_rated_all_time">#%1$d highest rated all time</string>
     <string name="media_rank_rated_year">#%1$d highest rated %2$d</string>
     <string name="media_rank_popular_all_time">#%1$d most popular all time</string>
@@ -65,10 +60,6 @@
     <string name="media_relation_compilation">Compilation</string>
     <string name="media_relation_contains">Contains</string>
     <string name="media_relation_other">Other</string>
-    <string name="media_season_winter">Winter</string>
-    <string name="media_season_spring">Spring</string>
-    <string name="media_season_summer">Summer</string>
-    <string name="media_season_fall">Fall</string>
     <string name="media_source_original">Original</string>
     <string name="media_source_manga">Manga</string>
     <string name="media_source_light_novel">Light novel</string>
@@ -77,9 +68,6 @@
     <string name="media_source_visual_novel">Visual novel</string>
     <string name="media_source_video_game">Video game</string>
     <string name="media_source_anime">Anime</string>
-    <string name="media_role_main">Main</string>
-    <string name="media_role_supporting">Supporting</string>
-    <string name="media_role_background">Background</string>
     <string name="media_share_title">Share as image</string>
     <string name="media_share_story">Story 9:16</string>
     <string name="media_share_square">Square 1:1</string>

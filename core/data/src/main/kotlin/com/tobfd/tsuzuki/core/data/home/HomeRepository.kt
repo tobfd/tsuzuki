@@ -8,9 +8,9 @@ import com.apollographql.cache.normalized.fetchPolicy
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.mapper.toModel
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
+import com.tobfd.tsuzuki.core.data.session.isAdultArgument
 import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.MediaLite
-import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.network.ActivityFeedQuery
 import com.tobfd.tsuzuki.core.network.HomeQuery
 import com.tobfd.tsuzuki.core.network.ToggleActivityLikeMutation
@@ -92,12 +92,10 @@ internal class DefaultHomeRepository @Inject constructor(
     }
 
     private suspend fun firstPage(following: Boolean, cacheOnly: Boolean): Result<FeedPage> {
-        val adult =
-            (sessionRepository.session.first() as? SessionState.LoggedIn)?.viewer?.options?.displayAdultContent == true
         val query = HomeQuery(
             isFollowing = Optional.present(following),
             hasRepliesOrTypeText = if (following) Optional.Absent else Optional.present(true),
-            isAdult = Optional.present(adult)
+            isAdult = sessionRepository.isAdultArgument()
         )
         val response = try {
             apolloClient.query(query)

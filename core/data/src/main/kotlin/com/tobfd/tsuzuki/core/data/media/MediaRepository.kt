@@ -9,6 +9,7 @@ import com.apollographql.cache.normalized.isFromCache
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.mapper.enumNamed
 import com.tobfd.tsuzuki.core.data.mapper.toModel
+import com.tobfd.tsuzuki.core.data.mapper.toPerson
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.model.CharacterRole
 import com.tobfd.tsuzuki.core.model.FollowingEntry
@@ -18,6 +19,7 @@ import com.tobfd.tsuzuki.core.model.MediaInfo
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaRanking
 import com.tobfd.tsuzuki.core.model.MediaRelation
+import com.tobfd.tsuzuki.core.model.MediaSeason
 import com.tobfd.tsuzuki.core.model.MediaTag
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.PersonLite
@@ -31,8 +33,6 @@ import com.tobfd.tsuzuki.core.network.MediaDetailQuery
 import com.tobfd.tsuzuki.core.network.ToggleFavouriteMutation
 import com.tobfd.tsuzuki.core.network.error.appErrorOrNull
 import com.tobfd.tsuzuki.core.network.error.toAppError
-import com.tobfd.tsuzuki.core.network.fragment.CharacterLite
-import com.tobfd.tsuzuki.core.network.fragment.StaffLite
 import com.tobfd.tsuzuki.core.network.type.ExternalLinkType
 import com.tobfd.tsuzuki.core.network.type.MediaRankType
 import java.time.Clock
@@ -129,7 +129,7 @@ internal fun MediaDetailQuery.Data.toModel(): MediaDetail? {
         },
         info = MediaInfo(
             episodeDuration = media.duration,
-            season = media.season?.rawValue,
+            season = enumNamed<MediaSeason>(media.season?.rawValue),
             source = media.source?.rawValue,
             startDate = media.mediaCard.startDate?.let { FuzzyDate.orNull(it.year, it.month, it.day) },
             endDate = media.endDate?.let { FuzzyDate.orNull(it.year, it.month, it.day) },
@@ -188,7 +188,3 @@ internal fun MediaDetailQuery.Data.toModel(): MediaDetail? {
         }
     )
 }
-
-private fun CharacterLite.toPerson() = PersonLite(id, name?.userPreferred.orEmpty(), image?.medium)
-
-private fun StaffLite.toPerson() = PersonLite(id, name?.userPreferred.orEmpty(), image?.medium)

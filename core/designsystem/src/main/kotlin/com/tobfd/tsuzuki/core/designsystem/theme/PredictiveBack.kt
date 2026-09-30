@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.PathEasing
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.snap
@@ -300,6 +301,28 @@ fun rememberPredictiveBackState(): PredictiveBackState {
 
 private enum class BackRole { Closing, Entering }
 
+/** Where a navigation entry sits in the back stack that back works on. */
+enum class BackStackPosition {
+    /** The screen on top, which back closes. */
+    Top,
+
+    /** The screen right below it, which back reveals. */
+    Previous,
+
+    /** Any other screen, and every screen when back leaves the app. */
+    Other;
+
+    companion object {
+        /** The position of the entry with [key] in [stack] (bottom to top). */
+        fun of(key: Any, stack: List<Any>): BackStackPosition = when {
+            stack.size < 2 -> Other
+            key == stack.last() -> Top
+            key == stack[stack.lastIndex - 1] -> Previous
+            else -> Other
+        }
+    }
+}
+
 /** Mutable holder for the role an entry had during the gesture; read only while drawing. */
 private class RoleMemory {
     var role: BackRole? = null
@@ -314,6 +337,10 @@ private class RoleMemory {
  * moving on to the right, and the previous screen grows back into place in 450 ms (emphasized),
  * with a small spring from the release speed. Cancelling springs back.
  *
+ * Which screen closes and which one it reveals comes from [position], never from the entry's
+ * transition: back can start while an opening transition still runs, and then the screen that is
+ * leaving that transition is the one back reveals.
+ *
  * Other transitions are left alone. Pair it with [TsuzukiTransitions.predictiveBack] as the
  * `NavDisplay`'s predictive pop transition. With [enabled] false (animations turned off) nothing moves.
  */
@@ -322,6 +349,7 @@ fun PredictiveBackEntry(
     scope: AnimatedVisibilityScope,
     state: PredictiveBackState,
     enabled: Boolean,
+    position: BackStackPosition,
     content: @Composable () -> Unit
 ) {
     val transition = scope.transition
@@ -339,14 +367,13 @@ fun PredictiveBackEntry(
     val role = when {
         !active -> null
 
-        phase == PredictiveBackState.Phase.Dragging -> when {
-            transition.currentState == EnterExitState.Visible && transition.targetState == EnterExitState.PostExit ->
-                BackRole.Closing
+        phase == PredictiveBackState.Phase.Dragging -> when (position) {
+            BackStackPosition.Top -> BackRole.Closing
 
-            transition.currentState == EnterExitState.PreEnter && transition.targetState == EnterExitState.Visible ->
-                BackRole.Entering
+            // Unless it is already on screen beside the closing one (list and detail side by side).
+            BackStackPosition.Previous -> BackRole.Entering.takeUnless { transition.isSettledVisible() }
 
-            else -> null
+            BackStackPosition.Other -> null
         }
 
         // After release only the entries from the gesture animate, even once Navigation 3 is done.
@@ -355,7 +382,8 @@ fun PredictiveBackEntry(
     SideEffect { memory.role = role }
 
     // Once faded out, the leaving screen leaves composition, so it stops taking touches and cannot
-    // show again at full size when the animation ends before Navigation 3 removes it.
+    // show again at full size when the animation ends before Navigation 3 removes it. Only while it is
+    // really leaving: should it become the target again, it shows again.
     val postCommitFadedOut by remember(state) {
         derivedStateOf {
             state.phase == PredictiveBackState.Phase.Committed &&
@@ -364,6 +392,8 @@ fun PredictiveBackEntry(
     }
     var gone by remember { mutableStateOf(false) }
     if (role == BackRole.Closing && postCommitFadedOut) SideEffect { gone = true }
+    val leaving = transition.targetState == EnterExitState.PostExit
+    if (gone && !leaving) SideEffect { gone = false }
 
     val view = LocalView.current
     val scrimAlpha = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) {
@@ -417,10 +447,13 @@ fun PredictiveBackEntry(
                 clip = true
             }
         ) {
-            if (!gone) content()
+            if (!(gone && leaving)) content()
         }
     }
 }
+
+private fun Transition<EnterExitState>.isSettledVisible(): Boolean =
+    currentState == EnterExitState.Visible && targetState == EnterExitState.Visible
 
 /** Transition length Navigation 3 uses to finish a committed gesture; long enough for the fade-out. */
 private const val HOLD_DURATION = PredictiveBackTokens.POST_COMMIT_DURATION * 2

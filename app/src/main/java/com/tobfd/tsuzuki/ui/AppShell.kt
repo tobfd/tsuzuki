@@ -14,6 +14,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,6 +37,7 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.core.designsystem.theme.BackStackPosition
 import com.tobfd.tsuzuki.core.designsystem.theme.BackSwipeEdge
 import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackEntry
 import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackState
@@ -196,9 +198,16 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             }
         }
     }
+    // Content keys of the shown entries, bottom to top: back closes the last and reveals the one below.
+    val visibleContentKeys = remember { mutableStateOf(emptyList<Any>()) }
     val predictiveBackDecorator = remember(predictiveBack, reducedMotion) {
         NavEntryDecorator<NavKey> { entry ->
-            PredictiveBackEntry(LocalNavAnimatedContentScope.current, predictiveBack, enabled = !reducedMotion) {
+            PredictiveBackEntry(
+                scope = LocalNavAnimatedContentScope.current,
+                state = predictiveBack,
+                enabled = !reducedMotion,
+                position = BackStackPosition.of(entry.contentKey, visibleContentKeys.value)
+            ) {
                 entry.Content()
             }
         }
@@ -217,6 +226,9 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             entryProvider = entryProvider
         )
     }
+
+    val visibleEntries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) }
+    SideEffect { visibleContentKeys.value = visibleEntries.map { it.contentKey } }
 
     CompositionLocalProvider(LocalShellChrome provides chrome) {
         NavigationSuiteScaffold(
@@ -241,7 +253,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
         ) {
             val slideDistancePx = with(LocalDensity.current) { TsuzukiTransitions.SharedAxisSlideDistance.roundToPx() }
             NavDisplay(
-                entries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) },
+                entries = visibleEntries,
                 sceneStrategies = sceneStrategies,
                 // Tab switches fade through; opening screens, the back arrow and back without the
                 // gesture use shared axis X.

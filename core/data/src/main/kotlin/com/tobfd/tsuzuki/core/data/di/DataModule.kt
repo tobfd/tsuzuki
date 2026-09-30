@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.core.data.di
 
+import com.tobfd.tsuzuki.core.data.browse.BrowseRepository
+import com.tobfd.tsuzuki.core.data.browse.DefaultBrowseRepository
 import com.tobfd.tsuzuki.core.data.home.DefaultHomeRepository
 import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ConnectivityNetworkMonitor
@@ -43,6 +45,9 @@ internal interface DataModule {
 
     @Binds
     fun listRepository(impl: DefaultListRepository): ListRepository
+
+    @Binds
+    fun browseRepository(impl: DefaultBrowseRepository): BrowseRepository
 
     @Binds
     fun listWorkScheduler(impl: WorkManagerListWorkScheduler): ListWorkScheduler

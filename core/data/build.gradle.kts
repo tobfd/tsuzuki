@@ -15,6 +15,8 @@ android {
 dependencies {
     api(project(":core:common"))
     api(project(":core:model"))
+    // Search results (Browse, later notifications) are PagingData.
+    api(libs.androidx.paging.runtime)
 
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
@@ -27,6 +29,7 @@ dependencies {
     testImplementation(project(":core:testing"))
     testImplementation(libs.androidx.datastore.preferences)
     testImplementation(libs.apollo.testing.support)
+    testImplementation(libs.androidx.paging.testing)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.robolectric)
 }

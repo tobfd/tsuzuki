@@ -15,6 +15,8 @@ query BrowseHome($type: MediaType!, $isAdult: Boolean = false) {
 #   Top movies  format_in [MOVIE], sort SCORE_DESC
 #   Top manhwa  type MANGA, countryOfOrigin "KR", sort SCORE_DESC
 # Leave `search` null when the field is empty; with a search term, sort SEARCH_MATCH first.
+# A year filters anime by `seasonYear` and manga by start date (`startDate_greater` / `_lesser`,
+# FuzzyDateInt YYYYMMDD), like anilist.co. `isAdult: null` shows both (AniList ignores null arguments).
 query SearchMedia(
   $page: Int!
   $type: MediaType!
@@ -23,6 +25,8 @@ query SearchMedia(
   $status_in: [MediaStatus]
   $season: MediaSeason
   $seasonYear: Int
+  $startDate_greater: FuzzyDateInt
+  $startDate_lesser: FuzzyDateInt
   $genre_in: [String]
   $tag_in: [String]
   $countryOfOrigin: CountryCode
@@ -38,6 +42,8 @@ query SearchMedia(
       status_in: $status_in
       season: $season
       seasonYear: $seasonYear
+      startDate_greater: $startDate_greater
+      startDate_lesser: $startDate_lesser
       genre_in: $genre_in
       tag_in: $tag_in
       countryOfOrigin: $countryOfOrigin

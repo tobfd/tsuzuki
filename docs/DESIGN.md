@@ -38,6 +38,17 @@ Font: **Google Sans Flex** (Google Fonts, OFL), bundled as a variable font. Scal
 - Spacing grid 4 dp. Screen margin 16, gap between cards 12, gap between sections 24 (28 on Home), chip padding 8.
 - Sizes: covers 2:3; In Progress cover 144 × 204; list thumbnail 48 × 68; bottom nav 80; top app bar 64; +1 button 48 × 48 (40 × 40 inside dense cards).
 
+### Large screens (Tablet package)
+
+Phones in portrait look exactly as specified below; wider panes adapt to the space they get, so a list pane next to an open detail pane stays a single column.
+
+- **Adaptive grids:** list rows (Lists, other users' lists, Browse results) in columns of at least 360 dp; the Home feed in a staggered grid of at least 320 dp per column (two columns from about 650 dp). Horizontal rows (In Progress, Trending, Newly added) still scroll from edge to edge.
+- **Reading width:** running text (descriptions, bios) at most 640 dp wide; the login actions at most 480 dp, centred.
+- **List-detail:** Lists, Browse, the Profile tab, other users' profiles and their lists are list panes; media, character and staff pages open in the detail pane beside them. Before anything is opened the detail pane shows a placeholder (続 tile, "Nothing open yet").
+- **Detail page in two columns** from 840 dp of available width: the header (banner, cover, score, title, list button) in a 400 dp column on the left, the anchored tabs and sections on the right.
+- **Sheets as dialogs** on expanded windows: the list editor and the Browse filters open as a dialog up to 560 dp wide (extraLarge corners, surfaceContainerLow) instead of a bottom sheet.
+- Checked on the Pixel Tablet size (2560 × 1600, 320 dpi, landscape) and an open foldable (2076 × 2152, 390 dpi), simulated on the phone emulator with `adb shell wm size` / `wm density`.
+
 ### Motion and feel
 
 - **+1 button** (signature component): filled `primary`, label "+1". At rest it is a rounded square (shape medium, 12 dp); while pressed it morphs to a circle (full) with a spring (`Spring.DampingRatioMediumBouncy`, stiffness medium-low), then back. Light haptic tick on tap; confirm haptic when the entry completes. When progress reaches the total, the button is replaced by a "Completed" chip in completed-container colors.

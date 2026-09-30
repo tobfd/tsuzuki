@@ -54,7 +54,7 @@ object TsuzukiSizes {
     val rowGridMinWidth = 360.dp
 
     /** Narrowest column of the activity feed on large screens. */
-    val feedGridMinWidth = 420.dp
+    val feedGridMinWidth = 320.dp
 
     /** Available width from which the detail page splits into two columns. */
     val twoColumnMinWidth = 840.dp

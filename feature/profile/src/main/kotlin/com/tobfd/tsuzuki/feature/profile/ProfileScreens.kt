@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
@@ -422,7 +423,7 @@ private fun Header(state: ProfileUiState.Content, side: PaddingValues, onToggleF
 /** Total anime, episodes watched, days watched and mean score. */
 @Composable
 private fun StatsRow(anime: ListStatistics, modifier: Modifier = Modifier) {
-    val locale = Locale.getDefault()
+    val locale = LocalConfiguration.current.locales[0]
     Row(modifier = modifier.fillMaxWidth()) {
         listOf(
             stringResource(R.string.profile_total_anime) to "%,d".format(locale, anime.count),
@@ -545,7 +546,7 @@ private fun LazyListScope.stats(profile: UserProfile, side: PaddingValues) {
             side
         )
         item(key = "statsNumbers-$type") {
-            val locale = Locale.getDefault()
+            val locale = LocalConfiguration.current.locales[0]
             val numbers = buildList {
                 add(stringResource(R.string.profile_stats_count) to "%,d".format(locale, statistics.count))
                 if (anime) {
@@ -632,7 +633,7 @@ private fun StatusBars(
                     )
                 }
                 Text(
-                    text = "%,d".format(Locale.getDefault(), count),
+                    text = "%,d".format(LocalConfiguration.current.locales[0], count),
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(0.15f)

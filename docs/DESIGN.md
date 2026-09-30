@@ -87,6 +87,9 @@ Material Symbols Rounded, 24 dp, weight 400. Icon-only buttons are 48 dp touch t
 | `SectionHeader` | titleLarge + optional "See all" text button (primary). |
 | `ProgressButton` | Tonal button that shows a small spinner (20 dp) in place of its label while loading, keeping its size; taps wait until done ("Load more" on Home). |
 | `ActivityCard` | surfaceContainerLow, large shape: avatar 40, "user" bold + text ("watched episode 18 of") + media title in primary, 40 × 56 cover on the right, relative time, like button with count (heart, primary when liked), reply count. |
+| `MediaResultRow` | Browse results: the `MediaListRow` card without +1; title (2 lines), "TV · 2023 · 91%", and the viewer's list status (status dot + label) when the media is on the list. Tap opens detail. |
+| `PersonCoverCard` | A character or staff member as a 2:3 card (120 dp wide) with name and one more line (e.g. the media a character is from); next to `MediaCoverCard` in grids and rows. |
+| `ActivityHeatmap` | Profile activity history: 12 weeks × 7 days (Monday on top), 12 dp cells with 3 dp gaps, empty days in surfaceContainerHighest, 4 strengths of primary relative to the busiest day shown, month labels above the week a month starts in. TalkBack reads the total. |
 | Empty / error states | Centered: 56 dp icon tile (surfaceContainerHigh, 16 dp radius), titleLarge headline, bodyMedium text, optional tonal action button. |
 | Snackbar | M3 snackbar with action ("Undo"). |
 | Bottom sheets | `ModalBottomSheet`, drag handle, extraLarge top corners, surfaceContainerLow. |

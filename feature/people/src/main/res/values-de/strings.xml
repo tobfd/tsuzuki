@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="people_character_title">Figur</string>
-    <string name="people_staff_title">Mitwirkende</string>
-    <string name="people_character_placeholder">Figurenseiten kommen in M8. Das ist die AniList-ID %1$d.</string>
-    <string name="people_staff_placeholder">Seiten für Mitwirkende kommen in M8. Das ist die AniList-ID %1$d.</string>
+    <string name="people_staff_title">Staff</string>
+    <string name="people_error_title">Seite konnte nicht geladen werden</string>
+    <string name="people_favourite">Zu Favoriten hinzufügen</string>
+    <string name="people_unfavourite">Aus Favoriten entfernen</string>
+    <plurals name="people_favourites">
+        <item quantity="one">%s Favorit</item>
+        <item quantity="other">%s Favoriten</item>
+    </plurals>
+    <string name="people_log_in_to_use">Melde dich an, um Favoriten zu speichern.</string>
+    <string name="people_log_in">Anmelden</string>
+    <string name="people_open_on_anilist">Auf AniList öffnen</string>
+    <string name="people_info_gender">Geschlecht</string>
+    <string name="people_info_age">Alter</string>
+    <string name="people_info_birthday">Geburtstag</string>
+    <string name="people_info_blood_type">Blutgruppe</string>
+    <string name="people_info_hometown">Heimatort</string>
+    <string name="people_info_years_active">Aktiv</string>
+    <string name="people_years_since">Seit %1$d</string>
+    <string name="people_years_range">%1$d–%2$d</string>
+    <string name="people_appearances">Auftritte</string>
+    <string name="people_no_appearances">Keine Auftritte eingetragen.</string>
+    <string name="people_characters_voiced">Gesprochene Figuren</string>
+    <string name="people_production_roles">Produktion</string>
+    <string name="people_load_more">Mehr laden</string>
 </resources>

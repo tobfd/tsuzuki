@@ -152,14 +152,16 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 characterId = route.id,
                 onBack = { navigator.back() },
                 onOpenMedia = { navigator.navigate(MediaRoute(it)) },
-                onOpenStaff = { navigator.navigate(StaffRoute(it)) }
+                onLogIn = onLogOut
             )
         }
         entry<StaffRoute> { route ->
             StaffScreen(
                 staffId = route.id,
                 onBack = { navigator.back() },
-                onOpenCharacter = { navigator.navigate(CharacterRoute(it)) }
+                onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
+                onLogIn = onLogOut
             )
         }
         entry<UserRoute> { route ->

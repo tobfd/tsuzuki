@@ -59,8 +59,12 @@ import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.ActivityDay
+import com.tobfd.tsuzuki.core.model.ActivityNotificationKind
+import com.tobfd.tsuzuki.core.model.ListActivitySummary
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
+import com.tobfd.tsuzuki.core.model.Notification
+import com.tobfd.tsuzuki.core.model.NotificationEntry
 import com.tobfd.tsuzuki.core.model.PersonLite
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.UserLite
@@ -71,6 +75,7 @@ import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.MediaListRow
 import com.tobfd.tsuzuki.core.ui.MediaResultRow
+import com.tobfd.tsuzuki.core.ui.NotificationRow
 import com.tobfd.tsuzuki.core.ui.PersonCoverCard
 import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
@@ -138,6 +143,7 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_search_field) { SearchFieldSamples() } }
             item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
             item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_notification_row) { NotificationRowSamples() } }
             item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
             item { CatalogSection(R.string.catalog_section_result_row) { ResultRowSamples() } }
             item { CatalogSection(R.string.catalog_section_person_card) { PersonCardSamples() } }
@@ -512,6 +518,44 @@ private fun ActivityCardSamples() {
         onUserClick = {},
         onMediaClick = {}
     )
+}
+
+@Composable
+private fun NotificationRowSamples() {
+    val now = Instant.now()
+    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    Column {
+        NotificationRow(
+            entry = NotificationEntry(
+                Notification.ActivityEvent(
+                    id = 1,
+                    createdAt = now.minusSeconds(900),
+                    kind = ActivityNotificationKind.Like,
+                    users = users + UserLite(4, "tobfd", null) + UserLite(5, "Frieren", null),
+                    activityId = 7,
+                    listActivity = ListActivitySummary("watched episode", "17 - 18", 154587, "Frieren")
+                ),
+                isUnread = true
+            ),
+            onClick = {}
+        )
+        NotificationRow(
+            entry = NotificationEntry(
+                Notification.Airing(
+                    2,
+                    now.minusSeconds(7_200),
+                    18,
+                    PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)
+                ),
+                isUnread = false
+            ),
+            onClick = {}
+        )
+        NotificationRow(
+            entry = NotificationEntry(Notification.Follow(3, now.minusSeconds(90_000), users[2]), isUnread = false),
+            onClick = {}
+        )
+    }
 }
 
 @Composable

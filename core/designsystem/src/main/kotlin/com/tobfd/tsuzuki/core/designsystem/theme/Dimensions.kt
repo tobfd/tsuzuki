@@ -38,6 +38,9 @@ object TsuzukiSizes {
     val logoTile = 96.dp
     val buttonProgress = 20.dp
     val buttonProgressStroke = 2.dp
+    val notificationLeading = 64.dp
+    val notificationAvatar = 32.dp
+    val notificationAvatarOffset = 16.dp
     val heatmapCell = 12.dp
     val heatmapGap = 3.dp
     val profileBanner = 140.dp

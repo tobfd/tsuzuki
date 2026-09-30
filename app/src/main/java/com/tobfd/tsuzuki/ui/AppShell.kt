@@ -189,7 +189,11 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             )
         }
         entry<NotificationsRoute> {
-            NotificationsScreen(onBack = { navigator.back() }, onOpenMedia = { navigator.navigate(MediaRoute(it)) })
+            NotificationsScreen(
+                onBack = { navigator.back() },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
+                onOpenUser = { id, name -> navigator.navigate(UserRoute(id, name)) }
+            )
         }
         entry<SettingsRoute> {
             SettingsScreen(

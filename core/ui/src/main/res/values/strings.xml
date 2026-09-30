@@ -89,4 +89,30 @@
         <item quantity="one">Activity history: %1$d activity in the last %2$d weeks</item>
         <item quantity="other">Activity history: %1$d activities in the last %2$d weeks</item>
     </plurals>
+    <string name="ui_notification_unread">Unread</string>
+    <string name="ui_notification_airing">Episode %1$s of %2$s aired</string>
+    <string name="ui_notification_follow">%1$s started following you</string>
+    <string name="ui_notification_like_one">%1$s liked your activity</string>
+    <string name="ui_notification_like_two">%1$s and %2$s liked your activity</string>
+    <plurals name="ui_notification_like_many">
+        <item quantity="one">%1$s, %2$s and %3$d other liked your activity</item>
+        <item quantity="other">%1$s, %2$s and %3$d others liked your activity</item>
+    </plurals>
+    <string name="ui_notification_reply">%1$s replied to your activity</string>
+    <string name="ui_notification_reply_like">%1$s liked your reply</string>
+    <string name="ui_notification_reply_subscribed">%1$s replied to an activity you follow</string>
+    <string name="ui_notification_mention">%1$s mentioned you</string>
+    <string name="ui_notification_message">%1$s sent you a message</string>
+    <string name="ui_notification_related">%1$s was added to the site</string>
+    <string name="ui_notification_data_change">%1$s received data changes</string>
+    <string name="ui_notification_merge">%1$s was merged into %2$s</string>
+    <string name="ui_notification_deletion">%1$s was deleted from the site</string>
+    <string name="ui_notification_subline_watched">Watched episode %1$s of %2$s</string>
+    <string name="ui_notification_subline_rewatched">Rewatched episode %1$s of %2$s</string>
+    <string name="ui_notification_subline_read">Read chapter %1$s of %2$s</string>
+    <string name="ui_notification_subline_reread">Reread chapter %1$s of %2$s</string>
+    <string name="ui_notification_subline_completed">Completed %1$s</string>
+    <string name="ui_notification_subline_planning">Plans to start %1$s</string>
+    <string name="ui_notification_subline_dropped">Dropped %1$s</string>
+    <string name="ui_notification_subline_paused">Paused %1$s</string>
 </resources>

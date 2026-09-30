@@ -164,7 +164,7 @@ fun relativeTime(instant: Instant): String {
 }
 
 @Composable
-private fun bold(text: String): AnnotatedString = buildAnnotatedString {
+internal fun bold(text: String): AnnotatedString = buildAnnotatedString {
     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(text) }
 }
 
@@ -211,7 +211,7 @@ private fun listUpdateTemplate(status: String, withProgress: Boolean): Int? = wh
 }
 
 /** Replaces the markers \u0001, \u0002, \u0003 in [template] with [parts], keeping their styles. */
-private fun fillTemplate(template: String, vararg parts: AnnotatedString): AnnotatedString = buildAnnotatedString {
+internal fun fillTemplate(template: String, vararg parts: AnnotatedString): AnnotatedString = buildAnnotatedString {
     var rest = template
     while (rest.isNotEmpty()) {
         val index = rest.indexOfFirst { it in '\u0001'..'\u0003' }

@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.core.model
 
+import java.time.Instant
+
 /** Titles of a media. [userPreferred] already follows the viewer's title language. */
 data class MediaTitle(val userPreferred: String, val romaji: String?, val english: String?, val native: String?) {
     /** Every known title, for searching. */
@@ -25,7 +27,9 @@ data class MediaLite(
     val averageScore: Int?,
     /** The next episode to air, for airing anime. */
     val nextAiringEpisode: Int?,
-    val isAdult: Boolean
+    val isAdult: Boolean,
+    /** When [nextAiringEpisode] airs. */
+    val nextAiringAt: Instant? = null
 ) {
     /** Episodes for anime, chapters for manga; null while unknown. */
     val total: Int?

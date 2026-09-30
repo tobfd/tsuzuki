@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room3.Room
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import com.tobfd.tsuzuki.core.database.TsuzukiDatabase
+import com.tobfd.tsuzuki.core.database.dao.FriendActivityDao
 import com.tobfd.tsuzuki.core.database.dao.MediaListDao
 import com.tobfd.tsuzuki.core.database.dao.PendingMutationDao
 import dagger.Module
@@ -30,4 +31,7 @@ object DatabaseModule {
 
     @Provides
     fun pendingMutationDao(database: TsuzukiDatabase): PendingMutationDao = database.pendingMutationDao()
+
+    @Provides
+    fun friendActivityDao(database: TsuzukiDatabase): FriendActivityDao = database.friendActivityDao()
 }

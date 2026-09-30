@@ -12,6 +12,13 @@ android {
     }
 }
 
+// MigrationTestHelper reads the exported schemas from the unit tests' assets.
+androidComponents {
+    onVariants { variant ->
+        variant.hostTests.values.forEach { it.sources.assets?.addStaticSourceDirectory("schemas") }
+    }
+}
+
 dependencies {
     // TsuzukiDatabase is a RoomDatabase; core/data runs transactions and clears it.
     api(libs.androidx.room.runtime)

@@ -53,7 +53,7 @@ private val HOME_JSON = """
 """.trimIndent()
 
 private val GENRES_JSON = """
-    {"data":{"GenreCollection":["Action","Drama"],
+    {"data":{"GenreCollection":["Action","Drama","Hentai"],
      "MediaTagCollection":[
        {"__typename":"MediaTag","id":1,"name":"Elf","category":"Cast-Traits","isAdult":false},
        {"__typename":"MediaTag","id":2,"name":"Nudity","category":"Sexual Content","isAdult":true},

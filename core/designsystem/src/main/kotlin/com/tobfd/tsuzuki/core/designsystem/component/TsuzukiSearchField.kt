@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.core.designsystem.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -42,6 +44,7 @@ fun TsuzukiSearchField(
     focusOnStart: Boolean = false
 ) {
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -60,6 +63,8 @@ fun TsuzukiSearchField(
         singleLine = true,
         shape = CircleShape,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        // Results update while typing; the search key only puts the keyboard away.
+        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,

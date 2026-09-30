@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,8 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -36,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
@@ -135,11 +139,44 @@ internal fun BrowseContent(
     LaunchedEffect(state.search) { listState.scrollToItem(0) }
 
     // The search field, toggle and chips stay put; only the rows or results below them scroll.
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(start = start, end = end, top = contentPadding.calculateTopPadding())
-    ) {
+    // Horizontal rows scroll edge to edge, so the side padding goes to each item instead.
+    CompositionLocalProvider(LocalSidePadding provides PaddingValues(start = start, end = end)) {
+        BrowseColumn(
+            state = state,
+            results = results,
+            listState = listState,
+            bottomPadding = contentPadding.calculateBottomPadding(),
+            onQueryChange = onQueryChange,
+            onTypeChange = onTypeChange,
+            onQuickFilter = onQuickFilter,
+            onOpenFilters = onOpenFilters,
+            onSeeAllNewlyAdded = onSeeAllNewlyAdded,
+            onRetryRows = onRetryRows,
+            onOpenMedia = onOpenMedia,
+            modifier = modifier.padding(top = contentPadding.calculateTopPadding())
+        )
+    }
+}
+
+/** Side padding of the tab content (screen margin and window insets), for items that don't scroll sideways. */
+private val LocalSidePadding = staticCompositionLocalOf { PaddingValues(horizontal = TsuzukiSpacing.screenMargin) }
+
+@Composable
+private fun BrowseColumn(
+    state: BrowseUiState,
+    results: LazyPagingItems<SearchResult>,
+    listState: LazyListState,
+    bottomPadding: Dp,
+    onQueryChange: (String) -> Unit,
+    onTypeChange: (MediaType) -> Unit,
+    onQuickFilter: (QuickFilter) -> Unit,
+    onOpenFilters: () -> Unit,
+    onSeeAllNewlyAdded: () -> Unit,
+    onRetryRows: () -> Unit,
+    onOpenMedia: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxSize()) {
         Controls(
             state = state,
             onQueryChange = onQueryChange,
@@ -152,7 +189,7 @@ internal fun BrowseContent(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = TsuzukiSpacing.small,
-                bottom = contentPadding.calculateBottomPadding() + TsuzukiSpacing.large
+                bottom = bottomPadding + TsuzukiSpacing.large
             ),
             verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
         ) {
@@ -178,7 +215,7 @@ private fun Controls(
         verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin),
+            modifier = Modifier.padding(LocalSidePadding.current),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
         ) {
@@ -198,10 +235,10 @@ private fun Controls(
             onSelect = { onTypeChange(MediaType.entries[it]) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = TsuzukiSpacing.screenMargin)
+                .padding(LocalSidePadding.current)
         )
         LazyRow(
-            contentPadding = PaddingValues(horizontal = TsuzukiSpacing.screenMargin),
+            contentPadding = LocalSidePadding.current,
             horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
         ) {
             items(QuickFilter.entries, key = { it.name }) { chip ->
@@ -279,10 +316,10 @@ private fun MediaRow(title: String, media: List<MediaLite>, onSeeAll: () -> Unit
         SectionHeader(
             title = title,
             onSeeAllClick = onSeeAll,
-            modifier = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin)
+            modifier = Modifier.padding(LocalSidePadding.current)
         )
         LazyRow(
-            contentPadding = PaddingValues(horizontal = TsuzukiSpacing.screenMargin),
+            contentPadding = LocalSidePadding.current,
             horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
         ) {
             items(media, key = { it.id }) { item ->
@@ -325,7 +362,7 @@ private fun LazyListScope.results(
                     text = stringResource(R.string.browse_results),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        .padding(horizontal = TsuzukiSpacing.screenMargin)
+                        .padding(LocalSidePadding.current)
                         .padding(top = TsuzukiSpacing.small)
                         .semantics { heading() }
                 )
@@ -340,7 +377,7 @@ private fun LazyListScope.results(
                         media = result.media,
                         listStatus = result.listStatus,
                         onClick = { onOpenMedia(result.media.id) },
-                        modifier = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin)
+                        modifier = Modifier.padding(LocalSidePadding.current)
                     )
                 }
             }

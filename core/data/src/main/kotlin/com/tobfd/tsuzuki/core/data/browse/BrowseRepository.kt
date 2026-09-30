@@ -40,6 +40,9 @@ private val HOME_MAX_AGE: Duration = Duration.ofMinutes(30)
 /** Results per search page; the `perPage` of `SearchMedia`. */
 const val SEARCH_PAGE_SIZE = 20
 
+/** AniList's one adult-only genre; hidden with adult content, like adult tags. */
+private const val ADULT_GENRE = "Hentai"
+
 /** Loads the next page when the list is this close to its end. */
 private const val PREFETCH_DISTANCE = 5
 
@@ -126,16 +129,12 @@ internal class DefaultBrowseRepository @Inject constructor(
                 }.sortedBy { it.name.lowercase() }
             ).also { if (!response.isFromCache) options = it }
         }
+        if (sessionRepository.adultContentAllowed()) return Result.success(loaded)
         return Result.success(
-            if (sessionRepository.adultContentAllowed()) {
-                loaded
-            } else {
-                loaded.copy(
-                    tags = loaded.tags.filterNot {
-                        it.isAdult
-                    }
-                )
-            }
+            loaded.copy(
+                genres = loaded.genres.filterNot { it.equals(ADULT_GENRE, ignoreCase = true) },
+                tags = loaded.tags.filterNot { it.isAdult }
+            )
         )
     }
 }

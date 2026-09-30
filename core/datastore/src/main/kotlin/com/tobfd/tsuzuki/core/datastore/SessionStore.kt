@@ -68,6 +68,17 @@ class SessionStore @Inject constructor(
         }
     }
 
+    /** Replaces the cached viewer's AniList options (after a change was saved to AniList). */
+    suspend fun saveViewerOptions(options: ViewerOptions) {
+        dataStore.edit { prefs ->
+            if (prefs[Keys.viewerId] == null) return@edit
+            prefs[Keys.titleLanguage] = options.titleLanguage.name
+            prefs[Keys.staffNameLanguage] = options.staffNameLanguage.name
+            prefs[Keys.displayAdultContent] = options.displayAdultContent
+            prefs[Keys.scoreFormat] = options.scoreFormat.name
+        }
+    }
+
     suspend fun enterGuestMode() {
         dataStore.edit { prefs ->
             prefs.clearSession()

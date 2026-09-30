@@ -22,9 +22,16 @@ import kotlinx.coroutines.CoroutineScope
 /** File name of the session DataStore; excluded from backups (res/xml of `app`). */
 internal const val SESSION_DATASTORE_NAME = "session"
 
+/** File name of the app settings DataStore (appearance); part of backups. */
+internal const val SETTINGS_DATASTORE_NAME = "settings"
+
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SessionPreferences
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SettingsPreferences
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -39,6 +46,18 @@ object DataStoreModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
         produceFile = { context.preferencesDataStoreFile(SESSION_DATASTORE_NAME) }
+    )
+
+    @Provides
+    @Singleton
+    @SettingsPreferences
+    fun settingsDataStore(
+        @ApplicationContext context: Context,
+        @Dispatcher(TsuzukiDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+        @ApplicationScope scope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
+        produceFile = { context.preferencesDataStoreFile(SETTINGS_DATASTORE_NAME) }
     )
 }
 

@@ -54,6 +54,21 @@ abstract class MediaListDao {
     abstract suspend fun deleteEntriesMissingFromSync(type: String, run: Long)
 
     /** Media rows no entry refers to any more (no data beyond what the app needs). */
+    /**
+     * Picks the shown title of every media again after the viewer changed their title language
+     * (`ROMAJI`, `ENGLISH` or `NATIVE`), falling back to romaji like AniList's `userPreferred`.
+     */
+    @Query(
+        """
+        UPDATE media_lite SET title_user_preferred = COALESCE(
+            CASE :language WHEN 'ENGLISH' THEN title_english WHEN 'NATIVE' THEN title_native ELSE NULL END,
+            title_romaji,
+            title_user_preferred
+        )
+        """
+    )
+    abstract suspend fun applyTitleLanguage(language: String)
+
     @Query("DELETE FROM media_lite WHERE id NOT IN (SELECT media_id FROM media_list_entry)")
     abstract suspend fun deleteUnusedMedia()
 

@@ -21,4 +21,13 @@ class AniListTextTest {
         )
         assertFalse(hasSpoilers("No spoilers here."))
     }
+
+    @Test
+    fun images_becomeLinks() {
+        assertEquals(
+            // The space keeps images next to each other apart; HTML collapses the double space.
+            "Hi <a href=\"https://i.imgur.com/x.png\">[Image]</a>  there",
+            withImagesAsLinks("Hi <img width='220' src='https://i.imgur.com/x.png'> there", "[Image]")
+        )
+    }
 }

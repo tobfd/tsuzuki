@@ -40,6 +40,16 @@ fun withSpoilers(html: String, reveal: Boolean, placeholder: String): String = S
 
 fun hasSpoilers(html: String): Boolean = SpoilerPattern.containsMatchIn(html)
 
+/** `<img>` tags; their `src` is kept. */
+private val ImagePattern = Regex("""<img\b[^>]*?src=['"]([^'"]+)['"][^>]*>""", RegexOption.IGNORE_CASE)
+
+/**
+ * [html] with images turned into links labelled [label]: v1 never loads embedded images
+ * (docs/ANILIST_API.md, Adult content and user options), and `fromHtml` would draw them as boxes.
+ */
+fun withImagesAsLinks(html: String, label: String): String =
+    ImagePattern.replace(html) { match -> "<a href=\"${match.groupValues[1]}\">$label</a> " }
+
 /**
  * AniList's HTML subset (descriptions, bios; docs/ANILIST_API.md, Text and HTML) with links, spoilers
  * hidden until "Show spoilers", and [collapsedLines] lines until "Read more".
@@ -49,10 +59,11 @@ fun AniListHtmlText(html: String, modifier: Modifier = Modifier, collapsedLines:
     var expanded by rememberSaveable { mutableStateOf(false) }
     var revealed by rememberSaveable { mutableStateOf(false) }
     val placeholder = stringResource(R.string.ui_spoiler)
+    val imageLabel = stringResource(R.string.ui_image_link)
     val linkColor = MaterialTheme.colorScheme.primary
     val text = remember(html, revealed, linkColor) {
         AnnotatedString.fromHtml(
-            withSpoilers(html, revealed, placeholder),
+            withSpoilers(withImagesAsLinks(html, imageLabel), revealed, placeholder),
             linkStyles = TextLinkStyles(style = SpanStyle(color = linkColor))
         )
     }

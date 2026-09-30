@@ -74,6 +74,7 @@
     <string name="ui_role_supporting">Nebenrolle</string>
     <string name="ui_role_background">Hintergrund</string>
     <string name="ui_average_score">%1$d %%</string>
+    <string name="ui_image_link">[Bild]</string>
     <plurals name="ui_heatmap_description">
         <item quantity="one">Aktivitätsverlauf: %1$d Aktivität in den letzten %2$d Wochen</item>
         <item quantity="other">Aktivitätsverlauf: %1$d Aktivitäten in den letzten %2$d Wochen</item>

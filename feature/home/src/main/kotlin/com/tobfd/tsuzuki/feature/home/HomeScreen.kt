@@ -15,13 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -213,12 +213,13 @@ private fun HomeList(
     val start = contentPadding.calculateStartPadding(layoutDirection)
     val end = contentPadding.calculateEndPadding(layoutDirection)
     val horizontal = Modifier.padding(start = start, end = end)
-    val gridState = rememberLazyGridState()
+    val gridState = rememberLazyStaggeredGridState()
     ScrollToTopOnTabReselect(gridState)
 
-    // One column of activity cards on phones; on tablets the feed fills two or more columns.
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(TsuzukiSizes.feedGridMinWidth),
+    // One column of activity cards on phones; on tablets the feed fills two or more columns,
+    // staggered so short and long posts don't leave gaps.
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(TsuzukiSizes.feedGridMinWidth),
         state = gridState,
         contentPadding = PaddingValues(
             start = start,
@@ -227,13 +228,13 @@ private fun HomeList(
             bottom = contentPadding.calculateBottomPadding()
         ),
         horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap),
-        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap),
+        verticalItemSpacing = TsuzukiSpacing.cardGap,
         modifier = Modifier.fillMaxSize()
     ) {
         // One item for everything above the feed: sections that fill in later (Room, the trending
         // row) then grow the list at the top instead of pushing the first visible item away. It
         // reaches under the grid's side padding so its rows scroll from edge to edge.
-        item(key = "top", span = { GridItemSpan(maxLineSpan) }) {
+        item(key = "top", span = StaggeredGridItemSpan.FullLine) {
             Column(
                 modifier = Modifier.bleedHorizontally(start, end),
                 verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
@@ -301,7 +302,7 @@ private fun HomeList(
                 onMediaClick = onOpenMedia
             )
         }
-        item(key = "feedFooter", span = { GridItemSpan(maxLineSpan) }) {
+        item(key = "feedFooter", span = StaggeredGridItemSpan.FullLine) {
             FeedFooter(
                 feed = state.feed,
                 isGuest = state.isGuest,

@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.core.ui
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -42,6 +43,12 @@ fun ScrollToTopOnTabReselect(listState: LazyListState) = ScrollToTopOnTabReselec
 /** Scrolls [gridState] to the top whenever the current tab is reselected (grids on large screens). */
 @Composable
 fun ScrollToTopOnTabReselect(gridState: LazyGridState) = ScrollToTopOnTabReselect(gridState) {
+    gridState.animateScrollToItem(0)
+}
+
+/** Scrolls [gridState] to the top whenever the current tab is reselected (the Home feed on tablets). */
+@Composable
+fun ScrollToTopOnTabReselect(gridState: LazyStaggeredGridState) = ScrollToTopOnTabReselect(gridState) {
     gridState.animateScrollToItem(0)
 }
 

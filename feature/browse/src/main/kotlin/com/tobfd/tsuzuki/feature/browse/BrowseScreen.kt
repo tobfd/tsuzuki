@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.feature.browse
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -180,7 +181,9 @@ private fun BrowseColumn(
     onOpenMedia: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    // On tablets the list-detail scaffold moves focus into the pane it shows. Without a focusable
+    // root that focus would land on the search field and open the keyboard every time.
+    Column(modifier = modifier.fillMaxSize().focusable()) {
         Controls(
             state = state,
             onQueryChange = onQueryChange,

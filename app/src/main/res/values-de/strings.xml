@@ -8,4 +8,6 @@
         <item quantity="one">Deine AniList-Anmeldung läuft in %d Tag ab. Melde dich erneut an, um sie zu verlängern.</item>
         <item quantity="other">Deine AniList-Anmeldung läuft in %d Tagen ab. Melde dich erneut an, um sie zu verlängern.</item>
     </plurals>
+    <string name="detail_placeholder_title">Noch nichts geöffnet</string>
+    <string name="detail_placeholder_message">Tippe auf einen Titel, eine Figur oder eine Person, dann erscheint sie hier.</string>
 </resources>

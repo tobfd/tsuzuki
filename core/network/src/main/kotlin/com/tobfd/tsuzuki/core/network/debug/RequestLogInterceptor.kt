@@ -11,8 +11,10 @@ private const val PEEK_BYTES = 64L * 1024
 private const val MAX_LOG_CHARS = 600
 
 private val OperationName = Regex(""""operationName"\s*:\s*"([^"]+)"""")
-private val Variables = Regex(""""variables"\s*:\s*(\{.*?\})\s*(,\s*"|})""", RegexOption.DOT_MATCHES_ALL)
-private val Errors = Regex(""""errors"\s*:\s*(\[.*])""", RegexOption.DOT_MATCHES_ALL)
+
+// Braces are escaped everywhere: Android's ICU regex rejects a bare "}" that the JVM accepts.
+private val Variables = Regex(""""variables"\s*:\s*(\{.*?\})\s*(,\s*"|\})""", RegexOption.DOT_MATCHES_ALL)
+private val Errors = Regex(""""errors"\s*:\s*(\[.*\])""", RegexOption.DOT_MATCHES_ALL)
 
 /**
  * Debug builds only: logs each AniList request's operation name and variables, the HTTP status, the
@@ -22,12 +24,13 @@ private val Errors = Regex(""""errors"\s*:\s*(\[.*])""", RegexOption.DOT_MATCHES
 class RequestLogInterceptor(private val log: (String) -> Unit) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val body = request.body?.let { requestBody ->
-            Buffer().also { requestBody.writeTo(it) }.readUtf8()
-        }.orEmpty()
-        log(describeRequest(body))
+        // Logging must never break a request, whatever the body looks like.
+        runCatching {
+            val body = request.body?.let { requestBody -> Buffer().also { requestBody.writeTo(it) }.readUtf8() }
+            log(describeRequest(body.orEmpty()))
+        }
         val response = chain.proceed(request)
-        log(describeResponse(response.code, response.peekBody(PEEK_BYTES).string()))
+        runCatching { log(describeResponse(response.code, response.peekBody(PEEK_BYTES).string())) }
         return response
     }
 }

@@ -7,7 +7,9 @@ From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each wi
 1. M4
 2. M5 + M6
 3. M7 + M8 + M9
-4. M10 + M11 + M12
+4. Tablet (added by Tobias, 2026-09-30)
+5. M10 + M11 + M12
+6. M13 (widgets, after v1)
 
 Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
 
@@ -135,8 +137,22 @@ Before M0, Tobias does two things by hand:
 - [x] Stats: anime by status, score overview. (Anime and manga: totals, mean score, standard deviation, and bars by status in the status colors.)
 - [x] Social: following / followers (first page); follow / unfollow on other profiles. (Each list loads when first shown; "More on AniList" when there are more. Follow is optimistic; guests get the log-in prompt.)
 - [x] Top bar on own profile: bell and settings. (The Profile tab shows settings and the bell instead of the avatar.)
+- [x] Other users' lists (added by Tobias, 2026-09-30): "Anime list" / "Manga list" on other profiles open the Lists view read only (`UserListRoute`): `MediaListCollection` by user id, status and custom tabs, sort, search, no +1 or editor, tap → detail. Kept in the Apollo cache only, never in Room. Private lists ("Private User", status 404) show their own state. (Chunks of 500 are loaded one after the other when the list opens, at most 10.)
 
 **Done when:** Tobias's and GeckoTV's profiles render correctly.
+
+## Tablet · Adaptive layouts (added by Tobias, 2026-09-30)
+
+For medium and expanded widths (Pixel Tablet, foldables open, phones in landscape). Phones in portrait stay as they are.
+
+- [ ] Grids with more columns: Browse results and idle rows, Home (In Progress, trending, the feed in two columns on expanded), character/staff grids and profile favourites use the width instead of stretching one column.
+- [ ] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred.
+- [ ] List-detail side by side: Lists → detail, Browse → detail, Profile (own and others, incl. their lists) → detail, with the detail pane replacing itself on further taps.
+- [ ] Detail page in two columns on expanded widths: header, list button and info on one side, the sections on the other.
+- [ ] Sheets as dialogs where that reads better on large screens (list editor, filter sheet, share preview), keeping predictive back.
+- [ ] Checked with screenshots on the tablet emulator (Pixel Tablet, portrait and landscape) and a foldable emulator (folded and open).
+
+**Done when:** every tab, the detail page and the people/profile pages look designed on the Pixel Tablet and an open foldable, with no stretched single column and nothing clipped.
 
 ## M10 · Notifications
 
@@ -161,7 +177,7 @@ Before M0, Tobias does two things by hand:
 
 - [ ] German translation complete and reviewed by Tobias.
 - [ ] Accessibility pass: TalkBack on every screen, font scale 200 %, contrast in both color sources.
-- [ ] Large screens: tablet + foldable emulator pass, no orientation lock warnings.
+- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens (tablet + foldable emulator), no orientation lock warnings.
 - [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler).
 - [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
 - [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
@@ -170,3 +186,14 @@ Before M0, Tobias does two things by hand:
 - [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
 
 **Done when:** Tobias has used v1 as his only AniList app for a week.
+
+## M13 · Widgets (Glance, after v1; added by Tobias, 2026-09-30)
+
+Starts only after v1 is done (docs/PRODUCT.md, "Later"). Jetpack Glance is not in the tech stack yet, so adding it needs Tobias's OK when M13 starts.
+
+- [ ] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes.
+- [ ] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop.
+- [ ] "Friends' activity": the newest activities of the people the viewer follows, one request per periodic update (every few hours, backed off on errors and rate limits), shown from the last result in between.
+- [ ] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline.
+
+**Done when:** all three widgets run on Tobias's home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.

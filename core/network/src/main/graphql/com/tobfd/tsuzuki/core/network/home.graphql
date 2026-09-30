@@ -7,7 +7,7 @@ query Home($isFollowing: Boolean = true, $hasRepliesOrTypeText: Boolean, $isAdul
       ...MediaCard
     }
   }
-  feed: Page(page: 1, perPage: 20) {
+  feed: Page(page: 1, perPage: 25) {
     pageInfo { hasNextPage }
     activities(
       isFollowing: $isFollowing
@@ -23,7 +23,7 @@ query Home($isFollowing: Boolean = true, $hasRepliesOrTypeText: Boolean, $isAdul
 # Further feed pages (Paging 3). For the Global feed pass isFollowing = false and hasRepliesOrTypeText = true,
 # which is what anilist.co does to keep the global feed readable.
 query ActivityFeed($page: Int!, $isFollowing: Boolean, $hasRepliesOrTypeText: Boolean) {
-  Page(page: $page, perPage: 20) {
+  Page(page: $page, perPage: 25) {
     pageInfo { hasNextPage }
     activities(
       isFollowing: $isFollowing

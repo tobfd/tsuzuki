@@ -1,10 +1,5 @@
 package com.tobfd.tsuzuki.core.data.home
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.ApolloException
@@ -23,7 +18,6 @@ import com.tobfd.tsuzuki.core.network.error.appErrorOrNull
 import com.tobfd.tsuzuki.core.network.error.toAppError
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,23 +42,18 @@ interface HomeRepository {
     val trending: StateFlow<List<MediaLite>>
 
     /**
-     * The feed, 20 per page. With [firstPageFromCache] the first page is read from the Apollo cache
-     * when it is there (no request); [onFirstPage] says where it came from, so the caller can ask the
-     * network next.
+     * One page of the feed, [FEED_PAGE_SIZE] activities (docs/ANILIST_API.md, Pagination). Page 1
+     * comes with the trending row in one `Home` request. With [cacheOnly] it is read from the Apollo
+     * cache without a request and fails with [AppError.NotFound] when it is not there.
      */
-    fun feed(
-        scope: FeedScope,
-        firstPageFromCache: Boolean,
-        onFirstPage: (fromCache: Boolean) -> Unit
-    ): Flow<PagingData<Activity>>
-
     suspend fun feedPage(scope: FeedScope, page: Int, cacheOnly: Boolean): Result<FeedPage>
 
     /** Likes or unlikes an activity; returns whether it is liked now. */
     suspend fun toggleLike(activityId: Int): Result<Boolean>
 }
 
-internal const val FEED_PAGE_SIZE = 20
+/** Activities per feed page; the `perPage` of both feed queries. */
+const val FEED_PAGE_SIZE = 25
 
 @Singleton
 internal class DefaultHomeRepository @Inject constructor(
@@ -74,15 +63,6 @@ internal class DefaultHomeRepository @Inject constructor(
 
     private val trendingState = MutableStateFlow<List<MediaLite>>(emptyList())
     override val trending: StateFlow<List<MediaLite>> = trendingState.asStateFlow()
-
-    override fun feed(
-        scope: FeedScope,
-        firstPageFromCache: Boolean,
-        onFirstPage: (fromCache: Boolean) -> Unit
-    ): Flow<PagingData<Activity>> = Pager(
-        config = PagingConfig(pageSize = FEED_PAGE_SIZE, initialLoadSize = FEED_PAGE_SIZE, enablePlaceholders = false),
-        pagingSourceFactory = { FeedPagingSource(this, scope, firstPageFromCache, onFirstPage) }
-    ).flow
 
     override suspend fun feedPage(scope: FeedScope, page: Int, cacheOnly: Boolean): Result<FeedPage> {
         val following = scope == FeedScope.Following
@@ -152,30 +132,4 @@ internal class DefaultHomeRepository @Inject constructor(
         } ?: return Result.failure(AppError.Unknown("AniList returned no like"))
         return Result.success(liked)
     }
-}
-
-/** Pages of the feed; page numbers are the keys (docs/ANILIST_API.md, Pagination). */
-internal class FeedPagingSource(
-    private val repository: HomeRepository,
-    private val scope: FeedScope,
-    private val firstPageFromCache: Boolean,
-    private val onFirstPage: (fromCache: Boolean) -> Unit
-) : PagingSource<Int, Activity>() {
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Activity> {
-        val page = params.key ?: 1
-        var result = repository.feedPage(scope, page, cacheOnly = page == 1 && firstPageFromCache)
-        if (page == 1 && firstPageFromCache && result.isFailure) {
-            result = repository.feedPage(scope, page, cacheOnly = false)
-        }
-        val feedPage = result.getOrElse { return LoadResult.Error(it) }
-        if (page == 1) onFirstPage(feedPage.fromCache)
-        return LoadResult.Page(
-            data = feedPage.activities,
-            prevKey = null,
-            nextKey = if (feedPage.hasNextPage) page + 1 else null
-        )
-    }
-
-    override fun getRefreshKey(state: PagingState<Int, Activity>): Int? = null
 }

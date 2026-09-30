@@ -116,6 +116,12 @@ class DefaultHomeRepositoryTest {
     }
 
     @Test
+    fun bothFeedQueries_askForAPageOfFeedPageSize() {
+        assertTrue(HomeQuery().document().contains("perPage: $FEED_PAGE_SIZE"))
+        assertTrue(ActivityFeedQuery(page = 2).document().contains("perPage: $FEED_PAGE_SIZE"))
+    }
+
+    @Test
     fun offline_isAnError() = runTest {
         apollo.enqueueOffline(ActivityFeedQuery(page = 2))
         assertEquals(

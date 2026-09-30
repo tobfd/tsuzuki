@@ -16,6 +16,8 @@
     <string name="catalog_section_status_chip" translatable="false">StatusChip</string>
     <string name="catalog_section_score_text" translatable="false">ScoreText</string>
     <string name="catalog_section_section_header" translatable="false">SectionHeader</string>
+    <string name="catalog_section_progress_button" translatable="false">ProgressButton</string>
+    <string name="catalog_load_more" translatable="false">Load more</string>
     <string name="catalog_section_media_cover" translatable="false">MediaCover</string>
     <string name="catalog_section_segmented_toggle" translatable="false">SegmentedToggle</string>
     <string name="catalog_section_top_bar" translatable="false">TsuzukiTopBar</string>

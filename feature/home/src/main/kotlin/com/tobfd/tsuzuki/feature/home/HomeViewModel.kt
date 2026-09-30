@@ -3,9 +3,8 @@ package com.tobfd.tsuzuki.feature.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.tobfd.tsuzuki.core.common.AppError
+import com.tobfd.tsuzuki.core.data.home.FeedPage
 import com.tobfd.tsuzuki.core.data.home.FeedScope
 import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ListRepository
@@ -25,7 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +32,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -67,12 +64,29 @@ internal fun upNextOf(entries: List<MediaListEntry>): List<MediaListEntry> = ent
 /** A like the user just tapped, shown before AniList confirms it. */
 data class LikeState(val isLiked: Boolean, val likeCount: Int)
 
+/**
+ * The activity feed, loaded a page (25) at a time: the first page on its own, every further page
+ * when the user asks for it with "Load more".
+ */
+data class FeedUiState(
+    val activities: ImmutableList<Activity> = persistentListOf(),
+    /** The first page is loading and nothing is shown yet. */
+    val isLoading: Boolean = true,
+    /** Pull to refresh while activities are shown. */
+    val isRefreshing: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val hasMore: Boolean = false,
+    /** The first page failed and there is nothing to show. */
+    val error: AppError? = null
+)
+
 data class HomeUiState(
     val isGuest: Boolean = false,
     val inProgress: ImmutableList<MediaListEntry> = persistentListOf(),
     val upNext: ImmutableList<MediaListEntry> = persistentListOf(),
     val trending: ImmutableList<MediaLite> = persistentListOf(),
     val feedScope: FeedScope = FeedScope.Following,
+    val feed: FeedUiState = FeedUiState(),
     val likes: ImmutableMap<Int, LikeState> = persistentMapOf()
 )
 
@@ -81,11 +95,13 @@ sealed interface HomeEvent {
     data class Completed(val before: MediaListEntry) : HomeEvent
 
     data class LikeFailed(val error: AppError) : HomeEvent
+
+    /** Refreshing the feed or loading more failed while activities are shown. */
+    data class FeedFailed(val error: AppError) : HomeEvent
 }
 
 private const val KEY_SCOPE = "feedScope"
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedState: SavedStateHandle,
@@ -106,35 +122,12 @@ class HomeViewModel @Inject constructor(
     private val events = Channel<HomeEvent>(Channel.BUFFERED)
     val eventFlow: Flow<HomeEvent> = events.receiveAsFlow()
 
-    /**
-     * The first page comes from the Apollo cache when it is there, so Home shows at once; then the
-     * feed is loaded again from the network (one request: feed page and trending together).
-     */
-    private data class FeedKey(val scope: FeedScope, val fromCache: Boolean)
+    private val feed = MutableStateFlow(FeedUiState())
+    private var feedScope = FeedScope.Following
+    private var feedPages = 0
 
-    private val feedKey = MutableStateFlow<FeedKey?>(null)
-
-    val feed: Flow<PagingData<Activity>> = feedKey
-        .flatMapLatest { key ->
-            if (key == null) {
-                flowOf(PagingData.empty())
-            } else {
-                homeRepository.feed(key.scope, key.fromCache) { fromCache ->
-                    if (fromCache) {
-                        feedKey.update { current ->
-                            if (current ==
-                                key
-                            ) {
-                                key.copy(fromCache = false)
-                            } else {
-                                current
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .cachedIn(viewModelScope)
+    /** The one feed request running; a new first page cancels it, "Load more" waits for it. */
+    private var feedJob: Job? = null
 
     private val lists =
         combine(listRepository.observeList(MediaType.ANIME), listRepository.observeList(MediaType.MANGA)) {
@@ -144,12 +137,14 @@ class HomeViewModel @Inject constructor(
             anime.entries + manga.entries
         }
 
-    val uiState: StateFlow<HomeUiState> = combine(isGuest, lists, homeRepository.trending, scope, likes) {
+    private val feedAndLikes = combine(feed, likes, ::Pair)
+
+    val uiState: StateFlow<HomeUiState> = combine(isGuest, lists, homeRepository.trending, scope, feedAndLikes) {
             guest,
             entries,
             trending,
             scope,
-            likes
+            (feed, likes)
         ->
         HomeUiState(
             isGuest = guest,
@@ -157,14 +152,102 @@ class HomeViewModel @Inject constructor(
             upNext = upNextOf(entries).toImmutableList(),
             trending = trending.toImmutableList(),
             feedScope = scope,
+            feed = feed,
             likes = likes.toPersistentMap()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
     init {
         viewModelScope.launch {
-            scope.collect { scope -> feedKey.value = FeedKey(scope, fromCache = true) }
+            scope.collect { scope -> loadFirstPage(scope, fromCache = true) }
         }
+    }
+
+    /**
+     * Loads the feed's first page again. With [fromCache] (opening Home, another scope) the feed
+     * starts over and shows the Apollo cache at once when it is there; then the network (one request:
+     * feed page and trending together). Later pages are dropped.
+     */
+    private fun loadFirstPage(scope: FeedScope, fromCache: Boolean) {
+        feedJob?.cancel()
+        feedScope = scope
+        if (fromCache) {
+            feed.value = FeedUiState()
+            feedPages = 0
+        } else {
+            feed.update {
+                it.copy(
+                    isLoading = it.activities.isEmpty(),
+                    isRefreshing = it.activities.isNotEmpty(),
+                    isLoadingMore = false,
+                    error = null
+                )
+            }
+        }
+        feedJob = viewModelScope.launch {
+            if (fromCache) homeRepository.feedPage(scope, page = 1, cacheOnly = true).onSuccess(::showFirstPage)
+            homeRepository.feedPage(scope, page = 1, cacheOnly = false)
+                .onSuccess(::showFirstPage)
+                .onFailure { feedFailed(it) }
+        }
+    }
+
+    private fun showFirstPage(page: FeedPage) {
+        feedPages = 1
+        feed.value = FeedUiState(
+            activities = page.activities.distinctBy { it.id }.toImmutableList(),
+            isLoading = false,
+            hasMore = page.hasNextPage
+        )
+    }
+
+    private suspend fun feedFailed(error: Throwable) {
+        val appError = error as? AppError ?: AppError.Unknown(error.message)
+        val shown = feed.value.activities.isNotEmpty()
+        feed.update {
+            it.copy(
+                isLoading = false,
+                isRefreshing = false,
+                isLoadingMore = false,
+                error = appError.takeUnless { shown }
+            )
+        }
+        if (shown) events.send(HomeEvent.FeedFailed(appError))
+    }
+
+    /** "Load more": the next page, added below. */
+    fun onLoadMore() {
+        val current = feed.value
+        if (current.isLoadingMore || !current.hasMore) return
+        feed.update { it.copy(isLoadingMore = true) }
+        val running = feedJob
+        feedJob = viewModelScope.launch {
+            // A first page still on its way (the network after the cache) comes first.
+            running?.join()
+            if (!feed.value.hasMore) {
+                feed.update { it.copy(isLoadingMore = false) }
+                return@launch
+            }
+            homeRepository.feedPage(feedScope, page = feedPages + 1, cacheOnly = false)
+                .onSuccess { page ->
+                    feedPages++
+                    feed.update {
+                        it.copy(
+                            activities = (it.activities + page.activities)
+                                .distinctBy { activity -> activity.id }
+                                .toImmutableList(),
+                            isLoadingMore = false,
+                            hasMore = page.hasNextPage
+                        )
+                    }
+                }
+                .onFailure { feedFailed(it) }
+        }
+    }
+
+    /** Retry after the first page failed. */
+    fun onRetryFeed() {
+        loadFirstPage(feedScope, fromCache = false)
     }
 
     fun onFeedScopeSelected(scope: FeedScope) {
@@ -188,7 +271,7 @@ class HomeViewModel @Inject constructor(
 
     /** Pull to refresh: the lists (15-minute rule does not apply) and the feed from the network. */
     fun onRefresh() {
-        feedKey.update { it?.copy(fromCache = false) }
+        loadFirstPage(feedScope, fromCache = false)
         viewModelScope.launch { listRepository.refresh(force = true) }
     }
 

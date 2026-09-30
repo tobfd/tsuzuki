@@ -7,6 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.paging.compose)
     androidTestImplementation(project(":core:testing"))
 }

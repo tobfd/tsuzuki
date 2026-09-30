@@ -45,16 +45,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.home.FeedScope
 import com.tobfd.tsuzuki.core.designsystem.component.PlusOneButton
+import com.tobfd.tsuzuki.core.designsystem.component.ProgressButton
 import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiPullToRefresh
+import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
+import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
@@ -62,6 +61,7 @@ import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.ListEntryActions
 import com.tobfd.tsuzuki.core.model.MediaListEntry
 import com.tobfd.tsuzuki.core.model.MediaType
+import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.ui.ActivityCard
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
@@ -70,6 +70,7 @@ import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.message
 import com.tobfd.tsuzuki.core.ui.progressText
+import java.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -116,10 +117,9 @@ internal fun HomeContent(
     contentPadding: PaddingValues = PaddingValues()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val feed = viewModel.feed.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
-    var likeError by remember { mutableStateOf<AppError?>(null) }
+    var actionError by remember { mutableStateOf<AppError?>(null) }
 
     LaunchedEffect(viewModel) {
         viewModel.eventFlow.collect { event ->
@@ -144,28 +144,28 @@ internal fun HomeContent(
                     if (result == SnackbarResult.ActionPerformed) viewModel.onUndo(before)
                 }
 
-                is HomeEvent.LikeFailed -> likeError = event.error
+                is HomeEvent.LikeFailed -> actionError = event.error
+
+                is HomeEvent.FeedFailed -> actionError = event.error
             }
         }
     }
-    likeError?.let { error ->
+    actionError?.let { error ->
         val message = error.message()
         LaunchedEffect(error) {
             snackbarHostState.showSnackbar(message)
-            likeError = null
+            actionError = null
         }
     }
 
-    val refreshing = feed.loadState.refresh is LoadState.Loading && feed.itemCount > 0
     Box(modifier = modifier.fillMaxSize()) {
         TsuzukiPullToRefresh(
-            isRefreshing = refreshing,
+            isRefreshing = state.feed.isRefreshing,
             onRefresh = viewModel::onRefresh,
             modifier = Modifier.fillMaxSize()
         ) {
             HomeList(
                 state = state,
-                feed = feed,
                 contentPadding = contentPadding,
                 onOpenMedia = onOpenMedia,
                 onOpenUser = onOpenUser,
@@ -174,7 +174,9 @@ internal fun HomeContent(
                 onPlusOne = viewModel::onPlusOne,
                 onStart = viewModel::onStart,
                 onFeedScopeSelected = viewModel::onFeedScopeSelected,
-                onToggleLike = viewModel::onToggleLike
+                onToggleLike = viewModel::onToggleLike,
+                onLoadMore = viewModel::onLoadMore,
+                onRetryFeed = viewModel::onRetryFeed
             )
         }
         SnackbarHost(
@@ -189,7 +191,6 @@ internal fun HomeContent(
 @Composable
 private fun HomeList(
     state: HomeUiState,
-    feed: LazyPagingItems<Activity>,
     contentPadding: PaddingValues,
     onOpenMedia: (Int) -> Unit,
     onOpenUser: (String) -> Unit,
@@ -198,7 +199,9 @@ private fun HomeList(
     onPlusOne: (Int) -> Unit,
     onStart: (Int) -> Unit,
     onFeedScopeSelected: (FeedScope) -> Unit,
-    onToggleLike: (Activity) -> Unit
+    onToggleLike: (Activity) -> Unit,
+    onLoadMore: () -> Unit,
+    onRetryFeed: () -> Unit
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val start = contentPadding.calculateStartPadding(layoutDirection)
@@ -275,8 +278,7 @@ private fun HomeList(
                 )
             }
         }
-        items(count = feed.itemCount, key = feed.itemKey { "activity-${it.id}" }) { index ->
-            val activity = feed[index] ?: return@items
+        items(state.feed.activities, key = { "activity-${it.id}" }) { activity ->
             ActivityCard(
                 activity = activity.withLike(state.likes[activity.id]),
                 onLikeClick = { onToggleLike(activity) },
@@ -285,8 +287,14 @@ private fun HomeList(
                 modifier = horizontal
             )
         }
-        item(key = "feedState") {
-            FeedLoadState(feed = feed, isGuest = state.isGuest, modifier = horizontal)
+        item(key = "feedFooter") {
+            FeedFooter(
+                feed = state.feed,
+                isGuest = state.isGuest,
+                onLoadMore = onLoadMore,
+                onRetry = onRetryFeed,
+                modifier = horizontal
+            )
         }
     }
 }
@@ -309,11 +317,15 @@ private fun FeedHeader(state: HomeUiState, onFeedScopeSelected: (FeedScope) -> U
     }
 }
 
-/** Loading, error with retry, or the empty Following feed below the cards. */
+/** Below the cards: "Load more", or the first page loading, failed (with retry) or empty. */
 @Composable
-private fun FeedLoadState(feed: LazyPagingItems<Activity>, isGuest: Boolean, modifier: Modifier = Modifier) {
-    val refresh = feed.loadState.refresh
-    val append = feed.loadState.append
+private fun FeedFooter(
+    feed: FeedUiState,
+    isGuest: Boolean,
+    onLoadMore: () -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -321,14 +333,19 @@ private fun FeedLoadState(feed: LazyPagingItems<Activity>, isGuest: Boolean, mod
         contentAlignment = Alignment.Center
     ) {
         when {
-            (refresh is LoadState.Loading && feed.itemCount == 0) || append is LoadState.Loading ->
-                CircularProgressIndicator()
+            feed.activities.isNotEmpty() -> if (feed.hasMore) {
+                ProgressButton(
+                    text = stringResource(R.string.home_load_more),
+                    loading = feed.isLoadingMore,
+                    onClick = onLoadMore
+                )
+            }
 
-            refresh is LoadState.Error && feed.itemCount == 0 -> FeedError((refresh.error as? AppError), feed::retry)
+            feed.isLoading -> CircularProgressIndicator()
 
-            append is LoadState.Error -> FeedError((append.error as? AppError), feed::retry)
+            feed.error != null -> FeedError(feed.error, onRetry)
 
-            refresh is LoadState.NotLoading && feed.itemCount == 0 -> Text(
+            else -> Text(
                 text = stringResource(
                     if (isGuest) R.string.home_feed_empty_global else R.string.home_feed_empty_following
                 ),
@@ -340,10 +357,10 @@ private fun FeedLoadState(feed: LazyPagingItems<Activity>, isGuest: Boolean, mod
 }
 
 @Composable
-private fun FeedError(error: AppError?, onRetry: () -> Unit) {
+private fun FeedError(error: AppError, onRetry: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = (error ?: AppError.Unknown(null)).message(),
+            text = error.message(),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -474,4 +491,36 @@ private fun upNextMeta(entry: MediaListEntry): String {
         },
         media.status?.let { stringResource(it.labelRes()) }
     ).joinToString(" · ")
+}
+
+@ThemePreviews
+@Composable
+private fun FeedFooterPreview() {
+    val shown = FeedUiState(
+        activities = persistentListOf(
+            Activity.Text(
+                id = 1,
+                user = UserLite(1, "tobfd", null),
+                createdAt = Instant.EPOCH,
+                likeCount = 0,
+                isLiked = false,
+                replyCount = 0,
+                siteUrl = null,
+                html = ""
+            )
+        ),
+        isLoading = false,
+        hasMore = true
+    )
+    TsuzukiPreview {
+        FeedFooter(feed = shown, isGuest = false, onLoadMore = {}, onRetry = {})
+        FeedFooter(feed = shown.copy(isLoadingMore = true), isGuest = false, onLoadMore = {}, onRetry = {})
+        FeedFooter(feed = FeedUiState(isLoading = false), isGuest = false, onLoadMore = {}, onRetry = {})
+        FeedFooter(
+            feed = FeedUiState(isLoading = false, error = AppError.Offline),
+            isGuest = false,
+            onLoadMore = {},
+            onRetry = {}
+        )
+    }
 }

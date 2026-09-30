@@ -43,6 +43,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
 import com.tobfd.tsuzuki.core.designsystem.component.InitialAvatar
 import com.tobfd.tsuzuki.core.designsystem.component.PlusOneButton
+import com.tobfd.tsuzuki.core.designsystem.component.ProgressButton
 import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.StatusChip
@@ -123,6 +124,7 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_status_chip) { StatusChipSamples() } }
             item { CatalogSection(R.string.catalog_section_score_text) { ScoreSamples() } }
             item { CatalogSection(R.string.catalog_section_section_header) { SectionHeaderSamples() } }
+            item { CatalogSection(R.string.catalog_section_progress_button) { ProgressButtonSamples() } }
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
             item { CatalogSection(R.string.catalog_section_media_list_row) { MediaListRowSamples() } }
@@ -420,6 +422,14 @@ private fun ScoreSamples() {
 private fun SectionHeaderSamples() {
     SectionHeader(title = stringResource(R.string.catalog_header_in_progress), onSeeAllClick = {})
     SectionHeader(title = stringResource(R.string.catalog_header_planning))
+}
+
+@Composable
+private fun ProgressButtonSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        ProgressButton(text = stringResource(R.string.catalog_load_more), loading = false, onClick = {})
+        ProgressButton(text = stringResource(R.string.catalog_load_more), loading = true, onClick = {})
+    }
 }
 
 @Composable

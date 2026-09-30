@@ -11,6 +11,7 @@ import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.testing.FakeHomeRepository
+import com.tobfd.tsuzuki.core.testing.FakeHomeRepository.PageRequest
 import com.tobfd.tsuzuki.core.testing.FakeListRepository
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
@@ -23,6 +24,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -52,11 +55,12 @@ class HomeViewModelTest {
         html = "Hello"
     )
 
+    private fun activities(ids: IntRange) = ids.map { activity.copy(id = it) }
+
     private fun viewModel() = HomeViewModel(SavedStateHandle(), home, lists, session)
 
     private fun TestScope.state(viewModel: HomeViewModel): HomeUiState {
         backgroundScope.launch { viewModel.uiState.collect {} }
-        backgroundScope.launch { viewModel.feed.collect {} }
         runCurrent()
         return viewModel.uiState.value
     }
@@ -84,9 +88,93 @@ class HomeViewModelTest {
 
     @Test
     fun feed_showsTheCacheFirstThenAsksTheNetwork() = runTest {
-        home.firstPageFromCache = true
+        home.cached = true
         state(viewModel())
-        assertEquals(listOf(FeedScope.Following to true, FeedScope.Following to false), home.feedRequests)
+        assertEquals(
+            listOf(PageRequest(FeedScope.Following, 1, true), PageRequest(FeedScope.Following, 1, false)),
+            home.pageRequests
+        )
+    }
+
+    @Test
+    fun feed_showsTheFirstPageAndOffersMore() = runTest {
+        home.pages[1] = activities(1..25)
+        home.pages[2] = activities(26..30)
+
+        val feed = state(viewModel()).feed
+
+        assertEquals((1..25).toList(), feed.activities.map { it.id })
+        assertTrue(feed.hasMore)
+        assertFalse(feed.isLoading)
+    }
+
+    @Test
+    fun loadMore_addsTheNextPageAndShowsItIsLoading() = runTest {
+        home.pages[1] = activities(1..25)
+        home.pages[2] = activities(26..30)
+        val viewModel = viewModel()
+        state(viewModel)
+        home.pageGate = CompletableDeferred()
+
+        viewModel.onLoadMore()
+        runCurrent()
+        assertTrue(viewModel.uiState.value.feed.isLoadingMore)
+
+        home.pageGate?.complete(Unit)
+        runCurrent()
+        val feed = viewModel.uiState.value.feed
+        assertEquals((1..30).toList(), feed.activities.map { it.id })
+        assertFalse(feed.isLoadingMore)
+        assertFalse(feed.hasMore)
+        assertEquals(PageRequest(FeedScope.Following, 2, false), home.pageRequests.last())
+    }
+
+    @Test
+    fun loadMore_leavesOutActivitiesAlreadyShown() = runTest {
+        home.pages[1] = activities(1..25)
+        home.pages[2] = activities(25..27)
+        val viewModel = viewModel()
+        state(viewModel)
+
+        viewModel.onLoadMore()
+        runCurrent()
+
+        assertEquals((1..27).toList(), viewModel.uiState.value.feed.activities.map { it.id })
+    }
+
+    @Test
+    fun loadMore_failing_keepsTheFeedAndSaysWhy() = runTest {
+        home.pages[1] = activities(1..25)
+        home.pages[2] = activities(26..30)
+        val viewModel = viewModel()
+        state(viewModel)
+        home.failure = AppError.Offline
+
+        viewModel.eventFlow.test {
+            viewModel.onLoadMore()
+            assertEquals(HomeEvent.FeedFailed(AppError.Offline), awaitItem())
+        }
+        val feed = viewModel.uiState.value.feed
+        assertEquals(25, feed.activities.size)
+        assertFalse(feed.isLoadingMore)
+        assertTrue(feed.hasMore)
+        assertNull(feed.error)
+    }
+
+    @Test
+    fun firstPage_failing_showsTheErrorAndRetryLoadsIt() = runTest {
+        home.pages[1] = activities(1..3)
+        home.failure = AppError.Offline
+        val viewModel = viewModel()
+
+        assertEquals(AppError.Offline, state(viewModel).feed.error)
+
+        home.failure = null
+        viewModel.onRetryFeed()
+        runCurrent()
+        val feed = viewModel.uiState.value.feed
+        assertNull(feed.error)
+        assertEquals(listOf(1, 2, 3), feed.activities.map { it.id })
     }
 
     @Test
@@ -99,7 +187,7 @@ class HomeViewModelTest {
 
         assertTrue(state.isGuest)
         assertEquals(FeedScope.Global, state.feedScope)
-        assertEquals(listOf(FeedScope.Global to true), home.feedRequests)
+        assertEquals(setOf(FeedScope.Global), home.pageRequests.map { it.scope }.toSet())
     }
 
     @Test
@@ -108,7 +196,7 @@ class HomeViewModelTest {
         state(viewModel)
         viewModel.onFeedScopeSelected(FeedScope.Global)
         runCurrent()
-        assertEquals(FeedScope.Global to true, home.feedRequests.last())
+        assertEquals(PageRequest(FeedScope.Global, 1, false), home.pageRequests.last())
     }
 
     @Test
@@ -152,13 +240,21 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun refresh_forcesTheListsAndTheFeedFromTheNetwork() = runTest {
+    fun refresh_forcesTheListsAndTheFirstFeedPageFromTheNetwork() = runTest {
+        home.pages[1] = activities(1..25)
+        home.pages[2] = activities(26..30)
         val viewModel = viewModel()
         state(viewModel)
+        viewModel.onLoadMore()
+        runCurrent()
+        home.pageRequests.clear()
+
         viewModel.onRefresh()
         runCurrent()
+
         assertEquals(listOf(true), lists.refreshCalls)
-        assertEquals(FeedScope.Following to false, home.feedRequests.last())
+        assertEquals(listOf(PageRequest(FeedScope.Following, 1, false)), home.pageRequests)
+        assertEquals(25, viewModel.uiState.value.feed.activities.size)
     }
 
     @Test

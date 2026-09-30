@@ -16,6 +16,8 @@ import com.tobfd.tsuzuki.core.data.media.DefaultMediaRepository
 import com.tobfd.tsuzuki.core.data.media.MediaRepository
 import com.tobfd.tsuzuki.core.data.notifications.DefaultNotificationsRepository
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
+import com.tobfd.tsuzuki.core.data.people.DefaultPeopleRepository
+import com.tobfd.tsuzuki.core.data.people.PeopleRepository
 import com.tobfd.tsuzuki.core.data.session.DefaultSessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionTokenProvider
@@ -48,6 +50,9 @@ internal interface DataModule {
 
     @Binds
     fun browseRepository(impl: DefaultBrowseRepository): BrowseRepository
+
+    @Binds
+    fun peopleRepository(impl: DefaultPeopleRepository): PeopleRepository
 
     @Binds
     fun listWorkScheduler(impl: WorkManagerListWorkScheduler): ListWorkScheduler

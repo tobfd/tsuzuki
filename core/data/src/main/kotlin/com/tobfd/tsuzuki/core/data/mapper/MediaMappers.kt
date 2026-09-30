@@ -6,9 +6,12 @@ import com.tobfd.tsuzuki.core.model.MediaLite
 import com.tobfd.tsuzuki.core.model.MediaStatus
 import com.tobfd.tsuzuki.core.model.MediaTitle
 import com.tobfd.tsuzuki.core.model.MediaType
+import com.tobfd.tsuzuki.core.model.PersonLite
 import com.tobfd.tsuzuki.core.model.UserLite
+import com.tobfd.tsuzuki.core.network.fragment.CharacterLite
 import com.tobfd.tsuzuki.core.network.fragment.FeedActivity
 import com.tobfd.tsuzuki.core.network.fragment.MediaCard
+import com.tobfd.tsuzuki.core.network.fragment.StaffLite
 import com.tobfd.tsuzuki.core.network.fragment.UserLite as NetworkUserLite
 import java.time.Instant
 
@@ -39,6 +42,10 @@ internal fun MediaCard.toModel(): MediaLite? = MediaLite(
 )
 
 internal fun NetworkUserLite.toModel() = UserLite(id = id, name = name, avatarUrl = avatar?.medium)
+
+internal fun CharacterLite.toPerson() = PersonLite(id, name?.userPreferred.orEmpty(), image?.medium)
+
+internal fun StaffLite.toPerson() = PersonLite(id, name?.userPreferred.orEmpty(), image?.medium)
 
 /** List and text activities; other kinds (and ones missing their user or media) are skipped. */
 internal fun FeedActivity.toModel(): Activity? {

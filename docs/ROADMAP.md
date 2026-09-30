@@ -110,18 +110,18 @@ Before M0, Tobias does two things by hand:
 
 ## M7 · Browse and search
 
-- [ ] Search field (debounce 400 ms, min 2 chars) with results list, Anime/Manga toggle.
-- [ ] Filter sheet: format, status, season + year, genres, tags, sort; active filter count on the filter button; Reset / Show results.
-- [ ] Quick chips: Trending, Top 100, This season, Top movies, Top manhwa (preset filters).
-- [ ] Idle state: Trending now and Newly added rows.
-- [ ] Paging 3 on `hasNextPage`, adult filter applied.
+- [x] Search field (debounce 400 ms, min 2 chars) with results list, Anime/Manga toggle. (The field, toggle and chips stay above the scrolling results; a new term cancels the running search.)
+- [x] Filter sheet: format, status, season + year, genres, tags, sort; active filter count on the filter button; Reset / Show results. (Changes stay a draft until "Show results". A year filters anime by season year and manga by start date. Tags are searched by name, genres and tags load once per app run; the Hentai genre and adult tags only show with adult content on.)
+- [x] Quick chips: Trending, Top 100, This season, Top movies, Top manhwa (preset filters). (Top 100 stops paging at 100; This season, Top movies and Top manhwa switch the type they need; tapping an active chip clears it.)
+- [x] Idle state: Trending now and Newly added rows. ("See all" opens Trending, or recently added.)
+- [x] Paging 3 on `hasNextPage`, adult filter applied. (20 per page, the next page 5 rows before the end; media a later page repeats are left out. Adult content on sends `isAdult: null`, never `true`, which would show adult media only; the Home trending row had that bug and is fixed.)
 
 **Done when:** searching "frieren" with filters finds the right entry and scrolling pages don't trip the rate limit.
 
 ## M8 · Character and staff
 
-- [ ] Character: image, names (incl. native), description (rich text, spoilers), favourite toggle, appearances grid with role.
-- [ ] Staff: image, names, occupations, description, characters voiced (paged) and production roles.
+- [x] Character: image, names (incl. native), description (rich text, spoilers), favourite toggle, appearances grid with role. (Plus gender, age, birthday, blood type and the Japanese voice actor under each appearance; more appearances with "Load more".)
+- [x] Staff: image, names, occupations, description, characters voiced (paged) and production roles. (Both lists page with "Load more", one request per tap; the page itself is one `StaffDetail` request, cached for an hour like the detail page. Adult media are dropped on the client, since these connections have no `isAdult` argument.)
 
 **Done when:** tapping a character or voice actor from detail opens a complete page with one request.
 

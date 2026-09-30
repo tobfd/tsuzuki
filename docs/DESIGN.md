@@ -170,19 +170,22 @@ Top bar "Home" + bell + avatar. Scrolling column:
 
 - Top bar: back, "Notifications", "Mark all as read" action.
 - Filter chips: All, Airing, Activity, Follows, Media.
-- Groups by time ("This week", "Last week", "Earlier").
+- Groups by time ("This week", "Last week", "Earlier"); weeks start on the locale's first day of the week.
 - Row: stacked avatars (up to 3, 16 dp offset), bold names + text ("KiichiVS, ProfilPublicDeMathou and 3 others liked your activity"), subline with context ("Watched episodes 17 – 18 of Frieren"), relative time, unread dot (primary) and surfaceContainerHigh background when unread.
 - Per-item "read" is not supported by the API; unread items are the first `unreadNotificationCount` items at open time.
 - Empty states per filter (Airing: "You get one here when a new episode of something you are watching airs.").
+- Built (M10): the row is `NotificationRow` in `core/ui` (32 dp avatars in a 64 dp leading slot, the cover for airing and media changes); taps open the media (airing, media changes, activities about a list update) or the user (follows, messages, other activities). Rows are capped at the reading width on large screens. Pull to refresh.
 
 ### Settings
 
 - Top bar: back, "Settings".
-- **Appearance:** "Colors" as two selectable cards side by side (Material You with wallpaper swatches, AniList blue swatch), Theme segmented button (System / Light / Dark).
-- **Language:** App language row ("System default"), Title language segmented (Romaji / English / Native) with "Synced with your AniList settings" and a live example ("Sousou no Frieren").
-- **Lists and content:** Score format row ("10 point decimal (8.5/10)") opening a picker, "Show adult content" switch ("Hidden by default").
-- **Account:** avatar, name, "Logged in with AniList", outlined "Log out".
-- **About:** "Tsuzuki for AniList · 0.1.0", "Unofficial app. Not affiliated with AniList. Data from the AniList API.", Open-source licenses.
+- **Appearance:** "Colors" as two selectable cards side by side (Material You with wallpaper swatches, AniList blue swatch), Theme segmented button (System / Light / Dark), "Pure black" switch ("Black background in the dark theme"). The cards are `ColorChoiceCard` in `core/designsystem`; the whole app recolors at once, which is the live preview.
+- **Language:** App language row ("System default"; a dialog with System default / English / Deutsch; Android 13+ only, hidden on Android 12, which has no per-app languages), Title language segmented (Romaji / English / Native) with "Synced with your AniList settings" and a live example ("Sousou no Frieren").
+- **Lists and content:** Score format row ("10 point decimal (8.5/10)") opening a picker, "Show adult content" switch ("Hidden by default"; when on: "Shown in search, trending and lists").
+- **Account:** avatar, name, "Logged in with AniList", outlined "Log out" with a confirm dialog. Guests see "Log in with AniList" instead, and no title language or "Lists and content" (AniList options).
+- **About:** "Tsuzuki for AniList · 0.1.0", "Unofficial app. Not affiliated with AniList. Data from the AniList API.", Open-source licenses (a screen listing the shipped libraries by license, each license text expandable from the bundled assets).
+- Pure black (AMOLED): in the dark theme `background`, `surface`, `surfaceDim` and `surfaceContainerLowest` are black and the other surface containers move towards black, keeping 60 % of their color (`design/tokens.json`, `color.pureBlack`). Works with both color sources.
+- The settings column is capped at the reading width on large screens.
 
 ### Character / Staff (not in the prototype)
 

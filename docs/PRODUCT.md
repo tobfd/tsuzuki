@@ -28,13 +28,14 @@ Decided with Tobias during planning (2026-09-28). Changing any of these needs hi
 | Notifications | Filter chips (All, Airing, Activity, Follows, Media), grouped likes, mark all read. |
 | Profile | Own and other users: banner, avatar, stats, activity history heatmap, recent activity, favourites, stats, social. Follow / unfollow on other profiles. |
 | Settings | Colors (Material You / AniList blue), theme mode, app language, title language, score format, adult content, account / logout, about. |
+| Widgets | Home-screen widgets (Glance): "Currently watching" with +1, "Next episode" with countdown, "Friends' activity". Moved into v1 by Tobias on 2026-09-30. |
 
 ## Later (not in v1)
 
 - Replying to activities and writing status posts.
 - Forum (read first), reviews (read, then write), voting on recommendations.
 - Detailed stats pages, favourites management, full followers/following management.
-- Airing countdown and local episode reminders, home-screen widget with +1, system notifications for AniList notifications, deep links for anilist.co URLs.
+- Local episode reminders, system notifications for AniList notifications, deep links for anilist.co URLs. (Home-screen widgets, including the airing countdown, moved into v1 on 2026-09-30.)
 - Tablet layouts beyond the adaptive basics (the basics are required in v1).
 
 ## Ideas parked for later

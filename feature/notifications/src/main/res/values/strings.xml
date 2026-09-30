@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="notifications_title">Notifications</string>
-    <string name="notifications_placeholder">Notifications with filters and grouped likes arrive in M10.</string>
+    <string name="notifications_mark_all_read">Mark all as read</string>
+    <string name="notifications_filter_all">All</string>
+    <string name="notifications_filter_airing">Airing</string>
+    <string name="notifications_filter_activity">Activity</string>
+    <string name="notifications_filter_follows">Follows</string>
+    <string name="notifications_filter_media">Media</string>
+    <string name="notifications_section_this_week">This week</string>
+    <string name="notifications_section_last_week">Last week</string>
+    <string name="notifications_section_earlier">Earlier</string>
+    <string name="notifications_empty_title">No notifications</string>
+    <string name="notifications_empty_all">Likes, replies, new followers and new episodes show up here.</string>
+    <string name="notifications_empty_airing">You get one here when a new episode of something you are watching airs.</string>
+    <string name="notifications_empty_activity">Likes, replies and mentions on your activities show up here.</string>
+    <string name="notifications_empty_follows">You get one here when someone follows you.</string>
+    <string name="notifications_empty_media">Changes to titles on your lists show up here.</string>
+    <string name="notifications_error_title">Couldn\'t load notifications</string>
+    <string name="notifications_more_failed">Couldn\'t load more notifications.</string>
 </resources>

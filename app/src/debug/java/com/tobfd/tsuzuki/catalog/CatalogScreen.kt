@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.tobfd.tsuzuki.R
+import com.tobfd.tsuzuki.core.designsystem.component.ColorChoiceCard
 import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
 import com.tobfd.tsuzuki.core.designsystem.component.InitialAvatar
@@ -53,14 +54,19 @@ import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBanner
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiLogo
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiTopBar
+import com.tobfd.tsuzuki.core.designsystem.component.colorSourceSwatches
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.ActivityDay
+import com.tobfd.tsuzuki.core.model.ActivityNotificationKind
+import com.tobfd.tsuzuki.core.model.ListActivitySummary
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
+import com.tobfd.tsuzuki.core.model.Notification
+import com.tobfd.tsuzuki.core.model.NotificationEntry
 import com.tobfd.tsuzuki.core.model.PersonLite
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.UserLite
@@ -71,6 +77,7 @@ import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.MediaListRow
 import com.tobfd.tsuzuki.core.ui.MediaResultRow
+import com.tobfd.tsuzuki.core.ui.NotificationRow
 import com.tobfd.tsuzuki.core.ui.PersonCoverCard
 import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
@@ -103,8 +110,10 @@ private val ShapeSample = 56.dp
 fun CatalogScreen(
     colorSource: ColorSource,
     darkTheme: Boolean,
+    pureBlack: Boolean,
     onColorSourceChange: (ColorSource) -> Unit,
     onDarkThemeChange: (Boolean) -> Unit,
+    onPureBlackChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
@@ -121,7 +130,14 @@ fun CatalogScreen(
             verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.sectionGap)
         ) {
             item {
-                ThemeControls(colorSource, darkTheme, onColorSourceChange, onDarkThemeChange)
+                ThemeControls(
+                    colorSource,
+                    darkTheme,
+                    pureBlack,
+                    onColorSourceChange,
+                    onDarkThemeChange,
+                    onPureBlackChange
+                )
             }
             item { CatalogSection(R.string.catalog_section_colors) { ColorRoles() } }
             item { CatalogSection(R.string.catalog_section_status_colors) { StatusColorSwatches() } }
@@ -134,10 +150,14 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_progress_button) { ProgressButtonSamples() } }
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
+            item {
+                CatalogSection(R.string.catalog_section_color_choice) { ColorChoiceSamples(colorSource, darkTheme) }
+            }
             item { CatalogSection(R.string.catalog_section_media_list_row) { MediaListRowSamples() } }
             item { CatalogSection(R.string.catalog_section_search_field) { SearchFieldSamples() } }
             item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
             item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_notification_row) { NotificationRowSamples() } }
             item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
             item { CatalogSection(R.string.catalog_section_result_row) { ResultRowSamples() } }
             item { CatalogSection(R.string.catalog_section_person_card) { PersonCardSamples() } }
@@ -189,8 +209,10 @@ fun CatalogScreen(
 private fun ThemeControls(
     colorSource: ColorSource,
     darkTheme: Boolean,
+    pureBlack: Boolean,
     onColorSourceChange: (ColorSource) -> Unit,
-    onDarkThemeChange: (Boolean) -> Unit
+    onDarkThemeChange: (Boolean) -> Unit,
+    onPureBlackChange: (Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)) {
         Text(stringResource(R.string.catalog_title), style = MaterialTheme.typography.headlineMedium)
@@ -206,10 +228,18 @@ private fun ThemeControls(
         SegmentedToggle(
             options = persistentListOf(
                 stringResource(R.string.catalog_mode_light),
-                stringResource(R.string.catalog_mode_dark)
+                stringResource(R.string.catalog_mode_dark),
+                stringResource(R.string.catalog_mode_pure_black)
             ),
-            selectedIndex = if (darkTheme) 1 else 0,
-            onSelect = { onDarkThemeChange(it == 1) },
+            selectedIndex = when {
+                !darkTheme -> 0
+                pureBlack -> 2
+                else -> 1
+            },
+            onSelect = {
+                onDarkThemeChange(it > 0)
+                onPureBlackChange(it == 2)
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -512,6 +542,64 @@ private fun ActivityCardSamples() {
         onUserClick = {},
         onMediaClick = {}
     )
+}
+
+@Composable
+private fun ColorChoiceSamples(colorSource: ColorSource, darkTheme: Boolean) {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        ColorChoiceCard(
+            label = stringResource(R.string.catalog_color_material_you),
+            swatches = colorSourceSwatches(ColorSource.Dynamic, darkTheme),
+            selected = colorSource == ColorSource.Dynamic,
+            onClick = {},
+            modifier = Modifier.weight(1f)
+        )
+        ColorChoiceCard(
+            label = stringResource(R.string.catalog_color_anilist_blue),
+            swatches = colorSourceSwatches(ColorSource.AniListBlue, darkTheme),
+            selected = colorSource == ColorSource.AniListBlue,
+            onClick = {},
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun NotificationRowSamples() {
+    val now = Instant.now()
+    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    Column {
+        NotificationRow(
+            entry = NotificationEntry(
+                Notification.ActivityEvent(
+                    id = 1,
+                    createdAt = now.minusSeconds(900),
+                    kind = ActivityNotificationKind.Like,
+                    users = users + UserLite(4, "tobfd", null) + UserLite(5, "Frieren", null),
+                    activityId = 7,
+                    listActivity = ListActivitySummary("watched episode", "17 - 18", 154587, "Frieren")
+                ),
+                isUnread = true
+            ),
+            onClick = {}
+        )
+        NotificationRow(
+            entry = NotificationEntry(
+                Notification.Airing(
+                    2,
+                    now.minusSeconds(7_200),
+                    18,
+                    PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)
+                ),
+                isUnread = false
+            ),
+            onClick = {}
+        )
+        NotificationRow(
+            entry = NotificationEntry(Notification.Follow(3, now.minusSeconds(90_000), users[2]), isUnread = false),
+            onClick = {}
+        )
+    }
 }
 
 @Composable

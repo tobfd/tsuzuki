@@ -25,6 +25,8 @@ object TsuzukiIcons {
 
     @DrawableRes val CloudUpload: Int = R.drawable.ic_cloud_upload
 
+    @DrawableRes val DoneAll: Int = R.drawable.ic_done_all
+
     @DrawableRes val ExpandLess: Int = R.drawable.ic_expand_less
 
     @DrawableRes val ExpandMore: Int = R.drawable.ic_expand_more

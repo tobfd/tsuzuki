@@ -79,4 +79,34 @@
         <item quantity="one">Aktivitätsverlauf: %1$d Aktivität in den letzten %2$d Wochen</item>
         <item quantity="other">Aktivitätsverlauf: %1$d Aktivitäten in den letzten %2$d Wochen</item>
     </plurals>
+    <string name="ui_notification_unread">Ungelesen</string>
+    <string name="ui_notification_airing">Folge %1$s von %2$s ist erschienen</string>
+    <string name="ui_notification_follow">%1$s folgt dir jetzt</string>
+    <string name="ui_notification_like_one">%1$s gefällt deine Aktivität</string>
+    <string name="ui_notification_like_two">%1$s und %2$s gefällt deine Aktivität</string>
+    <plurals name="ui_notification_like_many">
+        <item quantity="one">%1$s, %2$s und %3$d weiteren Person gefällt deine Aktivität</item>
+        <item quantity="other">%1$s, %2$s und %3$d weiteren Personen gefällt deine Aktivität</item>
+    </plurals>
+    <string name="ui_notification_reply">%1$s hat auf deine Aktivität geantwortet</string>
+    <string name="ui_notification_reply_like">%1$s gefällt deine Antwort</string>
+    <string name="ui_notification_reply_subscribed">%1$s hat auf eine Aktivität geantwortet, der du folgst</string>
+    <string name="ui_notification_mention">%1$s hat dich erwähnt</string>
+    <string name="ui_notification_message">%1$s hat dir eine Nachricht geschickt</string>
+    <string name="ui_notification_related">%1$s wurde zur Seite hinzugefügt</string>
+    <string name="ui_notification_data_change">Die Daten von %1$s wurden geändert</string>
+    <string name="ui_notification_merge">%1$s wurde mit %2$s zusammengeführt</string>
+    <string name="ui_notification_deletion">%1$s wurde von der Seite gelöscht</string>
+    <string name="ui_notification_subline_watched">Folge %1$s von %2$s geschaut</string>
+    <string name="ui_notification_subline_rewatched">Folge %1$s von %2$s erneut geschaut</string>
+    <string name="ui_notification_subline_read">Kapitel %1$s von %2$s gelesen</string>
+    <string name="ui_notification_subline_reread">Kapitel %1$s von %2$s erneut gelesen</string>
+    <string name="ui_notification_subline_completed">%1$s abgeschlossen</string>
+    <string name="ui_notification_subline_planning">%1$s geplant</string>
+    <string name="ui_notification_subline_dropped">%1$s abgebrochen</string>
+    <string name="ui_notification_subline_paused">%1$s pausiert</string>
+    <string name="ui_notification_subline_watched_untitled">Folge %1$s geschaut</string>
+    <string name="ui_notification_subline_rewatched_untitled">Folge %1$s erneut geschaut</string>
+    <string name="ui_notification_subline_read_untitled">Kapitel %1$s gelesen</string>
+    <string name="ui_notification_subline_reread_untitled">Kapitel %1$s erneut gelesen</string>
 </resources>

@@ -5,6 +5,7 @@ import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.testing.FakeListRepository
 import com.tobfd.tsuzuki.core.testing.FakeNotificationsRepository
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
+import com.tobfd.tsuzuki.core.testing.FakeSettingsRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
 import com.tobfd.tsuzuki.core.testing.SampleData
 import java.time.Clock
@@ -25,8 +26,13 @@ class MainViewModelTest {
     private val listRepository = FakeListRepository()
 
     /** 100 days before the sample token expires, so no warning unless a test moves the clock. */
-    private fun viewModel(now: Instant = SampleData.tokenExpiry - Duration.ofDays(100)) =
-        MainViewModel(sessionRepository, notificationsRepository, listRepository, Clock.fixed(now, ZoneOffset.UTC))
+    private fun viewModel(now: Instant = SampleData.tokenExpiry - Duration.ofDays(100)) = MainViewModel(
+        sessionRepository,
+        notificationsRepository,
+        listRepository,
+        FakeSettingsRepository(),
+        Clock.fixed(now, ZoneOffset.UTC)
+    )
 
     private val loggedIn = SessionState.LoggedIn(SampleData.viewer, SampleData.tokenExpiry)
 

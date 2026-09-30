@@ -8,8 +8,11 @@ From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each wi
 2. M5 + M6
 3. M7 + M8 + M9
 4. Tablet (added by Tobias, 2026-09-30)
-5. M10 + M11 + M12
-6. M13 (widgets, after v1)
+5. M10 + M11
+6. Widgets (formerly M13, part of v1 since 2026-09-30)
+7. M12 (polish, the last package before v1; covers the widgets too)
+
+Reordered by Tobias on 2026-09-30: M12 moved behind the widgets so its accessibility, large-screen and performance passes include them.
 
 Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
 
@@ -146,7 +149,7 @@ Before M0, Tobias does two things by hand:
 For medium and expanded widths (Pixel Tablet, foldables open, phones in landscape). Phones in portrait stay as they are.
 
 - [x] Grids with more columns: Browse results and idle rows, Home (In Progress, trending, the feed in two columns on expanded), character/staff grids and profile favourites use the width instead of stretching one column. (Adaptive grids follow the pane's real width: list rows from 360 dp per column in Lists, other users' lists and Browse results; the Home feed as a staggered grid from 320 dp, two columns in tablet portrait, three in landscape. Character/staff grids were adaptive already; horizontal rows keep scrolling edge to edge.)
-- [x] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred. (Descriptions and bios at most 640 dp, left-aligned in their column; activity text is bounded by its grid column; the login actions 480 dp, centred. Settings follow in M11.)
+- [x] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred. (Descriptions and bios at most 640 dp, left-aligned in their column; activity text is bounded by its grid column; the login actions 480 dp, centred. Since M10/M11 the settings and the notification rows are capped at 640 dp too, centred.)
 - [x] List-detail side by side: Lists → detail, Browse → detail, Profile (own and others, incl. their lists) → detail, with the detail pane replacing itself on further taps. (Character and staff pages open in the detail pane too. Before anything is opened, the detail pane shows a placeholder instead of staying empty.)
 - [x] Detail page in two columns on expanded widths: header, list button and info on one side, the sections on the other. (From 840 dp of available width: banner, cover, score, title and list button in a 400 dp column; tabs and sections, the info grid included, on the right.)
 - [x] Sheets as dialogs where that reads better on large screens (list editor, filter sheet, share preview), keeping predictive back. (On expanded windows; the share preview was a dialog already. The list editor needs a login, so it is checked on a real device.)
@@ -156,40 +159,26 @@ For medium and expanded widths (Pixel Tablet, foldables open, phones in landscap
 
 ## M10 · Notifications
 
-- [ ] `Page.notifications` with `type_in` per filter chip (All, Airing, Activity, Follows, Media), Paging 3.
-- [ ] Unread = the first `unreadNotificationCount` items at the moment the screen opens (the API has no per-item read state). Opening with `resetNotificationCount: true` resets the badge; "Mark all as read" does the same explicitly.
-- [ ] Group consecutive likes on the same activity ("X, Y and 3 others liked your activity").
-- [ ] Tap targets: activity → media or user, airing → media, follow → user.
+- [x] `Page.notifications` with `type_in` per filter chip (All, Airing, Activity, Follows, Media), Paging 3. (25 per page; forum and submission notifications are left out. Grouped by This week / Last week / Earlier, pull to refresh.)
+- [x] Unread = the first `unreadNotificationCount` items at the moment the screen opens (the API has no per-item read state). Opening with `resetNotificationCount: true` resets the badge; "Mark all as read" does the same explicitly. (The count from before the reset comes in the same request as the first page, `Viewer` before `Page`; the badge count is the fallback. Unread rows are tinted with a dot until the screen closes or "Mark all as read".)
+- [x] Group consecutive likes on the same activity ("X, Y and 3 others liked your activity"). (Also across a page break; up to three stacked avatars.)
+- [x] Tap targets: activity → media or user, airing → media, follow → user. (Activities about a list update open the media, others the user; media changes open the media.)
 
 **Done when:** the badge clears after opening, and grouped likes match the website's list.
 
 ## M11 · Settings
 
-- [ ] Colors (Material You / AniList blue) with live preview, theme mode, app language (per-app locale).
-- [ ] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally.
-- [ ] Account: avatar, name, log out (confirm).
-- [ ] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen.
-- [ ] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog.
+- [x] Colors (Material You / AniList blue) with live preview, theme mode, app language (per-app locale). (Stored in a device DataStore that logout keeps; the splash waits for it. App language through `LocaleManager` and `locales_config.xml`, Android 13+ only.)
+- [x] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally. (One request per change, online only; the Apollo cache is cleared and the list titles in Room follow without a sync.)
+- [x] Account: avatar, name, log out (confirm). (Guests get "Log in with AniList".)
+- [x] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen. (Hand-made list by license with the license texts bundled; no new dependency.)
+- [x] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog. (Containers keep 60 % of their color, `design/tokens.json`.)
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 
-## M12 · Polish and release readiness
+## Widgets (Glance; added by Tobias, 2026-09-30, part of v1)
 
-- [ ] German translation complete and reviewed by Tobias.
-- [ ] Accessibility pass: TalkBack on every screen, font scale 200 %, contrast in both color sources.
-- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens (tablet + foldable emulator), no orientation lock warnings.
-- [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler).
-- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
-- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
-- [ ] Final app icon and themed icon.
-- [ ] Crash-free run through all screens with airplane mode toggled.
-- [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
-
-**Done when:** Tobias has used v1 as his only AniList app for a week.
-
-## M13 · Widgets (Glance, after v1; added by Tobias, 2026-09-30)
-
-Starts only after v1 is done (docs/PRODUCT.md, "Later"). Jetpack Glance is not in the tech stack yet, so adding it needs Tobias's OK when M13 starts.
+Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack Glance (latest stable) is approved and listed in `CLAUDE.md`.
 
 - [ ] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes.
 - [ ] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop.
@@ -197,3 +186,17 @@ Starts only after v1 is done (docs/PRODUCT.md, "Later"). Jetpack Glance is not i
 - [ ] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline.
 
 **Done when:** all three widgets run on Tobias's home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.
+
+## M12 · Polish and release readiness
+
+- [ ] German translation complete and reviewed by Tobias.
+- [ ] Accessibility pass: TalkBack on every screen and widget, font scale 200 %, contrast in both color sources.
+- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens and the widgets' sizes (tablet + foldable emulator), no orientation lock warnings.
+- [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler); widget updates stay cheap (no work on the main thread, no updates beyond the planned ones).
+- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
+- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
+- [ ] Final app icon and themed icon.
+- [ ] Crash-free run through all screens and widgets with airplane mode toggled.
+- [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
+
+**Done when:** Tobias has used v1 as his only AniList app for a week.

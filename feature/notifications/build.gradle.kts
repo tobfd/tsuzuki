@@ -5,3 +5,9 @@ plugins {
 android {
     namespace = "com.tobfd.tsuzuki.feature.notifications"
 }
+
+dependencies {
+    implementation(libs.androidx.paging.compose)
+
+    testImplementation(libs.androidx.paging.testing)
+}

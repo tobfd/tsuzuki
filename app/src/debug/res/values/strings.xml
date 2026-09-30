@@ -7,6 +7,7 @@
     <string name="catalog_color_anilist_blue" translatable="false">AniList blue</string>
     <string name="catalog_mode_light" translatable="false">Light</string>
     <string name="catalog_mode_dark" translatable="false">Dark</string>
+    <string name="catalog_mode_pure_black" translatable="false">Pure black</string>
 
     <string name="catalog_section_colors" translatable="false">Color roles</string>
     <string name="catalog_section_status_colors" translatable="false">Status colors</string>
@@ -59,6 +60,8 @@
     <string name="catalog_section_list_editor" translatable="false">List editor</string>
     <string name="catalog_search_placeholder" translatable="false">Search your list</string>
     <string name="catalog_section_activity_card" translatable="false">ActivityCard</string>
+    <string name="catalog_section_color_choice" translatable="false">ColorChoiceCard</string>
+    <string name="catalog_section_notification_row" translatable="false">NotificationRow</string>
     <string name="catalog_section_result_row" translatable="false">MediaResultRow</string>
     <string name="catalog_section_person_card" translatable="false">PersonCoverCard</string>
     <string name="catalog_section_heatmap" translatable="false">ActivityHeatmap</string>

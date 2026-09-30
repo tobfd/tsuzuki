@@ -114,7 +114,7 @@ Before M0, Tobias does two things by hand:
 - [x] Filter sheet: format, status, season + year, genres, tags, sort; active filter count on the filter button; Reset / Show results. (Changes stay a draft until "Show results". A year filters anime by season year and manga by start date. Tags are searched by name, genres and tags load once per app run; the Hentai genre and adult tags only show with adult content on.)
 - [x] Quick chips: Trending, Top 100, This season, Top movies, Top manhwa (preset filters). (Top 100 stops paging at 100; This season, Top movies and Top manhwa switch the type they need; tapping an active chip clears it.)
 - [x] Idle state: Trending now and Newly added rows. ("See all" opens Trending, or recently added.)
-- [x] Paging 3 on `hasNextPage`, adult filter applied. (20 per page, the next page 5 rows before the end; media a later page repeats are left out. Adult content on sends `isAdult: null`, never `true`, which would show adult media only; the Home trending row had that bug and is fixed.)
+- [x] Paging 3 on `hasNextPage`, adult filter applied. (20 per page, the next page 5 rows before the end; media a later page repeats are left out. With adult content on, `isAdult` is left out: `true` shows adult media only, the Home trending row had that bug; an explicit `null` returns nothing, which emptied every search on the first phone test.)
 
 **Done when:** searching "frieren" with filters finds the right entry and scrolling pages don't trip the rate limit.
 

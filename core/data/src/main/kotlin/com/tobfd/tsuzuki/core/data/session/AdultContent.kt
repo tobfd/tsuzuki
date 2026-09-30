@@ -10,8 +10,9 @@ internal suspend fun SessionRepository.adultContentAllowed(): Boolean =
 
 /**
  * The `isAdult` argument for media lists (docs/ANILIST_API.md, Adult content): `false` hides adult
- * media; `null` shows everything and is sent only when the viewer turned adult content on at AniList.
- * `true` would show adult media only, so it is never sent.
+ * media; with adult content allowed the variable is left out, which means no filter. Never send
+ * `true` (adult media only) or an explicit `null` (AniList then returns nothing). The queries that
+ * use it declare `$isAdult` without a default, so leaving it out really means "not set".
  */
 internal suspend fun SessionRepository.isAdultArgument(): Optional<Boolean?> =
-    Optional.present(if (adultContentAllowed()) null else false)
+    if (adultContentAllowed()) Optional.Absent else Optional.present(false)

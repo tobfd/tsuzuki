@@ -7,6 +7,7 @@ import com.tobfd.tsuzuki.core.data.MutableClock
 import com.tobfd.tsuzuki.core.data.TestApollo
 import com.tobfd.tsuzuki.core.data.list.enqueueJson
 import com.tobfd.tsuzuki.core.data.list.enqueueOffline
+import com.tobfd.tsuzuki.core.data.requestVariables
 import com.tobfd.tsuzuki.core.model.BrowseFilter
 import com.tobfd.tsuzuki.core.model.BrowseQuery
 import com.tobfd.tsuzuki.core.model.BrowseSort
@@ -26,7 +27,9 @@ import java.time.Instant
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 private fun cardJson(id: Int) = """
@@ -101,8 +104,38 @@ class DefaultBrowseRepositoryTest {
         session.sessionState.value = SessionState.LoggedIn(adultViewer, SampleData.tokenExpiry)
         apollo.enqueueJson(BrowseHomeQuery(type = com.tobfd.tsuzuki.core.network.type.MediaType.MANGA), HOME_JSON)
         repository.home(MediaType.MANGA)
-        // null, not true: true would show adult media only.
-        assertEquals(Optional.present(null), (apollo.operations.last() as BrowseHomeQuery).isAdult)
+        // Left out, not true (adult media only) and not null (AniList then returns nothing).
+        assertEquals(Optional.Absent, (apollo.operations.last() as BrowseHomeQuery).isAdult)
+    }
+
+    /**
+     * Regression (PR #7 phone test): logged in with adult content on, search sent `"isAdult":null`
+     * and AniList answered with an empty page for every search and quick chip.
+     */
+    @Test
+    fun search_withAdultContentOn_sendsNoIsAdultVariable() = runTest {
+        session.sessionState.value = SessionState.LoggedIn(
+            SampleData.viewer.copy(options = SampleData.viewer.options.copy(displayAdultContent = true)),
+            SampleData.tokenExpiry
+        )
+        apollo.enqueueJson(SearchMediaQuery(page = 1, type = ANIME), searchJson(listOf(1), false))
+
+        repository.search(animeQuery.copy(search = "frieren")).asSnapshot()
+
+        val variables = apollo.operations.single().requestVariables()
+        assertFalse(variables, variables.contains("isAdult"))
+        assertTrue(variables, variables.contains("\"search\":\"frieren\""))
+    }
+
+    @Test
+    fun search_withAdultContentOff_sendsIsAdultFalse() = runTest {
+        apollo.enqueueJson(SearchMediaQuery(page = 1, type = ANIME), searchJson(listOf(1), false))
+
+        repository.search(animeQuery).asSnapshot()
+
+        val variables = apollo.operations.single().requestVariables()
+        assertTrue(variables, variables.contains("\"isAdult\":false"))
+        assertFalse(variables, variables.contains("\"search\""))
     }
 
     @Test

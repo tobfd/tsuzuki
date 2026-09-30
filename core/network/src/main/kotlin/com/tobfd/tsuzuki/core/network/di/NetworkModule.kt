@@ -9,6 +9,7 @@ import com.apollographql.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.tobfd.tsuzuki.core.network.BuildConfig
 import com.tobfd.tsuzuki.core.network.auth.AuthInterceptor
 import com.tobfd.tsuzuki.core.network.cache.Cache
+import com.tobfd.tsuzuki.core.network.debug.RequestLogInterceptor
 import com.tobfd.tsuzuki.core.network.ratelimit.RateLimitInterceptor
 import dagger.Module
 import dagger.Provides
@@ -22,6 +23,7 @@ private const val ANILIST_URL = "https://graphql.anilist.co"
 private const val MEMORY_CACHE_BYTES = 10 * 1024 * 1024
 private const val CACHE_DB_NAME = "apollo.db"
 private const val LOG_TAG = "AniListRateLimit"
+private const val REQUEST_LOG_TAG = "AniListRequest"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -39,6 +41,10 @@ object NetworkModule {
             // Rate limiting wraps auth, so a retry after a 429 goes through auth again.
             .addInterceptor(rateLimitInterceptor)
             .addInterceptor(authInterceptor)
+            .apply {
+                // adb logcat -s AniListRequest: operation, variables, status and GraphQL errors, never headers.
+                if (BuildConfig.DEBUG) addInterceptor(RequestLogInterceptor { Log.d(REQUEST_LOG_TAG, it) })
+            }
             .build()
 
     @Provides

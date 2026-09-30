@@ -97,7 +97,7 @@ Own lists are not read from Apollo but from Room (offline first).
 
 ## Adult content and user options
 
-- Always pass `isAdult: false` unless the user's AniList option `displayAdultContent` is true; then pass `isAdult: null` (AniList ignores null arguments), never `true`, which returns adult media only. Guests never see adult content. Connections without an `isAdult` argument (character appearances, staff roles) are filtered on the client.
+- Always pass `isAdult: false` unless the user's AniList option `displayAdultContent` is true; then leave the `isAdult` variable out (the queries declare it without a default, so it is not set). Never send `true`, which returns adult media only, and never an explicit `null`: AniList filters on it and returns nothing (checked against the live API, 2026-09-30). Guests never see adult content. Connections without an `isAdult` argument (character appearances, staff roles) are filtered on the client.
 - "Ecchi" is **not** adult on AniList; don't try to reclassify it, just respect the flag.
 - User-generated text (activities, bios) may contain anything; show it as text, never auto-load embedded images in v1.
 - Title language: use `title.userPreferred` (AniList already applies the user's choice). For guests, use the app setting (Romaji default) and pick `romaji` / `english` / `native` locally.

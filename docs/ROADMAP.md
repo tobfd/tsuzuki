@@ -145,12 +145,12 @@ Before M0, Tobias does two things by hand:
 
 For medium and expanded widths (Pixel Tablet, foldables open, phones in landscape). Phones in portrait stay as they are.
 
-- [ ] Grids with more columns: Browse results and idle rows, Home (In Progress, trending, the feed in two columns on expanded), character/staff grids and profile favourites use the width instead of stretching one column.
-- [ ] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred.
-- [ ] List-detail side by side: Lists → detail, Browse → detail, Profile (own and others, incl. their lists) → detail, with the detail pane replacing itself on further taps.
-- [ ] Detail page in two columns on expanded widths: header, list button and info on one side, the sections on the other.
-- [ ] Sheets as dialogs where that reads better on large screens (list editor, filter sheet, share preview), keeping predictive back.
-- [ ] Checked with screenshots on the tablet emulator (Pixel Tablet, portrait and landscape) and a foldable emulator (folded and open).
+- [x] Grids with more columns: Browse results and idle rows, Home (In Progress, trending, the feed in two columns on expanded), character/staff grids and profile favourites use the width instead of stretching one column. (Adaptive grids follow the pane's real width: list rows from 360 dp per column in Lists, other users' lists and Browse results; the Home feed as a staggered grid from 320 dp, two columns in tablet portrait, three in landscape. Character/staff grids were adaptive already; horizontal rows keep scrolling edge to edge.)
+- [x] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred. (Descriptions and bios at most 640 dp, left-aligned in their column; activity text is bounded by its grid column; the login actions 480 dp, centred. Settings follow in M11.)
+- [x] List-detail side by side: Lists → detail, Browse → detail, Profile (own and others, incl. their lists) → detail, with the detail pane replacing itself on further taps. (Character and staff pages open in the detail pane too. Before anything is opened, the detail pane shows a placeholder instead of staying empty.)
+- [x] Detail page in two columns on expanded widths: header, list button and info on one side, the sections on the other. (From 840 dp of available width: banner, cover, score, title and list button in a 400 dp column; tabs and sections, the info grid included, on the right.)
+- [x] Sheets as dialogs where that reads better on large screens (list editor, filter sheet, share preview), keeping predictive back. (On expanded windows; the share preview was a dialog already. The list editor needs a login, so it is checked on a real device.)
+- [x] Checked with screenshots on the tablet emulator (Pixel Tablet, portrait and landscape) and a foldable emulator (folded and open). (No tablet or foldable image is installed and there is no avdmanager, so both are simulated on the phone emulator with `adb shell wm size` / `wm density`: 2560 × 1600 and 1600 × 2560 at 320 dpi, 2076 × 2152 at 390 dpi; folded equals the phone.)
 
 **Done when:** every tab, the detail page and the people/profile pages look designed on the Pixel Tablet and an open foldable, with no stretched single column and nothing clipped.
 

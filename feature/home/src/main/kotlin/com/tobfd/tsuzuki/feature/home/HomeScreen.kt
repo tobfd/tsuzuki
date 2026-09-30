@@ -17,6 +17,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +62,7 @@ import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
+import com.tobfd.tsuzuki.core.designsystem.theme.bleedHorizontally
 import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.ListEntryActions
 import com.tobfd.tsuzuki.core.model.MediaListEntry
@@ -207,22 +213,32 @@ private fun HomeList(
     val start = contentPadding.calculateStartPadding(layoutDirection)
     val end = contentPadding.calculateEndPadding(layoutDirection)
     val horizontal = Modifier.padding(start = start, end = end)
-    val listState = rememberLazyListState()
-    ScrollToTopOnTabReselect(listState)
+    val gridState = rememberLazyStaggeredGridState()
+    ScrollToTopOnTabReselect(gridState)
 
-    LazyColumn(
-        state = listState,
+    // One column of activity cards on phones; on tablets the feed fills two or more columns,
+    // staggered so short and long posts don't leave gaps.
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(TsuzukiSizes.feedGridMinWidth),
+        state = gridState,
         contentPadding = PaddingValues(
+            start = start,
+            end = end,
             top = contentPadding.calculateTopPadding(),
             bottom = contentPadding.calculateBottomPadding()
         ),
-        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap),
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap),
+        verticalItemSpacing = TsuzukiSpacing.cardGap,
         modifier = Modifier.fillMaxSize()
     ) {
         // One item for everything above the feed: sections that fill in later (Room, the trending
-        // row) then grow the list at the top instead of pushing the first visible item away.
-        item(key = "top") {
-            Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+        // row) then grow the list at the top instead of pushing the first visible item away. It
+        // reaches under the grid's side padding so its rows scroll from edge to edge.
+        item(key = "top", span = StaggeredGridItemSpan.FullLine) {
+            Column(
+                modifier = Modifier.bleedHorizontally(start, end),
+                verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+            ) {
                 if (state.inProgress.isNotEmpty()) {
                     SectionHeader(
                         title = stringResource(R.string.home_in_progress),
@@ -283,17 +299,15 @@ private fun HomeList(
                 activity = activity.withLike(state.likes[activity.id]),
                 onLikeClick = { onToggleLike(activity) },
                 onUserClick = { onOpenUser(activity.user.id, activity.user.name) },
-                onMediaClick = onOpenMedia,
-                modifier = horizontal
+                onMediaClick = onOpenMedia
             )
         }
-        item(key = "feedFooter") {
+        item(key = "feedFooter", span = StaggeredGridItemSpan.FullLine) {
             FeedFooter(
                 feed = state.feed,
                 isGuest = state.isGuest,
                 onLoadMore = onLoadMore,
-                onRetry = onRetryFeed,
-                modifier = horizontal
+                onRetry = onRetryFeed
             )
         }
     }

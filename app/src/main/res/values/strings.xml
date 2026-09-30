@@ -10,4 +10,6 @@
         <item quantity="one">Your AniList login expires in %d day. Log in again to renew it.</item>
         <item quantity="other">Your AniList login expires in %d days. Log in again to renew it.</item>
     </plurals>
+    <string name="detail_placeholder_title">Nothing open yet</string>
+    <string name="detail_placeholder_message">Pick a title, character or person and it opens here.</string>
 </resources>

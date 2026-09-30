@@ -103,7 +103,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 )
             }
         }
-        entry<ListsRoute>(metadata = ListDetailSceneStrategy.listPane()) {
+        entry<ListsRoute>(metadata = listPaneWithPlaceholder) {
             ListsRoute(
                 isGuest = isGuest,
                 onLogIn = onLogOut,
@@ -124,12 +124,12 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 }
             )
         }
-        entry<BrowseRoute>(metadata = ListDetailSceneStrategy.listPane()) {
+        entry<BrowseRoute>(metadata = listPaneWithPlaceholder) {
             TabRoot(TopLevelTab.Browse, navigator, onRenewLogin = onLogOut) { padding ->
                 BrowseScreen(onOpenMedia = { navigator.navigate(MediaRoute(it)) }, contentPadding = padding)
             }
         }
-        entry<ProfileRoute> {
+        entry<ProfileRoute>(metadata = listPaneWithPlaceholder) {
             TabRoot(
                 TopLevelTab.Profile,
                 navigator,
@@ -154,7 +154,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<CharacterRoute> { route ->
+        entry<CharacterRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             CharacterScreen(
                 characterId = route.id,
                 onBack = { navigator.back() },
@@ -162,7 +162,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<StaffRoute> { route ->
+        entry<StaffRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             StaffScreen(
                 staffId = route.id,
                 onBack = { navigator.back() },
@@ -171,7 +171,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<UserRoute> { route ->
+        entry<UserRoute>(metadata = listPaneWithPlaceholder) { route ->
             UserScreen(
                 userId = route.id,
                 userName = route.name,
@@ -179,7 +179,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 navigation = profileNavigation(navigator, onLogOut)
             )
         }
-        entry<UserListRoute>(metadata = ListDetailSceneStrategy.listPane()) { route ->
+        entry<UserListRoute>(metadata = listPaneWithPlaceholder) { route ->
             UserListScreen(
                 userId = route.userId,
                 userName = route.userName,
@@ -347,6 +347,10 @@ private fun rememberTopLevelNavigator(): TopLevelNavigator {
     val stacks = TopLevelTab.entries.associateWith { tab -> rememberNavBackStack(tab.root) }
     return remember(selectedTab, stacks) { TopLevelNavigator(selectedTab, stacks) }
 }
+
+/** List pane metadata with [DetailPanePlaceholder] where no detail is open yet. */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+private val listPaneWithPlaceholder = ListDetailSceneStrategy.listPane(detailPlaceholder = { DetailPanePlaceholder() })
 
 /** Where a profile's links lead. */
 private fun profileNavigation(navigator: TopLevelNavigator, onLogIn: () -> Unit) = ProfileNavigation(

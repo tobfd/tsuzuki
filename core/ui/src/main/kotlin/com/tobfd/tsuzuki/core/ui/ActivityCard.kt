@@ -89,8 +89,12 @@ fun ActivityCard(
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.clickable(onClick = onUserClick)
                         )
+                        val imageLabel = stringResource(R.string.ui_image_link)
                         Text(
-                            text = remember(activity.html) { AnnotatedString.fromHtml(activity.html) },
+                            // Images and embeds show as links; v1 loads no media from user text.
+                            text = remember(activity.html, imageLabel) {
+                                AnnotatedString.fromHtml(withImagesAsLinks(activity.html, imageLabel))
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = TEXT_ACTIVITY_MAX_LINES,
                             overflow = TextOverflow.Ellipsis

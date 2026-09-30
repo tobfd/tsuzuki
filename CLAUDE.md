@@ -138,6 +138,11 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - Full list refresh (`MediaListCollection`) on app start if older than 15 minutes, on pull to refresh, and via a periodic worker (every 6 hours, unmetered not required).
 - In code (since M4): `ListRepository` in `core/data` is the only entry point. `ListMutationSender` sends the queue oldest first, all queued changes of one entry as one `SaveMediaListEntry` (a +1 undone before sending sends nothing) and rolls rejected ones back from the `previous` snapshot stored with each change. `ListWorkScheduler` runs it through WorkManager (`ListMutationWorker`, `ListSyncWorker`, Hilt worker factory in `TsuzukiApplication`). A sync never overwrites entries whose changes are still queued. Logout clears the whole database (`UserDataCleaner`).
 
+### Settings (since M11)
+
+- The look (colors, theme mode, pure black) is `AppearanceSettings` in its own DataStore (`SettingsStore`, file `settings`), kept on logout; `MainActivity` themes the app from it. The AniList options (title language, score format, adult content) live with the cached viewer and change only through `SettingsRepository.updateAniListOptions` (`UpdateUser`), which also clears the Apollo cache and re-picks the list titles in Room.
+- App language is the platform per-app locale (`LocaleManager`, Android 13+, `res/xml/locales_config.xml`); there is no appcompat.
+
 ### AniList specifics that must hold everywhere
 
 Details in `docs/ANILIST_API.md`. The short version:

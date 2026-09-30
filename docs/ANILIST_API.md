@@ -75,13 +75,22 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 | `ToggleLikeV2(id, type: ACTIVITY)` | Like / unlike an activity. |
 | `ToggleFavourite(animeId / mangaId / characterId / staffId)` | Heart on detail pages. |
 | `ToggleFollow(userId)` | Follow / unfollow. |
-| `UpdateUser(titleLanguage, displayAdultContent, scoreFormat)` | Settings synced to AniList. |
+| `UpdateUser(titleLanguage, displayAdultContent, scoreFormat)` | Settings synced to AniList: one request per change, only the changed field. |
 
 All of them are optimistic in the UI and rolled back on error. List mutations go through the offline queue (see `CLAUDE.md`).
 
+`UpdateUser` is online only: Settings shows the new value while it is saved and goes back if AniList refuses it (one change at a time). On success the cached viewer options are replaced with what AniList returns, the Apollo cache is cleared (cached `userPreferred` titles and scores followed the old options) and the titles in Room are picked again from the stored romaji / English / native titles (`MediaListDao.applyTitleLanguage`, romaji as fallback like AniList), so the lists follow without a sync.
+
+## Notifications
+
+- `Notifications(page, types, reset)`: 25 per page, `type_in` per filter chip (the mapping is in `notifications.graphql`). Types the query has no fragment for (forum, submissions) arrive with only `__typename` and are left out, but still count for the unread position.
+- The API has no per-item read state. The first page of each visit to the screen sends `resetNotificationCount: true` and, in the same request, `Viewer { unreadNotificationCount }` before `Page` (`@include(if: $reset)`), so the count from before the reset comes back. The newest that many notifications of the All list are unread; filtered lists highlight the ones All marked. In case AniList resolves the reset first (count 0), the badge count from when the screen opened is used when higher. A page from the cache (offline) doesn't count as reset; the next load sends it again.
+- "Mark all as read" is `MarkNotificationsRead` (`perPage: 1`, reset), one request.
+- Consecutive `ACTIVITY_LIKE` notifications on the same `activityId` are grouped into one row, also across a page break (a like run at the end of a page waits for the next page unless it is all the page has).
+
 ## Caching (Apollo normalized cache)
 
-The cache is the `com.apollographql.cache` library (memory in front of SQLite `apollo.db`). `extra.graphqls` gives `Media`, `MediaList`, `User`, `Character` and `Staff` an `id`-based cache key (`@typePolicy`), so one record per object is shared by every query; the compiler plugin generates the `Cache` object that `NetworkModule` installs. Logout clears the whole cache.
+The cache is the `com.apollographql.cache` library (memory in front of SQLite `apollo.db`). `extra.graphqls` gives `Media`, `MediaList`, `User`, `Character` and `Staff` an `id`-based cache key (`@typePolicy`), so one record per object is shared by every query; the compiler plugin generates the `Cache` object that `NetworkModule` installs. Logout clears the whole cache, and so does a saved change to the AniList options (see Mutations).
 
 | Data | Fetch policy | Max age |
 |---|---|---|
@@ -100,7 +109,7 @@ Own lists are not read from Apollo but from Room (offline first).
 - Always pass `isAdult: false` unless the user's AniList option `displayAdultContent` is true; then leave the `isAdult` variable out (the queries declare it without a default, so it is not set). Never send `true`, which returns adult media only, and never an explicit `null`: AniList filters on it and returns nothing (checked against the live API, 2026-09-30). Guests never see adult content. Connections without an `isAdult` argument (character appearances, staff roles) are filtered on the client.
 - "Ecchi" is **not** adult on AniList; don't try to reclassify it, just respect the flag.
 - User-generated text (activities, bios) may contain anything; show it as text, never auto-load embedded images in v1.
-- Title language: use `title.userPreferred` (AniList already applies the user's choice). For guests, use the app setting (Romaji default) and pick `romaji` / `english` / `native` locally.
+- Title language: use `title.userPreferred` (AniList already applies the user's choice). Guests get AniList's default through `userPreferred` (romaji); Settings offers the title language only to logged-in users, since it is an AniList option.
 - Staff and character names: `name.userPreferred`.
 
 ## Text and HTML

@@ -149,7 +149,7 @@ Before M0, Tobias does two things by hand:
 For medium and expanded widths (Pixel Tablet, foldables open, phones in landscape). Phones in portrait stay as they are.
 
 - [x] Grids with more columns: Browse results and idle rows, Home (In Progress, trending, the feed in two columns on expanded), character/staff grids and profile favourites use the width instead of stretching one column. (Adaptive grids follow the pane's real width: list rows from 360 dp per column in Lists, other users' lists and Browse results; the Home feed as a staggered grid from 320 dp, two columns in tablet portrait, three in landscape. Character/staff grids were adaptive already; horizontal rows keep scrolling edge to edge.)
-- [x] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred. (Descriptions and bios at most 640 dp, left-aligned in their column; activity text is bounded by its grid column; the login actions 480 dp, centred. Settings follow in M11.)
+- [x] Maximum reading width for text (descriptions, bios, activity text, settings): long lines are capped and centred. (Descriptions and bios at most 640 dp, left-aligned in their column; activity text is bounded by its grid column; the login actions 480 dp, centred. Since M10/M11 the settings and the notification rows are capped at 640 dp too, centred.)
 - [x] List-detail side by side: Lists → detail, Browse → detail, Profile (own and others, incl. their lists) → detail, with the detail pane replacing itself on further taps. (Character and staff pages open in the detail pane too. Before anything is opened, the detail pane shows a placeholder instead of staying empty.)
 - [x] Detail page in two columns on expanded widths: header, list button and info on one side, the sections on the other. (From 840 dp of available width: banner, cover, score, title and list button in a 400 dp column; tabs and sections, the info grid included, on the right.)
 - [x] Sheets as dialogs where that reads better on large screens (list editor, filter sheet, share preview), keeping predictive back. (On expanded windows; the share preview was a dialog already. The list editor needs a login, so it is checked on a real device.)
@@ -159,20 +159,20 @@ For medium and expanded widths (Pixel Tablet, foldables open, phones in landscap
 
 ## M10 · Notifications
 
-- [ ] `Page.notifications` with `type_in` per filter chip (All, Airing, Activity, Follows, Media), Paging 3.
-- [ ] Unread = the first `unreadNotificationCount` items at the moment the screen opens (the API has no per-item read state). Opening with `resetNotificationCount: true` resets the badge; "Mark all as read" does the same explicitly.
-- [ ] Group consecutive likes on the same activity ("X, Y and 3 others liked your activity").
-- [ ] Tap targets: activity → media or user, airing → media, follow → user.
+- [x] `Page.notifications` with `type_in` per filter chip (All, Airing, Activity, Follows, Media), Paging 3. (25 per page; forum and submission notifications are left out. Grouped by This week / Last week / Earlier, pull to refresh.)
+- [x] Unread = the first `unreadNotificationCount` items at the moment the screen opens (the API has no per-item read state). Opening with `resetNotificationCount: true` resets the badge; "Mark all as read" does the same explicitly. (The count from before the reset comes in the same request as the first page, `Viewer` before `Page`; the badge count is the fallback. Unread rows are tinted with a dot until the screen closes or "Mark all as read".)
+- [x] Group consecutive likes on the same activity ("X, Y and 3 others liked your activity"). (Also across a page break; up to three stacked avatars.)
+- [x] Tap targets: activity → media or user, airing → media, follow → user. (Activities about a list update open the media, others the user; media changes open the media.)
 
 **Done when:** the badge clears after opening, and grouped likes match the website's list.
 
 ## M11 · Settings
 
-- [ ] Colors (Material You / AniList blue) with live preview, theme mode, app language (per-app locale).
-- [ ] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally.
-- [ ] Account: avatar, name, log out (confirm).
-- [ ] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen.
-- [ ] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog.
+- [x] Colors (Material You / AniList blue) with live preview, theme mode, app language (per-app locale). (Stored in a device DataStore that logout keeps; the splash waits for it. App language through `LocaleManager` and `locales_config.xml`, Android 13+ only.)
+- [x] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally. (One request per change, online only; the Apollo cache is cleared and the list titles in Room follow without a sync.)
+- [x] Account: avatar, name, log out (confirm). (Guests get "Log in with AniList".)
+- [x] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen. (Hand-made list by license with the license texts bundled; no new dependency.)
+- [x] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog. (Containers keep 60 % of their color, `design/tokens.json`.)
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 

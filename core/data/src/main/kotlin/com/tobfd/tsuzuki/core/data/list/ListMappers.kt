@@ -89,7 +89,8 @@ private fun MediaCard.toEntity(type: String) = MediaLiteEntity(
     year = seasonYear ?: startDate?.year,
     averageScore = averageScore,
     nextAiringEpisode = nextAiringEpisode?.episode,
-    isAdult = isAdult ?: false
+    isAdult = isAdult ?: false,
+    nextAiringAt = nextAiringEpisode?.airingAt?.toLong()
 )
 
 internal fun EntryWithMedia.toModel(): MediaListEntry? {
@@ -129,7 +130,8 @@ internal fun MediaLiteEntity.toModel(): MediaLite? = MediaLite(
     year = year,
     averageScore = averageScore,
     nextAiringEpisode = nextAiringEpisode,
-    isAdult = isAdult
+    isAdult = isAdult,
+    nextAiringAt = nextAiringAt?.let(Instant::ofEpochSecond)
 )
 
 /** The row for [entry] after a local change; keeps the sync run of the row it replaces. */

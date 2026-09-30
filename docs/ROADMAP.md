@@ -8,8 +8,11 @@ From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each wi
 2. M5 + M6
 3. M7 + M8 + M9
 4. Tablet (added by Tobias, 2026-09-30)
-5. M10 + M11 + M12
-6. M13 (widgets, after v1)
+5. M10 + M11
+6. Widgets (formerly M13, part of v1 since 2026-09-30)
+7. M12 (polish, the last package before v1; covers the widgets too)
+
+Reordered by Tobias on 2026-09-30: M12 moved behind the widgets so its accessibility, large-screen and performance passes include them.
 
 Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
 
@@ -173,23 +176,9 @@ For medium and expanded widths (Pixel Tablet, foldables open, phones in landscap
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 
-## M12 · Polish and release readiness
+## Widgets (Glance; added by Tobias, 2026-09-30, part of v1)
 
-- [ ] German translation complete and reviewed by Tobias.
-- [ ] Accessibility pass: TalkBack on every screen, font scale 200 %, contrast in both color sources.
-- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens (tablet + foldable emulator), no orientation lock warnings.
-- [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler).
-- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
-- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
-- [ ] Final app icon and themed icon.
-- [ ] Crash-free run through all screens with airplane mode toggled.
-- [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
-
-**Done when:** Tobias has used v1 as his only AniList app for a week.
-
-## M13 · Widgets (Glance, after v1; added by Tobias, 2026-09-30)
-
-Starts only after v1 is done (docs/PRODUCT.md, "Later"). Jetpack Glance is not in the tech stack yet, so adding it needs Tobias's OK when M13 starts.
+Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack Glance (latest stable) is approved and listed in `CLAUDE.md`.
 
 - [ ] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes.
 - [ ] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop.
@@ -197,3 +186,17 @@ Starts only after v1 is done (docs/PRODUCT.md, "Later"). Jetpack Glance is not i
 - [ ] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline.
 
 **Done when:** all three widgets run on Tobias's home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.
+
+## M12 · Polish and release readiness
+
+- [ ] German translation complete and reviewed by Tobias.
+- [ ] Accessibility pass: TalkBack on every screen and widget, font scale 200 %, contrast in both color sources.
+- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens and the widgets' sizes (tablet + foldable emulator), no orientation lock warnings.
+- [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler); widget updates stay cheap (no work on the main thread, no updates beyond the planned ones).
+- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
+- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
+- [ ] Final app icon and themed icon.
+- [ ] Crash-free run through all screens and widgets with airplane mode toggled.
+- [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
+
+**Done when:** Tobias has used v1 as his only AniList app for a week.

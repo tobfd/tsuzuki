@@ -25,8 +25,8 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 
 - **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
 - **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and M13 added 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11+M12, then M13 (widgets, after v1). One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
-- **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`). Conventional Commits (`feat(lists): add +1 with undo`).
+- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`), `<package>/<short-topic>` for unnumbered packages (e.g. `widgets/glance`). Conventional Commits (`feat(lists): add +1 with undo`).
 - **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
 - **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
 - **Before saying "done":** `./gradlew spotlessApply` then `./gradlew build` (compiles, unit tests, lint). Report failures honestly with the output.
@@ -67,6 +67,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Paging | Paging 3 (`paging-compose`) | Search, notifications. The Home feed loads more by button, without Paging. |
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
+| Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; latest stable is 1.2.0 (pin it when the package starts). Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
@@ -178,7 +179,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 
 ## Don'ts
 
-- Don't add a forum, review writing, widgets or airing reminders before v1 is done (see `docs/PRODUCT.md`, "Later").
+- Don't add a forum, review writing or airing reminders before v1 is done (see `docs/PRODUCT.md`, "Later"). Widgets are part of v1 since 2026-09-30.
 - Don't hardcode the client ID, colors, strings or spacing.
 - Don't call the API from composables or from `init {}` of anything but a ViewModel/repository.
 - Don't swallow errors; map them to `AppError` and show them.

@@ -37,6 +37,9 @@ import com.tobfd.tsuzuki.core.ui.score.ScoreText
  * A row of the viewer's list (docs/DESIGN.md, `MediaListRow`): thumbnail, title, "TV · 2023 · 9.0",
  * progress, and +1 while watching or "Start" while planning. Tap edits the entry, long press opens
  * the detail page. TalkBack reads the row as one item with +1 / Start as actions.
+ *
+ * With [readOnly] (someone else's list) there is no +1 or Start and a tap opens [onClick] as the
+ * detail page.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,12 +50,13 @@ fun MediaListRow(
     onLongClick: () -> Unit,
     onPlusOne: () -> Unit,
     onStart: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    readOnly: Boolean = false
 ) {
     val media = entry.media
     val total = media.total
-    val canPlusOne = ListEntryActions.canPlusOne(entry)
-    val canStart = entry.status == MediaListStatus.PLANNING
+    val canPlusOne = !readOnly && ListEntryActions.canPlusOne(entry)
+    val canStart = !readOnly && entry.status == MediaListStatus.PLANNING
     val plusOneLabel = stringResource(DesignR.string.designsystem_plus_one_description)
     val startLabel = stringResource(R.string.ui_list_start)
     Surface(
@@ -70,7 +74,9 @@ fun MediaListRow(
         Row(
             modifier = Modifier
                 .combinedClickable(
-                    onClickLabel = stringResource(R.string.ui_list_edit_entry),
+                    onClickLabel = stringResource(
+                        if (readOnly) R.string.ui_open_details else R.string.ui_list_edit_entry
+                    ),
                     onLongClickLabel = stringResource(R.string.ui_open_details),
                     onClick = onClick,
                     onLongClick = onLongClick

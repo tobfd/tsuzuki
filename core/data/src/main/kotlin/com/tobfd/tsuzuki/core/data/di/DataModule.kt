@@ -7,10 +7,12 @@ import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ConnectivityNetworkMonitor
 import com.tobfd.tsuzuki.core.data.list.DatabaseUserDataCleaner
 import com.tobfd.tsuzuki.core.data.list.DefaultListRepository
+import com.tobfd.tsuzuki.core.data.list.DefaultUserListRepository
 import com.tobfd.tsuzuki.core.data.list.ListRepository
 import com.tobfd.tsuzuki.core.data.list.ListWorkScheduler
 import com.tobfd.tsuzuki.core.data.list.NetworkMonitor
 import com.tobfd.tsuzuki.core.data.list.UserDataCleaner
+import com.tobfd.tsuzuki.core.data.list.UserListRepository
 import com.tobfd.tsuzuki.core.data.list.WorkManagerListWorkScheduler
 import com.tobfd.tsuzuki.core.data.media.DefaultMediaRepository
 import com.tobfd.tsuzuki.core.data.media.MediaRepository
@@ -58,6 +60,9 @@ internal interface DataModule {
 
     @Binds
     fun profileRepository(impl: DefaultProfileRepository): ProfileRepository
+
+    @Binds
+    fun userListRepository(impl: DefaultUserListRepository): UserListRepository
 
     @Binds
     fun listWorkScheduler(impl: WorkManagerListWorkScheduler): ListWorkScheduler

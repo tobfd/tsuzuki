@@ -44,4 +44,6 @@
     <string name="profile_social_empty_following">Not following anyone yet.</string>
     <string name="profile_social_empty_followers">No followers yet.</string>
     <string name="profile_social_more">More on AniList</string>
+    <string name="profile_anime_list">Anime list</string>
+    <string name="profile_manga_list">Manga list</string>
 </resources>

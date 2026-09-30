@@ -29,6 +29,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -126,6 +127,8 @@ data class ProfileNavigation(
     val onOpenCharacter: (Int) -> Unit,
     val onOpenStaff: (Int) -> Unit,
     val onOpenUser: (id: Int, name: String) -> Unit,
+    /** Someone else's anime or manga list, read only. */
+    val onOpenList: (userId: Int, userName: String, type: MediaType) -> Unit,
     val onLogIn: () -> Unit
 )
 
@@ -324,6 +327,14 @@ private fun ProfileList(
             Header(state = state, side = side, onToggleFollow = onToggleFollow)
         }
         item(key = "stats") { StatsRow(state.profile.anime, modifier = Modifier.padding(side)) }
+        if (!state.isOwn) {
+            item(key = "lists") {
+                ListButtons(
+                    onOpenList = { type -> navigation.onOpenList(state.profile.id, state.profile.name, type) },
+                    modifier = Modifier.padding(side)
+                )
+            }
+        }
         stickyHeader(key = "tabs") {
             PrimaryTabRow(selectedTabIndex = tab.ordinal, containerColor = MaterialTheme.colorScheme.surface) {
                 ProfileTab.entries.forEach { entry ->
@@ -416,6 +427,19 @@ private fun Header(state: ProfileUiState.Content, side: PaddingValues, onToggleF
                     )
                 }
             }
+        }
+    }
+}
+
+/** "Anime list" and "Manga list" on someone else's profile. */
+@Composable
+private fun ListButtons(onOpenList: (MediaType) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        OutlinedButton(onClick = { onOpenList(MediaType.ANIME) }, modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.profile_anime_list))
+        }
+        OutlinedButton(onClick = { onOpenList(MediaType.MANGA) }, modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.profile_manga_list))
         }
     }
 }
@@ -784,7 +808,7 @@ private val previewProfile = UserProfile(
     recentActivity = emptyList()
 )
 
-private val previewNavigation = ProfileNavigation({}, {}, {}, { _, _ -> }, {})
+private val previewNavigation = ProfileNavigation({}, {}, {}, { _, _ -> }, { _, _, _ -> }, {})
 
 @ThemePreviews
 @Composable

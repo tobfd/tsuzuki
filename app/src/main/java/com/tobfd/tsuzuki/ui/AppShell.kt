@@ -50,6 +50,8 @@ import com.tobfd.tsuzuki.feature.browse.BrowseScreen
 import com.tobfd.tsuzuki.feature.home.HomeRoute
 import com.tobfd.tsuzuki.feature.home.HomeScreen
 import com.tobfd.tsuzuki.feature.lists.ListsRoute
+import com.tobfd.tsuzuki.feature.lists.UserListRoute
+import com.tobfd.tsuzuki.feature.lists.UserListScreen
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorRoute
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorSheet
 import com.tobfd.tsuzuki.feature.media.MediaRoute
@@ -175,6 +177,15 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 userName = route.name,
                 onBack = { navigator.back() },
                 navigation = profileNavigation(navigator, onLogOut)
+            )
+        }
+        entry<UserListRoute>(metadata = ListDetailSceneStrategy.listPane()) { route ->
+            UserListScreen(
+                userId = route.userId,
+                userName = route.userName,
+                type = route.type,
+                onBack = { navigator.back() },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) }
             )
         }
         entry<NotificationsRoute> {
@@ -343,6 +354,7 @@ private fun profileNavigation(navigator: TopLevelNavigator, onLogIn: () -> Unit)
     onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
     onOpenStaff = { navigator.navigate(StaffRoute(it)) },
     onOpenUser = { id, name -> navigator.navigate(UserRoute(id, name)) },
+    onOpenList = { userId, userName, type -> navigator.navigate(UserListRoute(userId, userName, type)) },
     onLogIn = onLogIn
 )
 

@@ -171,6 +171,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Compose UI tests for the list editor sheet, +1 with undo, and login redirect handling.
 - Test names describe behavior: `plusOne_whenReachingTotal_marksCompletedAndOffersUndo`.
 - Room is tested with an in-memory database on Robolectric (`@Config(sdk = [35])`: Robolectric's SDK 36 setup fails on the JDK 25 test runtime). Apollo responses in these tests are parsed from JSON (`ListTestData.kt`), shaped like AniList's.
+- Compose UI tests (`connectedDebugAndroidTest`) run on the emulator (API 36) only. On Android 17 (API 37) every one fails inside Espresso 3.7.0 (`NoSuchMethodException: InputManager.getInstance`); as of 2026-09-30 there is no newer stable Espresso / androidx.test release. Update and retry on the Pixel once one ships.
 - `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design), `MainDispatcherRule`, fakes like `FakeSessionRepository`, and `InMemoryDataStore`. Unit tests never use the file-backed DataStore: it can't replace its file on Windows JVMs, so such tests fail locally while CI (Linux) passes.
 
 ## Don'ts

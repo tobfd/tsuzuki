@@ -40,6 +40,7 @@ fun TabRootScaffold(
     onAvatarClick: () -> Unit,
     onRenewLogin: () -> Unit,
     modifier: Modifier = Modifier,
+    showAvatar: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (contentPadding: PaddingValues) -> Unit
 ) {
@@ -52,7 +53,9 @@ fun TabRootScaffold(
                 title = title,
                 unreadNotificationCount = if (viewer != null) chrome.unreadNotificationCount else null,
                 onNotificationsClick = onNotificationsClick,
-                avatar = viewer?.let { { UserAvatar(avatarUrl = it.avatarUrl, name = it.name) } },
+                avatar = viewer?.takeIf {
+                    showAvatar
+                }?.let { { UserAvatar(avatarUrl = it.avatarUrl, name = it.name) } },
                 onAvatarClick = onAvatarClick,
                 actions = actions
             )

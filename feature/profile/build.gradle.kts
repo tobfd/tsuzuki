@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.tobfd.tsuzuki.feature.profile"
 }
+
+dependencies {
+    implementation(libs.coil.compose)
+}

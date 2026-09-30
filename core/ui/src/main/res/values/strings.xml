@@ -84,4 +84,8 @@
     <string name="ui_role_supporting">Supporting</string>
     <string name="ui_role_background">Background</string>
     <string name="ui_average_score">%1$d%%</string>
+    <plurals name="ui_heatmap_description">
+        <item quantity="one">Activity history: %1$d activity in the last %2$d weeks</item>
+        <item quantity="other">Activity history: %1$d activities in the last %2$d weeks</item>
+    </plurals>
 </resources>

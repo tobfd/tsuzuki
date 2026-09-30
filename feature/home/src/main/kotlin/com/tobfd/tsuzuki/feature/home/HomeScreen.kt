@@ -89,7 +89,7 @@ private val UpNextCoverWidth = 40.dp
 @Composable
 fun HomeScreen(
     onOpenMedia: (mediaId: Int) -> Unit,
-    onOpenUser: (name: String) -> Unit,
+    onOpenUser: (id: Int, name: String) -> Unit,
     onEditEntry: (mediaId: Int) -> Unit,
     onSeeAllLists: () -> Unit,
     modifier: Modifier = Modifier,
@@ -110,7 +110,7 @@ fun HomeScreen(
 internal fun HomeContent(
     viewModel: HomeViewModel,
     onOpenMedia: (mediaId: Int) -> Unit,
-    onOpenUser: (name: String) -> Unit,
+    onOpenUser: (id: Int, name: String) -> Unit,
     onEditEntry: (mediaId: Int) -> Unit,
     onSeeAllLists: () -> Unit,
     modifier: Modifier = Modifier,
@@ -193,7 +193,7 @@ private fun HomeList(
     state: HomeUiState,
     contentPadding: PaddingValues,
     onOpenMedia: (Int) -> Unit,
-    onOpenUser: (String) -> Unit,
+    onOpenUser: (Int, String) -> Unit,
     onEditEntry: (Int) -> Unit,
     onSeeAllLists: () -> Unit,
     onPlusOne: (Int) -> Unit,
@@ -282,7 +282,7 @@ private fun HomeList(
             ActivityCard(
                 activity = activity.withLike(state.likes[activity.id]),
                 onLikeClick = { onToggleLike(activity) },
-                onUserClick = { onOpenUser(activity.user.name) },
+                onUserClick = { onOpenUser(activity.user.id, activity.user.name) },
                 onMediaClick = onOpenMedia,
                 modifier = horizontal
             )

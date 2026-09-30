@@ -73,4 +73,5 @@
     <string name="ui_role_main">Hauptrolle</string>
     <string name="ui_role_supporting">Nebenrolle</string>
     <string name="ui_role_background">Hintergrund</string>
+    <string name="ui_average_score">%1$d %%</string>
 </resources>

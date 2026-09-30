@@ -24,9 +24,11 @@ import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
 
 /**
- * Pill-shaped search field with a leading search icon and a trailing close button (Lists search;
- * Browse uses it in M7).
+ * Pill-shaped search field with a leading search icon and a trailing close button (Lists search,
+ * Browse).
  *
+ * @param onClose the trailing button; null hides it (Browse shows it only while there is text).
+ * @param closeLabel what TalkBack says for the trailing button.
  * @param focusOnStart moves the focus (and the keyboard) into the field when it first appears.
  */
 @Composable
@@ -34,8 +36,9 @@ fun TsuzukiSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String,
-    onClose: () -> Unit,
+    onClose: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    closeLabel: String = stringResource(R.string.designsystem_search_close),
     focusOnStart: Boolean = false
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -47,12 +50,11 @@ fun TsuzukiSearchField(
             .focusRequester(focusRequester),
         placeholder = { Text(placeholder) },
         leadingIcon = { Icon(painterResource(TsuzukiIcons.Search), contentDescription = null) },
-        trailingIcon = {
-            IconButton(onClick = onClose) {
-                Icon(
-                    painterResource(TsuzukiIcons.Close),
-                    contentDescription = stringResource(R.string.designsystem_search_close)
-                )
+        trailingIcon = onClose?.let {
+            {
+                IconButton(onClick = onClose) {
+                    Icon(painterResource(TsuzukiIcons.Close), contentDescription = closeLabel)
+                }
             }
         },
         singleLine = true,

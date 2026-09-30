@@ -11,13 +11,13 @@ import com.apollographql.cache.normalized.isFromCache
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.mapper.toModel
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
+import com.tobfd.tsuzuki.core.data.session.adultContentAllowed
 import com.tobfd.tsuzuki.core.data.session.isAdultArgument
 import com.tobfd.tsuzuki.core.model.BrowseHome
 import com.tobfd.tsuzuki.core.model.BrowseQuery
 import com.tobfd.tsuzuki.core.model.FilterOptions
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.SearchResult
-import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.model.TagOption
 import com.tobfd.tsuzuki.core.network.BrowseHomeQuery
 import com.tobfd.tsuzuki.core.network.GenresAndTagsQuery
@@ -32,7 +32,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
 /** How long the idle rows count as fresh (docs/ANILIST_API.md, Caching). */
@@ -127,8 +126,16 @@ internal class DefaultBrowseRepository @Inject constructor(
                 }.sortedBy { it.name.lowercase() }
             ).also { if (!response.isFromCache) options = it }
         }
-        val adultAllowed = (sessionRepository.session.first() as? SessionState.LoggedIn)
-            ?.viewer?.options?.displayAdultContent == true
-        return Result.success(if (adultAllowed) loaded else loaded.copy(tags = loaded.tags.filterNot { it.isAdult }))
+        return Result.success(
+            if (sessionRepository.adultContentAllowed()) {
+                loaded
+            } else {
+                loaded.copy(
+                    tags = loaded.tags.filterNot {
+                        it.isAdult
+                    }
+                )
+            }
+        )
     }
 }

@@ -58,6 +58,8 @@ object TsuzukiIcons {
 
     @DrawableRes val Person: Int = R.drawable.ic_person
 
+    @DrawableRes val PersonAdd: Int = R.drawable.ic_person_add
+
     @DrawableRes val PersonFilled: Int = R.drawable.ic_person_filled
 
     @DrawableRes val PlayArrow: Int = R.drawable.ic_play_arrow
@@ -85,4 +87,6 @@ object TsuzukiIcons {
     @DrawableRes val StarFilled: Int = R.drawable.ic_star_filled
 
     @DrawableRes val TrendingUp: Int = R.drawable.ic_trending_up
+
+    @DrawableRes val Tune: Int = R.drawable.ic_tune
 }

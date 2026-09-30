@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="browse_placeholder">Suche, Filter und die Trend-Reihen kommen in M7.</string>
+    <string name="browse_search_placeholder">Anime und Manga suchen</string>
+    <string name="browse_anime">Anime</string>
+    <string name="browse_manga">Manga</string>
+    <string name="browse_filters">Filter</string>
+    <plurals name="browse_filters_active">
+        <item quantity="one">Filter, %d aktiv</item>
+        <item quantity="other">Filter, %d aktiv</item>
+    </plurals>
+    <string name="browse_quick_trending">Im Trend</string>
+    <string name="browse_quick_top_100">Top 100</string>
+    <string name="browse_quick_this_season">Diese Saison</string>
+    <string name="browse_quick_top_movies">Top-Filme</string>
+    <string name="browse_quick_top_manhwa">Top-Manhwa</string>
+    <string name="browse_trending_now">Gerade im Trend</string>
+    <string name="browse_newly_added">Neu hinzugefügt</string>
+    <string name="browse_results">Ergebnisse</string>
+    <string name="browse_error_title">Konnte nicht geladen werden</string>
+    <string name="browse_no_results_title">Nichts gefunden</string>
+    <string name="browse_no_results_message">Versuch einen anderen Suchbegriff oder weniger Filter.</string>
+    <string name="browse_more_failed">Weitere Ergebnisse konnten nicht geladen werden.</string>
+    <string name="browse_filter_format">Format</string>
+    <string name="browse_filter_status">Erscheinungsstatus</string>
+    <string name="browse_filter_season">Saison</string>
+    <string name="browse_filter_year">Jahr</string>
+    <string name="browse_filter_any_year">Alle Jahre</string>
+    <string name="browse_filter_earlier_year">Früheres Jahr</string>
+    <string name="browse_filter_later_year">Späteres Jahr</string>
+    <string name="browse_filter_clear_year">Alle Jahre</string>
+    <string name="browse_filter_genres">Genres</string>
+    <string name="browse_filter_tags">Tags</string>
+    <string name="browse_filter_tag_search">Tags suchen</string>
+    <string name="browse_filter_options_error">Genres und Tags konnten nicht geladen werden.</string>
+    <string name="browse_filter_sort">Sortierung</string>
+    <string name="browse_filter_reset">Zurücksetzen</string>
+    <string name="browse_filter_show">Ergebnisse zeigen</string>
+    <string name="browse_sort_default">Standard</string>
+    <string name="browse_sort_popularity">Beliebtheit</string>
+    <string name="browse_sort_trending">Im Trend</string>
+    <string name="browse_sort_score">Bewertung</string>
+    <string name="browse_sort_newest">Neueste</string>
+    <string name="browse_sort_recently_added">Zuletzt hinzugefügt</string>
+    <string name="browse_sort_favourites">Favoriten</string>
+    <string name="browse_sort_title">Titel</string>
 </resources>

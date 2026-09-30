@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="browse_placeholder">Search, filters and the trending rows arrive in M7.</string>
+    <string name="browse_search_placeholder">Search anime and manga</string>
+    <string name="browse_anime">Anime</string>
+    <string name="browse_manga">Manga</string>
+    <string name="browse_filters">Filters</string>
+    <plurals name="browse_filters_active">
+        <item quantity="one">Filters, %d active</item>
+        <item quantity="other">Filters, %d active</item>
+    </plurals>
+    <string name="browse_quick_trending">Trending</string>
+    <string name="browse_quick_top_100">Top 100</string>
+    <string name="browse_quick_this_season">This season</string>
+    <string name="browse_quick_top_movies">Top movies</string>
+    <string name="browse_quick_top_manhwa">Top manhwa</string>
+    <string name="browse_trending_now">Trending now</string>
+    <string name="browse_newly_added">Newly added</string>
+    <string name="browse_results">Results</string>
+    <string name="browse_error_title">Couldn\'t load this</string>
+    <string name="browse_no_results_title">Nothing found</string>
+    <string name="browse_no_results_message">Try another search or fewer filters.</string>
+    <string name="browse_more_failed">Couldn\'t load more results.</string>
+    <string name="browse_filter_format">Format</string>
+    <string name="browse_filter_status">Release status</string>
+    <string name="browse_filter_season">Season</string>
+    <string name="browse_filter_year">Year</string>
+    <string name="browse_filter_any_year">Any year</string>
+    <string name="browse_filter_earlier_year">Earlier year</string>
+    <string name="browse_filter_later_year">Later year</string>
+    <string name="browse_filter_clear_year">Any year</string>
+    <string name="browse_filter_genres">Genres</string>
+    <string name="browse_filter_tags">Tags</string>
+    <string name="browse_filter_tag_search">Search tags</string>
+    <string name="browse_filter_options_error">Couldn\'t load genres and tags.</string>
+    <string name="browse_filter_sort">Sort</string>
+    <string name="browse_filter_reset">Reset</string>
+    <string name="browse_filter_show">Show results</string>
+    <string name="browse_sort_default">Default</string>
+    <string name="browse_sort_popularity">Popularity</string>
+    <string name="browse_sort_trending">Trending</string>
+    <string name="browse_sort_score">Score</string>
+    <string name="browse_sort_newest">Newest</string>
+    <string name="browse_sort_recently_added">Recently added</string>
+    <string name="browse_sort_favourites">Favourites</string>
+    <string name="browse_sort_title">Title</string>
 </resources>

@@ -25,6 +25,8 @@ import com.tobfd.tsuzuki.core.data.profile.ProfileRepository
 import com.tobfd.tsuzuki.core.data.session.DefaultSessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.SessionTokenProvider
+import com.tobfd.tsuzuki.core.data.settings.DefaultSettingsRepository
+import com.tobfd.tsuzuki.core.data.settings.SettingsRepository
 import com.tobfd.tsuzuki.core.network.auth.AccessTokenProvider
 import dagger.Binds
 import dagger.Module
@@ -63,6 +65,9 @@ internal interface DataModule {
 
     @Binds
     fun userListRepository(impl: DefaultUserListRepository): UserListRepository
+
+    @Binds
+    fun settingsRepository(impl: DefaultSettingsRepository): SettingsRepository
 
     @Binds
     fun listWorkScheduler(impl: WorkManagerListWorkScheduler): ListWorkScheduler

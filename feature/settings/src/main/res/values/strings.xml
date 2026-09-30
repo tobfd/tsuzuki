@@ -34,6 +34,7 @@
     <string name="settings_score_format_3">3 point (liked, neutral, disliked)</string>
     <string name="settings_adult_content">Show adult content</string>
     <string name="settings_adult_content_summary">Hidden by default</string>
+    <string name="settings_adult_content_summary_on">Shown in search, trending and lists</string>
     <string name="settings_save_failed">Couldn\'t save the setting. %1$s</string>
     <string name="settings_section_account">Account</string>
     <string name="settings_logged_in_with_anilist">Logged in with AniList</string>

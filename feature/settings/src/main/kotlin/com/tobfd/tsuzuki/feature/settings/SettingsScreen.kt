@@ -347,7 +347,13 @@ private fun ContentSection(state: SettingsUiState, actions: SettingsActions) {
         )
         SwitchRow(
             title = stringResource(R.string.settings_adult_content),
-            supporting = stringResource(R.string.settings_adult_content_summary),
+            supporting = stringResource(
+                if (options.displayAdultContent) {
+                    R.string.settings_adult_content_summary_on
+                } else {
+                    R.string.settings_adult_content_summary
+                }
+            ),
             checked = options.displayAdultContent,
             enabled = !state.savingOptions,
             onCheckedChange = actions.onAdultContentChange

@@ -29,6 +29,7 @@
     <string name="settings_score_format_3">3 Stufen (gut, neutral, schlecht)</string>
     <string name="settings_adult_content">Inhalte für Erwachsene zeigen</string>
     <string name="settings_adult_content_summary">Standardmäßig ausgeblendet</string>
+    <string name="settings_adult_content_summary_on">Werden in Suche, Trends und Listen angezeigt</string>
     <string name="settings_save_failed">Einstellung konnte nicht gespeichert werden. %1$s</string>
     <string name="settings_section_account">Konto</string>
     <string name="settings_logged_in_with_anilist">Mit AniList angemeldet</string>

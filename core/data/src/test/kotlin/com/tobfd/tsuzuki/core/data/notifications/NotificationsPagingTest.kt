@@ -20,6 +20,7 @@ import java.time.Instant
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -91,6 +92,50 @@ class NotificationsPagingTest {
         assertEquals(listOf(true, true, false), entries.map { it.isUnread })
         assertEquals(0, repository.unreadCount.value)
         assertTrue(apollo.operations.single().requestVariables().contains("\"reset\":true"))
+    }
+
+    @Test
+    fun allFilter_leavesTypesOut() = runTest {
+        // An explicit "types":null makes AniList answer HTTP 500 (seen on the phone, 2026-10-01).
+        apollo.enqueueJson(firstPage(), pageJson(listOf(follow(1, 11)), false, viewerCount = 0))
+
+        repository.notifications(NotificationFilter.All, repository.startVisit()).asSnapshot()
+
+        val variables = apollo.operations.single().requestVariables()
+        assertFalse(variables, variables.contains("types"))
+    }
+
+    @Test
+    fun unknownAndIncompleteNotifications_areSkippedWithoutFailingThePage() = runTest {
+        val items = listOf(
+            forum(1),
+            """{"__typename":"MediaSubmissionUpdate"}""",
+            // Media or user gone (deleted on AniList): nothing to show.
+            """{"__typename":"AiringNotification","id":3,"type":"AIRING","createdAt":1790000000,"episode":5,
+               "contexts":null,"media":null}""",
+            """{"__typename":"FollowingNotification","id":4,"type":"FOLLOWING","createdAt":1790000000,
+               "context":null,"user":null}""",
+            """{"__typename":"ActivityLikeNotification","id":5,"type":"ACTIVITY_LIKE","createdAt":null,
+               "context":null,"activityId":9,"user":${user(15)},"activity":null}""",
+            follow(6, 16)
+        )
+        apollo.enqueueJson(firstPage(), pageJson(items, false, viewerCount = 0))
+
+        val entries = repository.notifications(NotificationFilter.All, repository.startVisit()).asSnapshot()
+
+        assertEquals(listOf(5, 6), entries.map { it.notification.id })
+        assertEquals(null, (entries.first().notification as Notification.ActivityEvent).listActivity)
+    }
+
+    @Test
+    fun graphQlErrorsNextToData_stillShowThePage() = runTest {
+        val json = pageJson(listOf(follow(1, 11)), false, viewerCount = 0).removeSuffix("}") +
+            ""","errors":[{"message":"Media not found","status":404}]}"""
+        apollo.enqueueJson(firstPage(), json)
+
+        val entries = repository.notifications(NotificationFilter.All, repository.startVisit()).asSnapshot()
+
+        assertEquals(listOf(1), entries.map { it.notification.id })
     }
 
     @Test

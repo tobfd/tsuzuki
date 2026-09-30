@@ -1,5 +1,6 @@
 # Notifications (Paging 3). Filter chips map to `types`:
-#   All       null (forum and submission notifications are dropped client-side in v1)
+#   All       leave `types` out; an explicit null makes AniList answer HTTP 500 (forum and submission
+#             notifications are dropped client-side in v1)
 #   Airing    [AIRING]
 #   Activity  [ACTIVITY_MESSAGE, ACTIVITY_REPLY, ACTIVITY_MENTION, ACTIVITY_LIKE, ACTIVITY_REPLY_LIKE, ACTIVITY_REPLY_SUBSCRIBED]
 #   Follows   [FOLLOWING]

@@ -82,7 +82,8 @@ internal class NotificationsPagingSource(
         val reset = visit.claimReset()
         val query = NotificationsQuery(
             page = page,
-            types = Optional.present(filter.types()),
+            // All leaves `types` out: an explicit `null` makes AniList answer HTTP 500 (seen 2026-10-01).
+            types = Optional.presentIfNotNull(filter.types()),
             reset = Optional.present(reset)
         )
         val response = try {

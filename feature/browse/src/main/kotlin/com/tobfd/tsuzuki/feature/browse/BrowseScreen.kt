@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,8 +59,10 @@ import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
+import com.tobfd.tsuzuki.core.designsystem.theme.bleedHorizontally
 import com.tobfd.tsuzuki.core.model.BrowseHome
 import com.tobfd.tsuzuki.core.model.BrowseQuery
 import com.tobfd.tsuzuki.core.model.MediaLite
@@ -133,7 +137,7 @@ internal fun BrowseContent(
     val layoutDirection = LocalLayoutDirection.current
     val start = contentPadding.calculateStartPadding(layoutDirection)
     val end = contentPadding.calculateEndPadding(layoutDirection)
-    val listState = rememberLazyListState()
+    val listState = rememberLazyGridState()
     ScrollToTopOnTabReselect(listState)
     // A new search or filter starts at its first result.
     LaunchedEffect(state.search) { listState.scrollToItem(0) }
@@ -165,7 +169,7 @@ private val LocalSidePadding = staticCompositionLocalOf { PaddingValues(horizont
 private fun BrowseColumn(
     state: BrowseUiState,
     results: LazyPagingItems<SearchResult>,
-    listState: LazyListState,
+    listState: LazyGridState,
     bottomPadding: Dp,
     onQueryChange: (String) -> Unit,
     onTypeChange: (MediaType) -> Unit,
@@ -184,13 +188,20 @@ private fun BrowseColumn(
             onQuickFilter = onQuickFilter,
             onOpenFilters = onOpenFilters
         )
-        LazyColumn(
+        val side = LocalSidePadding.current
+        val layoutDirection = LocalLayoutDirection.current
+        // Results fill one column on phones and two or three next to each other on tablets.
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
+                start = side.calculateStartPadding(layoutDirection),
+                end = side.calculateEndPadding(layoutDirection),
                 top = TsuzukiSpacing.small,
                 bottom = bottomPadding + TsuzukiSpacing.large
             ),
+            horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
             verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
         ) {
             if (state.search != null) {
@@ -266,7 +277,7 @@ private fun FilterButton(activeCount: Int, onClick: () -> Unit) {
     }
 }
 
-private fun LazyListScope.idleRows(
+private fun LazyGridScope.idleRows(
     rows: BrowseRows,
     onQuickFilter: (QuickFilter) -> Unit,
     onSeeAllNewlyAdded: () -> Unit,
@@ -274,9 +285,9 @@ private fun LazyListScope.idleRows(
     onOpenMedia: (Int) -> Unit
 ) {
     when (rows) {
-        BrowseRows.Loading -> item(key = "loading") { CenteredProgress() }
+        BrowseRows.Loading -> item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { CenteredProgress() }
 
-        is BrowseRows.Error -> item(key = "error") {
+        is BrowseRows.Error -> item(key = "error", span = { GridItemSpan(maxLineSpan) }) {
             ErrorState(
                 title = stringResource(R.string.browse_error_title),
                 message = rows.error.message(),
@@ -286,7 +297,7 @@ private fun LazyListScope.idleRows(
         }
 
         is BrowseRows.Content -> {
-            item(key = "trending") {
+            item(key = "trending", span = { GridItemSpan(maxLineSpan) }) {
                 MediaRow(
                     title = stringResource(R.string.browse_trending_now),
                     media = rows.home.trending,
@@ -294,7 +305,7 @@ private fun LazyListScope.idleRows(
                     onOpenMedia = onOpenMedia
                 )
             }
-            item(key = "newlyAdded") {
+            item(key = "newlyAdded", span = { GridItemSpan(maxLineSpan) }) {
                 MediaRow(
                     title = stringResource(R.string.browse_newly_added),
                     media = rows.home.newlyAdded,
@@ -309,8 +320,12 @@ private fun LazyListScope.idleRows(
 @Composable
 private fun MediaRow(title: String, media: List<MediaLite>, onSeeAll: () -> Unit, onOpenMedia: (Int) -> Unit) {
     if (media.isEmpty()) return
+    val side = LocalSidePadding.current
+    val layoutDirection = LocalLayoutDirection.current
     Column(
-        modifier = Modifier.padding(top = TsuzukiSpacing.small, bottom = TsuzukiSpacing.large),
+        modifier = Modifier
+            .bleedHorizontally(side.calculateStartPadding(layoutDirection), side.calculateEndPadding(layoutDirection))
+            .padding(top = TsuzukiSpacing.small, bottom = TsuzukiSpacing.large),
         verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
     ) {
         SectionHeader(
@@ -329,16 +344,20 @@ private fun MediaRow(title: String, media: List<MediaLite>, onSeeAll: () -> Unit
     }
 }
 
-private fun LazyListScope.results(
+private fun LazyGridScope.results(
     results: LazyPagingItems<SearchResult>,
     query: BrowseQuery,
     onOpenMedia: (Int) -> Unit
 ) {
     val refresh = results.loadState.refresh
     when {
-        refresh is LoadState.Loading && results.itemCount == 0 -> item(key = "loading") { CenteredProgress() }
+        refresh is LoadState.Loading && results.itemCount == 0 -> item(key = "loading", span = {
+            GridItemSpan(maxLineSpan)
+        }) { CenteredProgress() }
 
-        refresh is LoadState.Error && results.itemCount == 0 -> item(key = "error") {
+        refresh is LoadState.Error && results.itemCount == 0 -> item(key = "error", span = {
+            GridItemSpan(maxLineSpan)
+        }) {
             ErrorState(
                 title = stringResource(R.string.browse_error_title),
                 message = (refresh.error as? AppError ?: AppError.Unknown(refresh.error.message)).message(),
@@ -347,7 +366,9 @@ private fun LazyListScope.results(
             )
         }
 
-        refresh is LoadState.NotLoading && results.itemCount == 0 -> item(key = "empty") {
+        refresh is LoadState.NotLoading && results.itemCount == 0 -> item(key = "empty", span = {
+            GridItemSpan(maxLineSpan)
+        }) {
             EmptyState(
                 icon = painterResource(TsuzukiIcons.Search),
                 title = stringResource(R.string.browse_no_results_title),
@@ -357,12 +378,11 @@ private fun LazyListScope.results(
         }
 
         else -> {
-            item(key = "resultsHeader") {
+            item(key = "resultsHeader", span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     text = stringResource(R.string.browse_results),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        .padding(LocalSidePadding.current)
                         .padding(top = TsuzukiSpacing.small)
                         .semantics { heading() }
                 )
@@ -376,15 +396,16 @@ private fun LazyListScope.results(
                     MediaResultRow(
                         media = result.media,
                         listStatus = result.listStatus,
-                        onClick = { onOpenMedia(result.media.id) },
-                        modifier = Modifier.padding(LocalSidePadding.current)
+                        onClick = { onOpenMedia(result.media.id) }
                     )
                 }
             }
             when (val append = results.loadState.append) {
-                is LoadState.Loading -> item(key = "appendLoading") { CenteredProgress() }
+                is LoadState.Loading -> item(key = "appendLoading", span = {
+                    GridItemSpan(maxLineSpan)
+                }) { CenteredProgress() }
 
-                is LoadState.Error -> item(key = "appendError") {
+                is LoadState.Error -> item(key = "appendError", span = { GridItemSpan(maxLineSpan) }) {
                     AppendError(error = append.error, onRetry = results::retry)
                 }
 

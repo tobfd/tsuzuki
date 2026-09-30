@@ -4,9 +4,11 @@ import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +18,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,6 +67,7 @@ import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.designsystem.R as DesignR
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.model.MediaDetail
 import com.tobfd.tsuzuki.core.model.MediaListEntry
@@ -233,6 +239,45 @@ private fun DetailPage(
     onOpenCharacter: (Int) -> Unit,
     onOpenStaff: (Int) -> Unit
 ) {
+    // Wide panes (tablets, an open foldable) put the header beside the sections instead of above.
+    BoxWithConstraints {
+        if (maxWidth >= TsuzukiSizes.twoColumnMinWidth) {
+            TwoColumnDetail(
+                state = state,
+                onBack = onBack,
+                onListButton = onListButton,
+                onToggleFavourite = onToggleFavourite,
+                onShare = onShare,
+                onOpenMedia = onOpenMedia,
+                onOpenCharacter = onOpenCharacter,
+                onOpenStaff = onOpenStaff
+            )
+        } else {
+            OneColumnDetail(
+                state = state,
+                onBack = onBack,
+                onListButton = onListButton,
+                onToggleFavourite = onToggleFavourite,
+                onShare = onShare,
+                onOpenMedia = onOpenMedia,
+                onOpenCharacter = onOpenCharacter,
+                onOpenStaff = onOpenStaff
+            )
+        }
+    }
+}
+
+@Composable
+private fun OneColumnDetail(
+    state: MediaDetailUiState.Content,
+    onBack: () -> Unit,
+    onListButton: () -> Unit,
+    onToggleFavourite: () -> Unit,
+    onShare: () -> Unit,
+    onOpenMedia: (Int) -> Unit,
+    onOpenCharacter: (Int) -> Unit,
+    onOpenStaff: (Int) -> Unit
+) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val selected by remember {
@@ -253,61 +298,144 @@ private fun DetailPage(
             }
             // Once the header has scrolled away, back and share move into the pinned tab bar.
             stickyHeader(key = "tabs") {
-                Surface(color = MaterialTheme.colorScheme.surface) {
-                    Row(modifier = Modifier.statusBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
-                        if (!headerVisible) {
-                            IconButton(onClick = onBack) {
-                                val backLabel = stringResource(DesignR.string.designsystem_back)
-                                Icon(painterResource(TsuzukiIcons.ArrowBack), contentDescription = backLabel)
-                            }
-                        }
-                        PrimaryScrollableTabRow(
-                            selectedTabIndex = selected,
-                            edgePadding = if (headerVisible) TsuzukiSpacing.screenMargin else 0.dp,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            DetailSection.entries.forEachIndexed { index, section ->
-                                Tab(
-                                    selected = index == selected,
-                                    onClick = {
-                                        scope.launch { listState.animateScrollToItem(index + SECTION_OFFSET) }
-                                    },
-                                    text = { Text(stringResource(section.labelRes)) }
-                                )
-                            }
-                        }
-                        if (!headerVisible) {
-                            IconButton(onClick = onShare) {
-                                val shareLabel = stringResource(R.string.media_share)
-                                Icon(painterResource(TsuzukiIcons.Share), contentDescription = shareLabel)
-                            }
-                        }
-                    }
-                }
-            }
-            item(key = "overview") {
-                OverviewSection(detail = state.detail, onOpenMedia = onOpenMedia)
-            }
-            item(key = "characters") {
-                CharactersSection(
-                    detail = state.detail,
-                    onOpenCharacter = onOpenCharacter,
-                    onOpenStaff = onOpenStaff
+                SectionTabs(
+                    selected = selected,
+                    compact = !headerVisible,
+                    onBack = onBack,
+                    onShare = onShare,
+                    onSelect = { index -> scope.launch { listState.animateScrollToItem(index + SECTION_OFFSET) } }
                 )
             }
-            item(key = "stats") {
-                StatsSection(detail = state.detail)
-            }
-            item(key = "social") {
-                SocialSection(state = state)
-            }
-            item(key = "recommendations") {
-                RecommendationsSection(detail = state.detail, onOpenMedia = onOpenMedia)
-            }
-            item(key = "bottom") { Spacer(Modifier.navigationBarsPadding().height(TsuzukiSpacing.extraLarge)) }
+            detailSections(state, onOpenMedia, onOpenCharacter, onOpenStaff)
         }
         if (headerVisible) FloatingButtons(onBack = onBack, onShare = onShare)
     }
+}
+
+/** Header, list button and actions in a column of their own on the left; the sections scroll on the right. */
+@Composable
+private fun TwoColumnDetail(
+    state: MediaDetailUiState.Content,
+    onBack: () -> Unit,
+    onListButton: () -> Unit,
+    onToggleFavourite: () -> Unit,
+    onShare: () -> Unit,
+    onOpenMedia: (Int) -> Unit,
+    onOpenCharacter: (Int) -> Unit,
+    onOpenStaff: (Int) -> Unit
+) {
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    // The sections start right after the tab row here: there is no header item in this list.
+    val selected by remember {
+        derivedStateOf { (listState.firstVisibleItemIndex - 1).coerceIn(0, DetailSection.entries.lastIndex) }
+    }
+    Row {
+        Box(
+            modifier = Modifier
+                .width(TsuzukiSizes.detailSideColumn)
+                .fillMaxHeight()
+        ) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .navigationBarsPadding()
+            ) {
+                Header(
+                    state = state,
+                    onListButton = onListButton,
+                    onToggleFavourite = onToggleFavourite,
+                    onShare = onShare
+                )
+            }
+            FloatingButtons(onBack = onBack, onShare = onShare)
+        }
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
+            stickyHeader(key = "tabs") {
+                SectionTabs(
+                    selected = selected,
+                    compact = false,
+                    onBack = onBack,
+                    onShare = onShare,
+                    onSelect = { index -> scope.launch { listState.animateScrollToItem(index + 1) } }
+                )
+            }
+            detailSections(state, onOpenMedia, onOpenCharacter, onOpenStaff)
+        }
+    }
+}
+
+/** The anchored tabs; [compact] adds back and share once the header has scrolled away. */
+@Composable
+private fun SectionTabs(
+    selected: Int,
+    compact: Boolean,
+    onBack: () -> Unit,
+    onShare: () -> Unit,
+    onSelect: (Int) -> Unit
+) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
+        Row(modifier = Modifier.statusBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
+            if (compact) {
+                IconButton(onClick = onBack) {
+                    val backLabel = stringResource(DesignR.string.designsystem_back)
+                    Icon(painterResource(TsuzukiIcons.ArrowBack), contentDescription = backLabel)
+                }
+            }
+            PrimaryScrollableTabRow(
+                selectedTabIndex = selected,
+                edgePadding = if (compact) 0.dp else TsuzukiSpacing.screenMargin,
+                modifier = Modifier.weight(1f)
+            ) {
+                DetailSection.entries.forEachIndexed { index, section ->
+                    Tab(
+                        selected = index == selected,
+                        onClick = { onSelect(index) },
+                        text = { Text(stringResource(section.labelRes)) }
+                    )
+                }
+            }
+            if (compact) {
+                IconButton(onClick = onShare) {
+                    val shareLabel = stringResource(R.string.media_share)
+                    Icon(painterResource(TsuzukiIcons.Share), contentDescription = shareLabel)
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.detailSections(
+    state: MediaDetailUiState.Content,
+    onOpenMedia: (Int) -> Unit,
+    onOpenCharacter: (Int) -> Unit,
+    onOpenStaff: (Int) -> Unit
+) {
+    item(key = "overview") {
+        OverviewSection(detail = state.detail, onOpenMedia = onOpenMedia)
+    }
+    item(key = "characters") {
+        CharactersSection(
+            detail = state.detail,
+            onOpenCharacter = onOpenCharacter,
+            onOpenStaff = onOpenStaff
+        )
+    }
+    item(key = "stats") {
+        StatsSection(detail = state.detail)
+    }
+    item(key = "social") {
+        SocialSection(state = state)
+    }
+    item(key = "recommendations") {
+        RecommendationsSection(detail = state.detail, onOpenMedia = onOpenMedia)
+    }
+    item(key = "bottom") { Spacer(Modifier.navigationBarsPadding().height(TsuzukiSpacing.extraLarge)) }
 }
 
 @Composable

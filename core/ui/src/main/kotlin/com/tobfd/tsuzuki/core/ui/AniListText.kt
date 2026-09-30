@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.core.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextOverflow
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.model.FuzzyDate
 import com.tobfd.tsuzuki.core.model.MediaSeason
 import java.time.YearMonth
@@ -68,7 +70,8 @@ fun AniListHtmlText(html: String, modifier: Modifier = Modifier, collapsedLines:
         )
     }
     var overflows by remember { mutableStateOf(false) }
-    Column(modifier = modifier) {
+    // Long lines are hard to read on tablets; phones never reach the cap.
+    Column(modifier = modifier.widthIn(max = TsuzukiSizes.readingWidth)) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,

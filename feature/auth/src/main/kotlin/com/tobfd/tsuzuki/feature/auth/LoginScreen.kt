@@ -47,6 +47,7 @@ import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
+import com.tobfd.tsuzuki.core.designsystem.theme.centeredMaxWidth
 import com.tobfd.tsuzuki.core.model.LogoutReason
 import com.tobfd.tsuzuki.core.ui.message
 
@@ -135,8 +136,11 @@ private fun LoginHeader(logoutReason: LogoutReason?) {
 
 @Composable
 private fun LoginActions(uiState: LoginUiState, onLogInClick: () -> Unit, onBrowseAsGuestClick: () -> Unit) {
+    // On tablets the actions keep a phone's width instead of spanning the screen.
     Column(
-        modifier = Modifier.padding(top = TsuzukiSpacing.extraLarge),
+        modifier = Modifier
+            .centeredMaxWidth(TsuzukiSizes.formWidth)
+            .padding(top = TsuzukiSpacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         uiState.error?.let { error ->

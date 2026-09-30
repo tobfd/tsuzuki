@@ -129,7 +129,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 BrowseScreen(onOpenMedia = { navigator.navigate(MediaRoute(it)) }, contentPadding = padding)
             }
         }
-        entry<ProfileRoute> {
+        entry<ProfileRoute>(metadata = ListDetailSceneStrategy.listPane()) {
             TabRoot(
                 TopLevelTab.Profile,
                 navigator,
@@ -154,7 +154,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<CharacterRoute> { route ->
+        entry<CharacterRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             CharacterScreen(
                 characterId = route.id,
                 onBack = { navigator.back() },
@@ -162,7 +162,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<StaffRoute> { route ->
+        entry<StaffRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             StaffScreen(
                 staffId = route.id,
                 onBack = { navigator.back() },
@@ -171,7 +171,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 onLogIn = onLogOut
             )
         }
-        entry<UserRoute> { route ->
+        entry<UserRoute>(metadata = ListDetailSceneStrategy.listPane()) { route ->
             UserScreen(
                 userId = route.id,
                 userName = route.name,

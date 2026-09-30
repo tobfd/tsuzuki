@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.feature.browse
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -22,6 +24,7 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -37,9 +40,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.tobfd.tsuzuki.core.designsystem.R as DesignR
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
+import com.tobfd.tsuzuki.core.designsystem.theme.isExpandedWindow
 import com.tobfd.tsuzuki.core.model.BrowseFilter
 import com.tobfd.tsuzuki.core.model.BrowseSort
 import com.tobfd.tsuzuki.core.model.MediaSeason
@@ -78,6 +85,23 @@ internal fun BrowseFilterSheet(
     onDismiss: () -> Unit,
     onRetryOptions: () -> Unit
 ) {
+    if (isExpandedWindow()) {
+        // On tablets the filters open as a dialog of a sheet's width, not a sheet across the screen.
+        Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier
+                    .widthIn(max = TsuzukiSizes.sheetDialogWidth)
+                    .padding(TsuzukiSpacing.extraLarge)
+            ) {
+                Column(modifier = Modifier.padding(top = TsuzukiSpacing.extraLarge)) {
+                    FilterBody(draft, type, today, options, onDraftChange, onReset, onApply, onRetryOptions)
+                }
+            }
+        }
+        return
+    }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     ModalBottomSheet(
@@ -85,105 +109,130 @@ internal fun BrowseFilterSheet(
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f, fill = false)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = TsuzukiSpacing.screenMargin),
-            verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.large)
-        ) {
-            Text(
-                text = stringResource(R.string.browse_filters),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.semantics { heading() }
-            )
-            ChipGroup(stringResource(R.string.browse_filter_format)) {
-                type.formats().forEach { format ->
-                    ToggleChip(stringResource(format.labelRes()), selected = format in draft.formats) {
-                        onDraftChange(draft.copy(formats = draft.formats.toggle(format)))
-                    }
-                }
-            }
-            ChipGroup(stringResource(R.string.browse_filter_status)) {
-                MediaStatus.entries.forEach { status ->
-                    ToggleChip(stringResource(status.labelRes()), selected = status in draft.statuses) {
-                        onDraftChange(draft.copy(statuses = draft.statuses.toggle(status)))
-                    }
-                }
-            }
-            if (type == MediaType.ANIME) {
-                ChipGroup(stringResource(R.string.browse_filter_season)) {
-                    MediaSeason.entries.forEach { season ->
-                        ToggleChip(stringResource(season.labelRes()), selected = draft.season == season) {
-                            onDraftChange(draft.copy(season = season.takeIf { draft.season != it }))
-                        }
-                    }
-                }
-            }
-            YearStepper(
-                year = draft.year,
-                currentYear = today.year,
-                onYearChange = { onDraftChange(draft.copy(year = it)) }
-            )
-            when (options) {
-                FilterOptionsState.Loading -> CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+        FilterBody(
+            draft = draft,
+            type = type,
+            today = today,
+            options = options,
+            onDraftChange = onDraftChange,
+            onReset = onReset,
+            onApply = { scope.launch { sheetState.hide() }.invokeOnCompletion { onApply() } },
+            onRetryOptions = onRetryOptions
+        )
+    }
+}
 
-                is FilterOptionsState.Error -> Column {
-                    Text(
-                        text = stringResource(R.string.browse_filter_options_error),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = options.error.message(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    TextButton(onClick = onRetryOptions) { Text(stringResource(DesignR.string.designsystem_retry)) }
-                }
-
-                is FilterOptionsState.Loaded -> {
-                    ChipGroup(stringResource(R.string.browse_filter_genres)) {
-                        options.options.genres.forEach { genre ->
-                            ToggleChip(genre, selected = genre in draft.genres) {
-                                onDraftChange(draft.copy(genres = draft.genres.toggle(genre)))
-                            }
-                        }
-                    }
-                    TagPicker(
-                        allTags = options.options.tags.map { it.name },
-                        selected = draft.tags,
-                        onToggle = { onDraftChange(draft.copy(tags = draft.tags.toggle(it))) }
-                    )
+/** The chip groups and the footer, in the sheet or in the tablet dialog. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ColumnScope.FilterBody(
+    draft: BrowseFilter,
+    type: MediaType,
+    today: LocalDate,
+    options: FilterOptionsState,
+    onDraftChange: (BrowseFilter) -> Unit,
+    onReset: () -> Unit,
+    onApply: () -> Unit,
+    onRetryOptions: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .weight(1f, fill = false)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = TsuzukiSpacing.screenMargin),
+        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.large)
+    ) {
+        Text(
+            text = stringResource(R.string.browse_filters),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.semantics { heading() }
+        )
+        ChipGroup(stringResource(R.string.browse_filter_format)) {
+            type.formats().forEach { format ->
+                ToggleChip(stringResource(format.labelRes()), selected = format in draft.formats) {
+                    onDraftChange(draft.copy(formats = draft.formats.toggle(format)))
                 }
             }
-            ChipGroup(stringResource(R.string.browse_filter_sort)) {
-                ToggleChip(stringResource(R.string.browse_sort_default), selected = draft.sort == null) {
-                    onDraftChange(draft.copy(sort = null))
+        }
+        ChipGroup(stringResource(R.string.browse_filter_status)) {
+            MediaStatus.entries.forEach { status ->
+                ToggleChip(stringResource(status.labelRes()), selected = status in draft.statuses) {
+                    onDraftChange(draft.copy(statuses = draft.statuses.toggle(status)))
                 }
-                BrowseSort.entries.forEach { sort ->
-                    ToggleChip(stringResource(sort.labelRes()), selected = draft.sort == sort) {
-                        onDraftChange(draft.copy(sort = sort))
+            }
+        }
+        if (type == MediaType.ANIME) {
+            ChipGroup(stringResource(R.string.browse_filter_season)) {
+                MediaSeason.entries.forEach { season ->
+                    ToggleChip(stringResource(season.labelRes()), selected = draft.season == season) {
+                        onDraftChange(draft.copy(season = season.takeIf { draft.season != it }))
                     }
                 }
             }
         }
-        HorizontalDivider()
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = TsuzukiSpacing.screenMargin, vertical = TsuzukiSpacing.small),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(onClick = onReset, enabled = draft.isActive) {
-                Text(stringResource(R.string.browse_filter_reset))
+        YearStepper(
+            year = draft.year,
+            currentYear = today.year,
+            onYearChange = { onDraftChange(draft.copy(year = it)) }
+        )
+        when (options) {
+            FilterOptionsState.Loading -> CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            is FilterOptionsState.Error -> Column {
+                Text(
+                    text = stringResource(R.string.browse_filter_options_error),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = options.error.message(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                TextButton(onClick = onRetryOptions) { Text(stringResource(DesignR.string.designsystem_retry)) }
             }
-            Spacer(Modifier.weight(1f))
-            Button(onClick = { scope.launch { sheetState.hide() }.invokeOnCompletion { onApply() } }) {
-                Text(stringResource(R.string.browse_filter_show))
+
+            is FilterOptionsState.Loaded -> {
+                ChipGroup(stringResource(R.string.browse_filter_genres)) {
+                    options.options.genres.forEach { genre ->
+                        ToggleChip(genre, selected = genre in draft.genres) {
+                            onDraftChange(draft.copy(genres = draft.genres.toggle(genre)))
+                        }
+                    }
+                }
+                TagPicker(
+                    allTags = options.options.tags.map { it.name },
+                    selected = draft.tags,
+                    onToggle = { onDraftChange(draft.copy(tags = draft.tags.toggle(it))) }
+                )
             }
+        }
+        ChipGroup(stringResource(R.string.browse_filter_sort)) {
+            ToggleChip(stringResource(R.string.browse_sort_default), selected = draft.sort == null) {
+                onDraftChange(draft.copy(sort = null))
+            }
+            BrowseSort.entries.forEach { sort ->
+                ToggleChip(stringResource(sort.labelRes()), selected = draft.sort == sort) {
+                    onDraftChange(draft.copy(sort = sort))
+                }
+            }
+        }
+    }
+    HorizontalDivider()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = TsuzukiSpacing.screenMargin, vertical = TsuzukiSpacing.small),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(onClick = onReset, enabled = draft.isActive) {
+            Text(stringResource(R.string.browse_filter_reset))
+        }
+        Spacer(Modifier.weight(1f))
+        Button(onClick = onApply) {
+            Text(stringResource(R.string.browse_filter_show))
         }
     }
 }

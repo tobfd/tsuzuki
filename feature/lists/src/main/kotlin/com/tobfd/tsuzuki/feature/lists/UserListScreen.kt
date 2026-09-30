@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,6 +33,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBackTopBar
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
+import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
 import com.tobfd.tsuzuki.core.model.MediaListStatus
@@ -208,9 +213,11 @@ private fun UserListBody(
                 )
             }
 
-            else -> LazyColumn(
-                state = rememberLazyListState(),
+            else -> LazyVerticalGrid(
+                columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
+                state = rememberLazyGridState(),
                 contentPadding = listPadding,
+                horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
                 verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
                 modifier = Modifier.fillMaxSize()
             ) {

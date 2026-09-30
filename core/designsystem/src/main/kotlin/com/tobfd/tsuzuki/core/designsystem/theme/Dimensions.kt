@@ -43,4 +43,25 @@ object TsuzukiSizes {
     val profileBanner = 140.dp
     val profileAvatar = 88.dp
     val statusBar = 8.dp
+
+    /** Longest comfortable line for running text on large screens (descriptions, bios, activity text). */
+    val readingWidth = 640.dp
+
+    /** Buttons and forms that would otherwise stretch across a tablet (login). */
+    val formWidth = 480.dp
+
+    /** Narrowest column of list rows in adaptive grids: phones keep one column, tablets get two or three. */
+    val rowGridMinWidth = 360.dp
+
+    /** Narrowest column of the activity feed on large screens. */
+    val feedGridMinWidth = 420.dp
+
+    /** Available width from which the detail page splits into two columns. */
+    val twoColumnMinWidth = 840.dp
+
+    /** Header column of the two-column detail page. */
+    val detailSideColumn = 400.dp
+
+    /** Width of a dialog that replaces a bottom sheet on large screens. */
+    val sheetDialogWidth = 560.dp
 }

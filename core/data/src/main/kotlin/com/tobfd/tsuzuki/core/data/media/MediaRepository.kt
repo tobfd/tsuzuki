@@ -18,6 +18,7 @@ import com.tobfd.tsuzuki.core.model.MediaInfo
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaRanking
 import com.tobfd.tsuzuki.core.model.MediaRelation
+import com.tobfd.tsuzuki.core.model.MediaSeason
 import com.tobfd.tsuzuki.core.model.MediaTag
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.PersonLite
@@ -129,7 +130,7 @@ internal fun MediaDetailQuery.Data.toModel(): MediaDetail? {
         },
         info = MediaInfo(
             episodeDuration = media.duration,
-            season = media.season?.rawValue,
+            season = enumNamed<MediaSeason>(media.season?.rawValue),
             source = media.source?.rawValue,
             startDate = media.mediaCard.startDate?.let { FuzzyDate.orNull(it.year, it.month, it.day) },
             endDate = media.endDate?.let { FuzzyDate.orNull(it.year, it.month, it.day) },

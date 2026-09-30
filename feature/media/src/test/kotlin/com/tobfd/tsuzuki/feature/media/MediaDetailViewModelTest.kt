@@ -123,19 +123,4 @@ class MediaDetailViewModelTest {
         assertTrue((viewModel.uiState.value as MediaDetailUiState.Content).isFavourite)
         assertEquals(listOf(frieren.mediaId, frieren.mediaId), media.favouriteToggles)
     }
-
-    @Test
-    fun spoilers_areHiddenUntilRevealed() {
-        val html = "Frieren meets <span class='markdown_spoiler'>Fern's teacher</span> and ~!a dragon!~."
-        assertTrue(hasSpoilers(html))
-        assertEquals(
-            "Frieren meets <i>Spoiler</i> and <i>Spoiler</i>.",
-            withSpoilers(html, reveal = false, placeholder = "Spoiler")
-        )
-        assertEquals(
-            "Frieren meets Fern's teacher and a dragon.",
-            withSpoilers(html, reveal = true, placeholder = "Spoiler")
-        )
-        assertFalse(hasSpoilers("No spoilers here."))
-    }
 }

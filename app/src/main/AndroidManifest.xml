@@ -36,6 +36,16 @@
                     android:host="auth"
                     android:scheme="tsuzuki" />
             </intent-filter>
+            <!-- Widgets open screens with tsuzuki://open/... links (AppLink in core/common). Not BROWSABLE. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="open"
+                    android:scheme="tsuzuki" />
+            </intent-filter>
         </activity>
 
         <!-- Share as image: the detail page shares its card from cache/shared/. -->

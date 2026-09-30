@@ -37,6 +37,8 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.core.common.AppDestination
+import com.tobfd.tsuzuki.core.common.AppTab
 import com.tobfd.tsuzuki.core.designsystem.theme.BackStackPosition
 import com.tobfd.tsuzuki.core.designsystem.theme.BackSwipeEdge
 import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackEntry
@@ -89,9 +91,26 @@ import com.tobfd.tsuzuki.navigation.TopLevelTab
 // The list-detail scene strategy (material3-adaptive-navigation3) is still experimental.
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Modifier) {
+fun AppShell(
+    chrome: ShellChrome,
+    onLogOut: () -> Unit,
+    modifier: Modifier = Modifier,
+    destination: AppDestination? = null,
+    onDestinationOpened: () -> Unit = {}
+) {
     val isGuest = chrome.viewer == null
     val navigator = rememberTopLevelNavigator()
+
+    // A widget tap: its screen on top of the matching tab.
+    LaunchedEffect(destination) {
+        when (destination) {
+            null -> return@LaunchedEffect
+            is AppDestination.Tab -> navigator.open(destination.tab.toTopLevelTab(), key = null)
+            is AppDestination.Media -> navigator.open(destination.tab.toTopLevelTab(), MediaRoute(destination.id))
+            is AppDestination.User -> navigator.open(TopLevelTab.Home, UserRoute(destination.id, destination.name))
+        }
+        onDestinationOpened()
+    }
 
     val entryProvider = entryProvider {
         entry<HomeRoute> {
@@ -348,6 +367,11 @@ private fun PredictiveBackState.onGestureProgress(event: NavigationEvent) {
         // Before Android 16 the system gives no frame time.
         frameTimeMillis = event.frameTimeMillis.takeIf { it > 0 } ?: SystemClock.uptimeMillis()
     )
+}
+
+private fun AppTab.toTopLevelTab(): TopLevelTab = when (this) {
+    AppTab.Home -> TopLevelTab.Home
+    AppTab.Lists -> TopLevelTab.Lists
 }
 
 @Composable

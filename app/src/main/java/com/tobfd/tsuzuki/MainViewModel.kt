@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tobfd.tsuzuki.core.common.AppDestination
 import com.tobfd.tsuzuki.core.data.list.ListRepository
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
@@ -13,8 +14,10 @@ import com.tobfd.tsuzuki.core.model.Viewer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -66,6 +69,19 @@ class MainViewModel @Inject constructor(
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, MainUiState.Loading)
+
+    private val destinationState = MutableStateFlow<AppDestination?>(null)
+
+    /** A screen a widget asked for, until the app shell has opened it. */
+    val destination: StateFlow<AppDestination?> = destinationState.asStateFlow()
+
+    fun open(destination: AppDestination) {
+        destinationState.value = destination
+    }
+
+    fun onDestinationOpened() {
+        destinationState.value = null
+    }
 
     init {
         viewModelScope.launch { sessionRepository.validate() }

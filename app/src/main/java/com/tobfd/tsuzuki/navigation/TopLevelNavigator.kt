@@ -68,6 +68,17 @@ class TopLevelNavigator(
     }
 
     /**
+     * Shows [tab] with [key] on top, for a screen opened from outside the app (a widget). Unlike
+     * [selectTab] the tab keeps its stack; [key] is pushed unless it is already the top screen.
+     */
+    fun open(tab: TopLevelTab, key: NavKey?) {
+        lastTransition = if (tab != currentTab) NavigationTransition.TabSwitch else NavigationTransition.Forward
+        selectedTab.value = tab
+        val stack = stacks.getValue(tab)
+        if (key != null && stack.last() != key) stack.add(key)
+    }
+
+    /**
      * Closes [key] if it is the screen on top of the current tab, e.g. a sheet that closes itself.
      * Unlike [back], it does nothing when [key] is already gone, so closing twice (a swipe and a
      * save finishing at the same time) never leaves the tab.

@@ -4,10 +4,15 @@
 #   Activity  [ACTIVITY_MESSAGE, ACTIVITY_REPLY, ACTIVITY_MENTION, ACTIVITY_LIKE, ACTIVITY_REPLY_LIKE, ACTIVITY_REPLY_SUBSCRIBED]
 #   Follows   [FOLLOWING]
 #   Media     [RELATED_MEDIA_ADDITION, MEDIA_DATA_CHANGE, MEDIA_MERGE, MEDIA_DELETION]
-# Pass reset = true on the first page when the screen opens, and for "Mark all as read".
-# The API has no per-item read state: read Viewer.unreadNotificationCount BEFORE resetting and treat that many
-# newest items as unread.
+# Pass reset = true on the first page when the screen opens ("Mark all as read" uses MarkNotificationsRead).
+# The API has no per-item read state: the newest unreadNotificationCount items (counted before the reset) are
+# unread. With reset, Viewer comes before Page so it is resolved first and still has the old count; the app
+# also keeps the badge count it had, in case AniList resolves the reset first.
 query Notifications($page: Int!, $types: [NotificationType], $reset: Boolean = false) {
+  Viewer @include(if: $reset) {
+    id
+    unreadNotificationCount
+  }
   Page(page: $page, perPage: 25) {
     pageInfo { hasNextPage }
     notifications(type_in: $types, resetNotificationCount: $reset) {
@@ -127,4 +132,13 @@ fragment NotificationActivity on ActivityUnion {
   }
   ... on TextActivity { id }
   ... on MessageActivity { id }
+}
+
+# "Mark all as read": resets the unread count without loading a page worth of notifications.
+query MarkNotificationsRead {
+  Page(page: 1, perPage: 1) {
+    notifications(resetNotificationCount: true) {
+      __typename
+    }
+  }
 }

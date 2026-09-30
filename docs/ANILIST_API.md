@@ -49,6 +49,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - `Page(page, perPage)` wraps list fields; one list field per `Page`. `perPage` max 50 (larger values are capped).
 - **Only `pageInfo.hasNextPage` is reliable.** Do not request or show `total`, `lastPage` or "page X of Y".
 - Paging 3 key = page number, start at 1, next key = page + 1 while `hasNextPage`.
+- The Home feed does not use Paging 3: 25 per page (`Home` for page 1, `ActivityFeed` after that), and the next page only when the user taps "Load more". Activities already shown are left out when a page repeats them (new activities push older ones onto the next page).
 - Several `Page`s in one query are fine with aliases (see `Home`, `BrowseHome`).
 
 ## Lists

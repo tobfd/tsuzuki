@@ -88,8 +88,8 @@ Before M0, Tobias does two things by hand:
 
 - [x] "In Progress" carousel from Room (current entries, sorted by last updated), +1 on each card, "See all" → Lists tab. (Tapping a card opens the list editor.)
 - [x] "Up next from Planning": up to 3 planning entries (prefer already released or airing, then most recently added) with Start. (Room keeps no "added" date, so the newest by `updatedAt`, which for planned entries is usually when they were added.)
-- [x] Activity feed with Following / Global toggle (Paging 3, `Page.activities`), list and text activities, like toggle (optimistic), relative time, tap on media → detail, tap on user → profile. (Guests see the Global feed only.)
-- [x] Trending row (anime) → detail. (Above the feed, since the feed pages on without end.)
+- [x] Activity feed with Following / Global toggle (`Page.activities`, 25 per page, more only through a "Load more" button), list and text activities, like toggle (optimistic), relative time, tap on media → detail, tap on user → profile. (Guests see the Global feed only.)
+- [x] Trending row (anime) → detail. (Above the feed.)
 - [x] One network query for the feed page + trending; the rest comes from Room. (The first page and trending show from the Apollo cache at once, then one `Home` request refreshes both.)
 
 **Done when:** Home loads from cache instantly and refreshes with at most 2 requests.

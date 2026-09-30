@@ -127,14 +127,14 @@ Before M0, Tobias does two things by hand:
 
 ## M9 · Profile
 
-- [ ] Own profile (Profile tab) and other users (route `UserRoute(name)`).
-- [ ] Banner, avatar, name, stats (total anime, episodes watched, days watched, mean score), tabs Overview / Favourites / Stats / Social.
-- [ ] Overview: activity history heatmap (12 weeks, `User.stats.activityHistory`), recent activity.
-- [ ] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided by Tobias, 2026-09-28).
-- [ ] Favourites: anime, manga, characters, staff; empty state.
-- [ ] Stats: anime by status, score overview.
-- [ ] Social: following / followers (first page); follow / unfollow on other profiles.
-- [ ] Top bar on own profile: bell and settings.
+- [x] Own profile (Profile tab) and other users (route `UserRoute(id, name)`: `UserProfile` needs the id for the activity page, and every link to a user knows it; the name titles the page while it loads).
+- [x] Banner, avatar, name, stats (total anime, episodes watched, days watched, mean score), tabs Overview / Favourites / Stats / Social. (One `UserProfile` request when the profile first shows and on pull to refresh. "Follows you" under the name; the about text on Overview, images in it shown as links.)
+- [x] Overview: activity history heatmap (12 weeks, `User.stats.activityHistory`), recent activity. (4 strengths relative to the busiest day shown, dates in UTC like AniList; likes on the recent activities.)
+- [x] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided by Tobias, 2026-09-28). (Checked 2026-09-30: `statistics` has no activity history, so it stays.)
+- [x] Favourites: anime, manga, characters, staff; empty state.
+- [x] Stats: anime by status, score overview. (Anime and manga: totals, mean score, standard deviation, and bars by status in the status colors.)
+- [x] Social: following / followers (first page); follow / unfollow on other profiles. (Each list loads when first shown; "More on AniList" when there are more. Follow is optimistic; guests get the log-in prompt.)
+- [x] Top bar on own profile: bell and settings. (The Profile tab shows settings and the bell instead of the avatar.)
 
 **Done when:** Tobias's and GeckoTV's profiles render correctly.
 

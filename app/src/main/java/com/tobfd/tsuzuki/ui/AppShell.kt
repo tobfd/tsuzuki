@@ -68,6 +68,8 @@ import com.tobfd.tsuzuki.feature.profile.ProfileScreen
 import com.tobfd.tsuzuki.feature.profile.ProfileSettingsAction
 import com.tobfd.tsuzuki.feature.profile.UserRoute
 import com.tobfd.tsuzuki.feature.profile.UserScreen
+import com.tobfd.tsuzuki.feature.settings.LicensesRoute
+import com.tobfd.tsuzuki.feature.settings.LicensesScreen
 import com.tobfd.tsuzuki.feature.settings.SettingsRoute
 import com.tobfd.tsuzuki.feature.settings.SettingsScreen
 import com.tobfd.tsuzuki.navigation.BottomSheetSceneStrategy
@@ -197,10 +199,13 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
         }
         entry<SettingsRoute> {
             SettingsScreen(
-                viewerName = LocalShellChrome.current.viewer?.name.orEmpty(),
                 onBack = { navigator.back() },
-                onLogOut = onLogOut
+                onLogOut = onLogOut,
+                onOpenLicenses = { navigator.navigate(LicensesRoute) }
             )
+        }
+        entry<LicensesRoute> {
+            LicensesScreen(onBack = { navigator.back() })
         }
     }
 

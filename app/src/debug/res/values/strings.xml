@@ -60,6 +60,7 @@
     <string name="catalog_section_list_editor" translatable="false">List editor</string>
     <string name="catalog_search_placeholder" translatable="false">Search your list</string>
     <string name="catalog_section_activity_card" translatable="false">ActivityCard</string>
+    <string name="catalog_section_color_choice" translatable="false">ColorChoiceCard</string>
     <string name="catalog_section_notification_row" translatable="false">NotificationRow</string>
     <string name="catalog_section_result_row" translatable="false">MediaResultRow</string>
     <string name="catalog_section_person_card" translatable="false">PersonCoverCard</string>

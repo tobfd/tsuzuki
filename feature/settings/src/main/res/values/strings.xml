@@ -1,7 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_title">Settings</string>
-    <string name="settings_placeholder">Settings arrive in M11. Until then you can log out here.</string>
-    <string name="settings_logged_in_as">Logged in as %1$s</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_colors">Colors</string>
+    <string name="settings_colors_material_you">Material You</string>
+    <string name="settings_colors_anilist_blue">AniList blue</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_pure_black">Pure black</string>
+    <string name="settings_pure_black_summary">Black background in the dark theme</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_app_language">App language</string>
+    <string name="settings_app_language_system">System default</string>
+    <string name="settings_app_language_english" translatable="false">English</string>
+    <string name="settings_app_language_german" translatable="false">Deutsch</string>
+    <string name="settings_title_language">Title language</string>
+    <string name="settings_title_language_romaji">Romaji</string>
+    <string name="settings_title_language_english">English</string>
+    <string name="settings_title_language_native">Native</string>
+    <string name="settings_title_language_example">Example: %1$s</string>
+    <string name="settings_title_example_romaji" translatable="false">Sousou no Frieren</string>
+    <string name="settings_title_example_english" translatable="false">Frieren: Beyond Journey\'s End</string>
+    <string name="settings_title_example_native" translatable="false">葬送のフリーレン</string>
+    <string name="settings_synced_with_anilist">Synced with your AniList settings</string>
+    <string name="settings_section_content">Lists and content</string>
+    <string name="settings_score_format">Score format</string>
+    <string name="settings_score_format_100">100 point (85/100)</string>
+    <string name="settings_score_format_10_decimal">10 point decimal (8.5/10)</string>
+    <string name="settings_score_format_10">10 point (8/10)</string>
+    <string name="settings_score_format_5">5 stars (4/5)</string>
+    <string name="settings_score_format_3">3 point (liked, neutral, disliked)</string>
+    <string name="settings_adult_content">Show adult content</string>
+    <string name="settings_adult_content_summary">Hidden by default</string>
+    <string name="settings_save_failed">Couldn\'t save the setting. %1$s</string>
+    <string name="settings_section_account">Account</string>
+    <string name="settings_logged_in_with_anilist">Logged in with AniList</string>
     <string name="settings_log_out">Log out</string>
+    <string name="settings_log_out_title">Log out?</string>
+    <string name="settings_log_out_message">Your lists are removed from this device, including changes that weren\'t sent yet. Everything on AniList stays.</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_guest">You are browsing without an account.</string>
+    <string name="settings_log_in">Log in with AniList</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_about_app">Tsuzuki for AniList · %1$s</string>
+    <string name="settings_about_disclaimer">Unofficial app. Not affiliated with AniList. Data from the AniList API.</string>
+    <string name="settings_licenses">Open-source licenses</string>
+    <string name="settings_license_show">Show license</string>
+    <string name="settings_license_hide">Hide license</string>
 </resources>

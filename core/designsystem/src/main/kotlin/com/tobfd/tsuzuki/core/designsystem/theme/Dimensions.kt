@@ -33,6 +33,7 @@ object TsuzukiSizes {
     val topBarAvatar = 32.dp
     val stateIconTile = 56.dp
     val statusDot = 8.dp
+    val colorSwatch = 20.dp
     val coverProgressBar = 4.dp
     val primaryButtonHeight = 56.dp
     val logoTile = 96.dp

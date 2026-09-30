@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.tobfd.tsuzuki.R
+import com.tobfd.tsuzuki.core.designsystem.component.ColorChoiceCard
 import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
 import com.tobfd.tsuzuki.core.designsystem.component.InitialAvatar
@@ -53,6 +54,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBanner
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiLogo
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiTopBar
+import com.tobfd.tsuzuki.core.designsystem.component.colorSourceSwatches
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
@@ -148,6 +150,9 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_progress_button) { ProgressButtonSamples() } }
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
+            item {
+                CatalogSection(R.string.catalog_section_color_choice) { ColorChoiceSamples(colorSource, darkTheme) }
+            }
             item { CatalogSection(R.string.catalog_section_media_list_row) { MediaListRowSamples() } }
             item { CatalogSection(R.string.catalog_section_search_field) { SearchFieldSamples() } }
             item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
@@ -537,6 +542,26 @@ private fun ActivityCardSamples() {
         onUserClick = {},
         onMediaClick = {}
     )
+}
+
+@Composable
+private fun ColorChoiceSamples(colorSource: ColorSource, darkTheme: Boolean) {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        ColorChoiceCard(
+            label = stringResource(R.string.catalog_color_material_you),
+            swatches = colorSourceSwatches(ColorSource.Dynamic, darkTheme),
+            selected = colorSource == ColorSource.Dynamic,
+            onClick = {},
+            modifier = Modifier.weight(1f)
+        )
+        ColorChoiceCard(
+            label = stringResource(R.string.catalog_color_anilist_blue),
+            swatches = colorSourceSwatches(ColorSource.AniListBlue, darkTheme),
+            selected = colorSource == ColorSource.AniListBlue,
+            onClick = {},
+            modifier = Modifier.weight(1f)
+        )
+    }
 }
 
 @Composable

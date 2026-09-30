@@ -108,8 +108,10 @@ private val ShapeSample = 56.dp
 fun CatalogScreen(
     colorSource: ColorSource,
     darkTheme: Boolean,
+    pureBlack: Boolean,
     onColorSourceChange: (ColorSource) -> Unit,
     onDarkThemeChange: (Boolean) -> Unit,
+    onPureBlackChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
@@ -126,7 +128,14 @@ fun CatalogScreen(
             verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.sectionGap)
         ) {
             item {
-                ThemeControls(colorSource, darkTheme, onColorSourceChange, onDarkThemeChange)
+                ThemeControls(
+                    colorSource,
+                    darkTheme,
+                    pureBlack,
+                    onColorSourceChange,
+                    onDarkThemeChange,
+                    onPureBlackChange
+                )
             }
             item { CatalogSection(R.string.catalog_section_colors) { ColorRoles() } }
             item { CatalogSection(R.string.catalog_section_status_colors) { StatusColorSwatches() } }
@@ -195,8 +204,10 @@ fun CatalogScreen(
 private fun ThemeControls(
     colorSource: ColorSource,
     darkTheme: Boolean,
+    pureBlack: Boolean,
     onColorSourceChange: (ColorSource) -> Unit,
-    onDarkThemeChange: (Boolean) -> Unit
+    onDarkThemeChange: (Boolean) -> Unit,
+    onPureBlackChange: (Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)) {
         Text(stringResource(R.string.catalog_title), style = MaterialTheme.typography.headlineMedium)
@@ -212,10 +223,18 @@ private fun ThemeControls(
         SegmentedToggle(
             options = persistentListOf(
                 stringResource(R.string.catalog_mode_light),
-                stringResource(R.string.catalog_mode_dark)
+                stringResource(R.string.catalog_mode_dark),
+                stringResource(R.string.catalog_mode_pure_black)
             ),
-            selectedIndex = if (darkTheme) 1 else 0,
-            onSelect = { onDarkThemeChange(it == 1) },
+            selectedIndex = when {
+                !darkTheme -> 0
+                pureBlack -> 2
+                else -> 1
+            },
+            onSelect = {
+                onDarkThemeChange(it > 0)
+                onPureBlackChange(it == 2)
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }

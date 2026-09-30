@@ -16,7 +16,7 @@ import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.ThemeMode
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
 
-/** Debug-only catalog of every design system component in both color sources, light and dark. */
+/** Debug-only catalog of every design system component in both color sources, light, dark and pure black. */
 class CatalogActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +25,7 @@ class CatalogActivity : ComponentActivity() {
             val systemDark = isSystemInDarkTheme()
             var colorSource by rememberSaveable { mutableStateOf(ColorSource.Dynamic) }
             var darkTheme by rememberSaveable { mutableStateOf(systemDark) }
+            var pureBlack by rememberSaveable { mutableStateOf(false) }
 
             // Keep status and navigation bar icons readable when the catalog overrides the system mode.
             DisposableEffect(darkTheme) {
@@ -35,13 +36,16 @@ class CatalogActivity : ComponentActivity() {
 
             TsuzukiTheme(
                 colorSource = colorSource,
-                themeMode = if (darkTheme) ThemeMode.Dark else ThemeMode.Light
+                themeMode = if (darkTheme) ThemeMode.Dark else ThemeMode.Light,
+                pureBlack = pureBlack
             ) {
                 CatalogScreen(
                     colorSource = colorSource,
                     darkTheme = darkTheme,
+                    pureBlack = pureBlack,
                     onColorSourceChange = { colorSource = it },
-                    onDarkThemeChange = { darkTheme = it }
+                    onDarkThemeChange = { darkTheme = it },
+                    onPureBlackChange = { pureBlack = it }
                 )
             }
         }

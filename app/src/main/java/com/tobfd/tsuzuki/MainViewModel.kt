@@ -6,6 +6,8 @@ import com.tobfd.tsuzuki.core.data.list.ListRepository
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.expiryWarningDays
+import com.tobfd.tsuzuki.core.data.settings.SettingsRepository
+import com.tobfd.tsuzuki.core.model.AppearanceSettings
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.model.Viewer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,8 +40,13 @@ class MainViewModel @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val notificationsRepository: NotificationsRepository,
     private val listRepository: ListRepository,
+    settingsRepository: SettingsRepository,
     private val clock: Clock
 ) : ViewModel() {
+    /** The app's look; null until read, so the splash screen stays up instead of flashing the wrong theme. */
+    val appearance: StateFlow<AppearanceSettings?> =
+        settingsRepository.appearance.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     // Eager, so the splash screen condition can read it before Compose collects.
     val uiState: StateFlow<MainUiState> = combine(
         sessionRepository.session,

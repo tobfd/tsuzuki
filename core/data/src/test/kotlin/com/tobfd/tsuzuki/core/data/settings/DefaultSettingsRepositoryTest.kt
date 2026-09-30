@@ -61,7 +61,8 @@ class DefaultSettingsRepositoryTest {
         .build()
     private val sessionStore = SessionStore(InMemoryDataStore(emptyPreferences()), PlainTokenEncryption)
     private val settingsStore = SettingsStore(InMemoryDataStore(emptyPreferences()))
-    private val repository = DefaultSettingsRepository(settingsStore, sessionStore, apollo.client, database.mediaListDao())
+    private val repository =
+        DefaultSettingsRepository(settingsStore, sessionStore, apollo.client, database.mediaListDao())
 
     @Before
     fun setUp() = runTest {
@@ -83,7 +84,10 @@ class DefaultSettingsRepositoryTest {
         repository.setThemeMode(AppThemeMode.Dark)
         repository.setPureBlack(true)
 
-        assertEquals(AppearanceSettings(AppColors.AniListBlue, AppThemeMode.Dark, pureBlack = true), repository.appearance.first())
+        assertEquals(
+            AppearanceSettings(AppColors.AniListBlue, AppThemeMode.Dark, pureBlack = true),
+            repository.appearance.first()
+        )
     }
 
     @Test

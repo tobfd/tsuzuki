@@ -7,6 +7,7 @@
     <string name="catalog_color_anilist_blue" translatable="false">AniList blue</string>
     <string name="catalog_mode_light" translatable="false">Light</string>
     <string name="catalog_mode_dark" translatable="false">Dark</string>
+    <string name="catalog_mode_pure_black" translatable="false">Pure black</string>
 
     <string name="catalog_section_colors" translatable="false">Color roles</string>
     <string name="catalog_section_status_colors" translatable="false">Status colors</string>

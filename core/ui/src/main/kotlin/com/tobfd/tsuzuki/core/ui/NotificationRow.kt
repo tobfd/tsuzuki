@@ -234,9 +234,9 @@ private fun notificationSubline(notification: Notification): String? = when (not
 }
 
 @Composable
-private fun listActivitySubline(summary: ListActivitySummary): String {
+private fun listActivitySubline(summary: ListActivitySummary): String? {
     val progress = summary.progress
-    val title = summary.mediaTitle
+    val title = summary.mediaTitle ?: return untitledListActivitySubline(summary)
     val withProgress = when (summary.status) {
         "watched episode" -> R.string.ui_notification_subline_watched
         "rewatched episode" -> R.string.ui_notification_subline_rewatched
@@ -253,6 +253,20 @@ private fun listActivitySubline(summary: ListActivitySummary): String {
         else -> null
     }
     return if (withoutProgress != null) stringResource(withoutProgress, title) else title
+}
+
+/** "Watched episodes 2 - 16" when AniList left the media out; nothing for status changes without progress. */
+@Composable
+private fun untitledListActivitySubline(summary: ListActivitySummary): String? {
+    val progress = summary.progress ?: return null
+    val template = when (summary.status) {
+        "watched episode" -> R.string.ui_notification_subline_watched_untitled
+        "rewatched episode" -> R.string.ui_notification_subline_rewatched_untitled
+        "read chapter" -> R.string.ui_notification_subline_read_untitled
+        "reread chapter" -> R.string.ui_notification_subline_reread_untitled
+        else -> return null
+    }
+    return stringResource(template, progress)
 }
 
 @ThemePreviews

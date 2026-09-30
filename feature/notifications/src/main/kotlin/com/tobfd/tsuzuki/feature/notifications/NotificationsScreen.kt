@@ -103,10 +103,10 @@ internal fun Notification.open(onOpenMedia: (Int) -> Unit, onOpenUser: (Int, Str
         is Notification.Follow -> onOpenUser(user.id, user.name)
 
         is Notification.ActivityEvent -> {
-            val summary = listActivity
+            val mediaId = listActivity?.mediaId
             val user = users.first()
-            if (summary != null && kind != ActivityNotificationKind.Message) {
-                onOpenMedia(summary.mediaId)
+            if (mediaId != null && kind != ActivityNotificationKind.Message) {
+                onOpenMedia(mediaId)
             } else {
                 onOpenUser(user.id, user.name)
             }

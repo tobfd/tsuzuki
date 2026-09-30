@@ -141,7 +141,17 @@ class NotificationsViewModelTest {
             null
         ).open(onMedia, onUser)
         Notification.MediaEvent(5, now, MediaNotificationKind.Deletion, null, listOf("Old"), null).open(onMedia, onUser)
+        // AniList leaves the media out of the liked list update: open the user instead.
+        val untitled = ListActivitySummary("watched episode", "2 - 16", null, null)
+        Notification.ActivityEvent(
+            6,
+            now,
+            ActivityNotificationKind.Like,
+            listOf(tobfd),
+            9,
+            untitled
+        ).open(onMedia, onUser)
 
-        assertEquals(listOf("media 154587", "user 1", "media 154587", "user 1"), opened)
+        assertEquals(listOf("media 154587", "user 1", "media 154587", "user 1", "user 1"), opened)
     }
 }

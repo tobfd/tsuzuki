@@ -41,12 +41,13 @@ private fun time(createdAt: Int?): Instant = Instant.ofEpochSecond(createdAt?.to
 
 private fun NotificationActivity?.summary(): ListActivitySummary? {
     val list = this?.onListActivity ?: return null
-    val media = list.media ?: return null
+    // AniList answers `media: null` here even for list activities; status and progress still come.
+    val media = list.media
     return ListActivitySummary(
         status = list.status ?: return null,
         progress = list.progress?.takeIf { it.isNotBlank() },
-        mediaId = media.id,
-        mediaTitle = media.title?.userPreferred ?: return null
+        mediaId = media?.id,
+        mediaTitle = media?.title?.userPreferred
     )
 }
 

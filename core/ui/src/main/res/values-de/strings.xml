@@ -105,4 +105,8 @@
     <string name="ui_notification_subline_planning">%1$s geplant</string>
     <string name="ui_notification_subline_dropped">%1$s abgebrochen</string>
     <string name="ui_notification_subline_paused">%1$s pausiert</string>
+    <string name="ui_notification_subline_watched_untitled">Folge %1$s geschaut</string>
+    <string name="ui_notification_subline_rewatched_untitled">Folge %1$s erneut geschaut</string>
+    <string name="ui_notification_subline_read_untitled">Kapitel %1$s gelesen</string>
+    <string name="ui_notification_subline_reread_untitled">Kapitel %1$s erneut gelesen</string>
 </resources>

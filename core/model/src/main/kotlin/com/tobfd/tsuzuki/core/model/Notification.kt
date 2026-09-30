@@ -35,8 +35,9 @@ data class ListActivitySummary(
     val status: String,
     /** "18" or "17 - 18"; null for status changes without progress. */
     val progress: String?,
-    val mediaId: Int,
-    val mediaTitle: String
+    /** AniList leaves the media out of activities inside notifications (seen 2026-10-01); null then. */
+    val mediaId: Int?,
+    val mediaTitle: String?
 )
 
 /** One notification of the viewer. The types the app doesn't show (forum, submissions) never get here. */

@@ -128,6 +128,26 @@ class NotificationsPagingTest {
     }
 
     @Test
+    fun listActivityWithoutMedia_keepsStatusAndProgress() = runTest {
+        // What AniList really sends for a like on a list update (seen on the phone, 2026-10-01).
+        val like = """
+            {"__typename":"ActivityLikeNotification","id":1,"type":"ACTIVITY_LIKE","createdAt":1790624595,
+             "context":" liked your activity.","activityId":1162048298,"user":${user(11)},
+             "activity":{"__typename":"ListActivity","id":1162048298,"status":"watched episode","progress":"2 - 16",
+               "media":null}}
+        """.trimIndent()
+        apollo.enqueueJson(firstPage(), pageJson(listOf(like), false, viewerCount = 0))
+
+        val entries = repository.notifications(NotificationFilter.All, repository.startVisit()).asSnapshot()
+
+        val event = entries.single().notification as Notification.ActivityEvent
+        assertEquals(
+            ListActivitySummary("watched episode", "2 - 16", mediaId = null, mediaTitle = null),
+            event.listActivity
+        )
+    }
+
+    @Test
     fun graphQlErrorsNextToData_stillShowThePage() = runTest {
         val json = pageJson(listOf(follow(1, 11)), false, viewerCount = 0).removeSuffix("}") +
             ""","errors":[{"message":"Media not found","status":404}]}"""

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +41,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -280,11 +283,7 @@ private fun OneColumnDetail(
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val selected by remember {
-        derivedStateOf {
-            (listState.firstVisibleItemIndex - SECTION_OFFSET).coerceIn(0, DetailSection.entries.lastIndex)
-        }
-    }
+    val sections = rememberSectionSelection(listState, firstSectionIndex = SECTION_OFFSET)
     val headerVisible by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
     Box {
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
@@ -299,11 +298,14 @@ private fun OneColumnDetail(
             // Once the header has scrolled away, back and share move into the pinned tab bar.
             stickyHeader(key = "tabs") {
                 SectionTabs(
-                    selected = selected,
+                    selected = sections.selected,
                     compact = !headerVisible,
                     onBack = onBack,
                     onShare = onShare,
-                    onSelect = { index -> scope.launch { listState.animateScrollToItem(index + SECTION_OFFSET) } }
+                    onSelect = { index ->
+                        sections.tapped = index
+                        scope.launch { listState.animateScrollToItem(index + SECTION_OFFSET) }
+                    }
                 )
             }
             detailSections(state, onOpenMedia, onOpenCharacter, onOpenStaff)
@@ -327,9 +329,7 @@ private fun TwoColumnDetail(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     // The sections start right after the tab row here: there is no header item in this list.
-    val selected by remember {
-        derivedStateOf { (listState.firstVisibleItemIndex - 1).coerceIn(0, DetailSection.entries.lastIndex) }
-    }
+    val sections = rememberSectionSelection(listState, firstSectionIndex = 1)
     Row {
         Box(
             modifier = Modifier
@@ -358,16 +358,54 @@ private fun TwoColumnDetail(
         ) {
             stickyHeader(key = "tabs") {
                 SectionTabs(
-                    selected = selected,
+                    selected = sections.selected,
                     compact = false,
                     onBack = onBack,
                     onShare = onShare,
-                    onSelect = { index -> scope.launch { listState.animateScrollToItem(index + 1) } }
+                    onSelect = { index ->
+                        sections.tapped = index
+                        scope.launch { listState.animateScrollToItem(index + 1) }
+                    }
                 )
             }
             detailSections(state, onOpenMedia, onOpenCharacter, onOpenStaff)
         }
     }
+}
+
+/**
+ * Which anchored tab is selected: the section at the top of the list. The last sections can't reach the top,
+ * so once the list can't scroll further the tapped section (if on screen) or the last one on screen counts.
+ */
+@Stable
+private class SectionSelection(private val listState: LazyListState, private val firstSectionIndex: Int) {
+    /** The tab tapped last; forgotten once the list can scroll further again. */
+    var tapped: Int? by mutableStateOf(null)
+
+    val selected: Int by derivedStateOf {
+        val last = DetailSection.entries.lastIndex
+        val visible = listState.layoutInfo.visibleItemsInfo
+            .map { it.index - firstSectionIndex }
+            .filter { it in 0..last }
+        val tappedNow = tapped
+        when {
+            listState.canScrollForward || visible.isEmpty() ->
+                (listState.firstVisibleItemIndex - firstSectionIndex).coerceIn(0, last)
+
+            tappedNow != null && tappedNow in visible -> tappedNow
+
+            else -> visible.max()
+        }
+    }
+}
+
+@Composable
+private fun rememberSectionSelection(listState: LazyListState, firstSectionIndex: Int): SectionSelection {
+    val selection = remember(listState) { SectionSelection(listState, firstSectionIndex) }
+    LaunchedEffect(selection) {
+        snapshotFlow { listState.canScrollForward }.collect { canScroll -> if (canScroll) selection.tapped = null }
+    }
+    return selection
 }
 
 /** The anchored tabs; [compact] adds back and share once the header has scrolled away. */

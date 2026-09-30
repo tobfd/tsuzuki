@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,6 +37,7 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.core.designsystem.theme.BackStackPosition
 import com.tobfd.tsuzuki.core.designsystem.theme.BackSwipeEdge
 import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackEntry
 import com.tobfd.tsuzuki.core.designsystem.theme.PredictiveBackState
@@ -75,6 +80,8 @@ import com.tobfd.tsuzuki.navigation.TopLevelTab
  * Back stacks and the selected tab survive rotation, resizing and process death. Each tab's entries
  * get their own saveable state and ViewModel stores, so switching tabs keeps everything.
  */
+// The list-detail scene strategy (material3-adaptive-navigation3) is still experimental.
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Modifier) {
     val isGuest = chrome.viewer == null
@@ -86,11 +93,13 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 HomeScreen(
                     onOpenMedia = { navigator.navigate(MediaRoute(it)) },
                     onOpenUser = { navigator.navigate(UserRoute(it)) },
+                    onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
+                    onSeeAllLists = { navigator.selectTab(TopLevelTab.Lists) },
                     contentPadding = padding
                 )
             }
         }
-        entry<ListsRoute> {
+        entry<ListsRoute>(metadata = ListDetailSceneStrategy.listPane()) {
             ListsRoute(
                 isGuest = isGuest,
                 onLogIn = onLogOut,
@@ -111,7 +120,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 }
             )
         }
-        entry<BrowseRoute> {
+        entry<BrowseRoute>(metadata = ListDetailSceneStrategy.listPane()) {
             TabRoot(TopLevelTab.Browse, navigator, onRenewLogin = onLogOut) { padding ->
                 BrowseScreen(onOpenMedia = { navigator.navigate(MediaRoute(it)) }, contentPadding = padding)
             }
@@ -127,12 +136,15 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
                 )
             }
         }
-        entry<MediaRoute> { route ->
+        entry<MediaRoute>(metadata = ListDetailSceneStrategy.detailPane()) { route ->
             MediaScreen(
                 mediaId = route.id,
                 onBack = { navigator.back() },
+                onOpenMedia = { navigator.navigate(MediaRoute(it)) },
                 onOpenCharacter = { navigator.navigate(CharacterRoute(it)) },
-                onOpenStaff = { navigator.navigate(StaffRoute(it)) }
+                onOpenStaff = { navigator.navigate(StaffRoute(it)) },
+                onEditEntry = { navigator.navigate(ListEditorRoute(it)) },
+                onLogIn = onLogOut
             )
         }
         entry<CharacterRoute> { route ->
@@ -166,7 +178,11 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
     }
 
     val reducedMotion = rememberReducedMotion()
-    val sceneStrategies = remember { listOf(BottomSheetSceneStrategy<NavKey>(), SinglePaneSceneStrategy()) }
+    // Sheets over everything; on expanded widths Lists or Browse with the detail page beside them.
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    val sceneStrategies = remember(listDetailStrategy) {
+        listOf(BottomSheetSceneStrategy(), listDetailStrategy, SinglePaneSceneStrategy())
+    }
     val predictiveBack = rememberPredictiveBackState()
     val navigationEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
     if (navigationEventDispatcher != null) {
@@ -182,9 +198,16 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             }
         }
     }
+    // Content keys of the shown entries, bottom to top: back closes the last and reveals the one below.
+    val visibleContentKeys = remember { mutableStateOf(emptyList<Any>()) }
     val predictiveBackDecorator = remember(predictiveBack, reducedMotion) {
         NavEntryDecorator<NavKey> { entry ->
-            PredictiveBackEntry(LocalNavAnimatedContentScope.current, predictiveBack, enabled = !reducedMotion) {
+            PredictiveBackEntry(
+                scope = LocalNavAnimatedContentScope.current,
+                state = predictiveBack,
+                enabled = !reducedMotion,
+                position = BackStackPosition.of(entry.contentKey, visibleContentKeys.value)
+            ) {
                 entry.Content()
             }
         }
@@ -203,6 +226,9 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
             entryProvider = entryProvider
         )
     }
+
+    val visibleEntries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) }
+    SideEffect { visibleContentKeys.value = visibleEntries.map { it.contentKey } }
 
     CompositionLocalProvider(LocalShellChrome provides chrome) {
         NavigationSuiteScaffold(
@@ -227,7 +253,7 @@ fun AppShell(chrome: ShellChrome, onLogOut: () -> Unit, modifier: Modifier = Mod
         ) {
             val slideDistancePx = with(LocalDensity.current) { TsuzukiTransitions.SharedAxisSlideDistance.roundToPx() }
             NavDisplay(
-                entries = navigator.visibleTabs.flatMap { entriesPerTab.getValue(it) },
+                entries = visibleEntries,
                 sceneStrategies = sceneStrategies,
                 // Tab switches fade through; opening screens, the back arrow and back without the
                 // gesture use shared axis X.

@@ -36,4 +36,6 @@ object TsuzukiSizes {
     val coverProgressBar = 4.dp
     val primaryButtonHeight = 56.dp
     val logoTile = 96.dp
+    val buttonProgress = 20.dp
+    val buttonProgressStroke = 2.dp
 }

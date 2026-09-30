@@ -211,6 +211,32 @@ class PredictiveBackStateTest {
     }
 }
 
+class BackStackPositionTest {
+
+    private val stack = listOf("home", "media", "staff")
+
+    @Test
+    fun topOfTheStack_isClosedByBack() {
+        assertEquals(BackStackPosition.Top, BackStackPosition.of("staff", stack))
+    }
+
+    @Test
+    fun screenBelowTheTop_isRevealedByBack() {
+        assertEquals(BackStackPosition.Previous, BackStackPosition.of("media", stack))
+    }
+
+    @Test
+    fun otherScreens_andScreensNotOnTheStack_takeNoPart() {
+        assertEquals(BackStackPosition.Other, BackStackPosition.of("home", stack))
+        assertEquals(BackStackPosition.Other, BackStackPosition.of("search", stack))
+    }
+
+    @Test
+    fun onlyScreen_takesNoPart_sinceBackLeavesTheApp() {
+        assertEquals(BackStackPosition.Other, BackStackPosition.of("home", listOf("home")))
+    }
+}
+
 /** A frame every 16 ms on the test's virtual time. */
 private class TestFrameClock : MonotonicFrameClock {
     private var frameTimeNanos = 0L

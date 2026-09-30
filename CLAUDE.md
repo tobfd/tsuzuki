@@ -64,7 +64,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Token storage | DataStore + Tink AEAD with an Android Keystore master key | `EncryptedSharedPreferences` is deprecated; do not use it. |
 | Background | WorkManager (+ Hilt worker factory) | Flush queued mutations, periodic list sync. |
 | Images | Coil 3 (`coil-compose`, `coil-network-okhttp`) | Covers, banners, avatars. |
-| Paging | Paging 3 (`paging-compose`) | Feeds, search, notifications. |
+| Paging | Paging 3 (`paging-compose`) | Search, notifications. The Home feed loads more by button, without Paging. |
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
@@ -162,6 +162,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Strings only from resources. English in `values/strings.xml`, German in `values-de/strings.xml`, both complete in every PR that adds UI text. Use plurals for counts. Per-app language via `locales_config.xml`.
 - Images: always pass the AniList `coverImage.color` as placeholder color, crossfade, correct `contentScale`. Covers are 2:3.
 - Haptics: light tick on +1, confirm haptic when an entry completes.
+- `PredictiveBackEntry` takes each entry's `BackStackPosition` (top / previous / other) from `AppShell`; which screen closes during back must come from the back stack, never from the entry's transition state (back can start mid-transition).
 - Screen transitions come from `TsuzukiTransitions` in `core/designsystem` (M3 motion tokens, emphasized easing): shared axis X for opening screens and for back via arrow or button, the system's own back animation between activities for the back gesture (`PredictiveBackEntry` entry decorator with the AOSP values in `PredictiveBackTokens`, fed by `PredictiveBackState` from the `NavigationEventDispatcher`; `predictiveBack` itself moves nothing), and fade through for tab switches. Bottom sheets use `ModalBottomSheet`'s own predictive back. `AppShell` applies them to `NavDisplay`, so new screens get them automatically; don't add per-screen transitions.
 
 ## Testing

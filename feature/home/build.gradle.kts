@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.tobfd.tsuzuki.feature.home"
 }
+
+dependencies {
+    androidTestImplementation(project(":core:testing"))
+}

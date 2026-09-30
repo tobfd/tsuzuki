@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.core.data.di
 
+import com.tobfd.tsuzuki.core.data.home.DefaultHomeRepository
+import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ConnectivityNetworkMonitor
 import com.tobfd.tsuzuki.core.data.list.DatabaseUserDataCleaner
 import com.tobfd.tsuzuki.core.data.list.DefaultListRepository
@@ -8,6 +10,8 @@ import com.tobfd.tsuzuki.core.data.list.ListWorkScheduler
 import com.tobfd.tsuzuki.core.data.list.NetworkMonitor
 import com.tobfd.tsuzuki.core.data.list.UserDataCleaner
 import com.tobfd.tsuzuki.core.data.list.WorkManagerListWorkScheduler
+import com.tobfd.tsuzuki.core.data.media.DefaultMediaRepository
+import com.tobfd.tsuzuki.core.data.media.MediaRepository
 import com.tobfd.tsuzuki.core.data.notifications.DefaultNotificationsRepository
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.DefaultSessionRepository
@@ -30,6 +34,12 @@ internal interface DataModule {
 
     @Binds
     fun notificationsRepository(impl: DefaultNotificationsRepository): NotificationsRepository
+
+    @Binds
+    fun homeRepository(impl: DefaultHomeRepository): HomeRepository
+
+    @Binds
+    fun mediaRepository(impl: DefaultMediaRepository): MediaRepository
 
     @Binds
     fun listRepository(impl: DefaultListRepository): ListRepository

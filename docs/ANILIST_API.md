@@ -49,6 +49,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - `Page(page, perPage)` wraps list fields; one list field per `Page`. `perPage` max 50 (larger values are capped).
 - **Only `pageInfo.hasNextPage` is reliable.** Do not request or show `total`, `lastPage` or "page X of Y".
 - Paging 3 key = page number, start at 1, next key = page + 1 while `hasNextPage`.
+- The Home feed does not use Paging 3: 25 per page (`Home` for page 1, `ActivityFeed` after that), and the next page only when the user taps "Load more". Activities already shown are left out when a page repeats them (new activities push older ones onto the next page).
 - Several `Page`s in one query are fine with aliases (see `Home`, `BrowseHome`).
 
 ## Lists
@@ -63,6 +64,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 - Scores in other formats are derived from `scoreRaw` the way AniList shows them: POINT_10_DECIMAL = raw / 10, POINT_10 and POINT_5 rounded (raw / 10, raw / 20), POINT_3 = 1 up to 35, 2 up to 60, else 3. Writing: stars × 20, smileys 35 / 60 / 85.
 - The list sync runs with `doNotStore(true)`: the lists live in Room only, not also in the Apollo cache.
 - A removed date is sent as a `FuzzyDateInput` with all parts `null`.
+- "Add to list" (detail page) is the one list change not queued: `SaveMediaListEntry(mediaId, status: PLANNING)` goes out at once, because only AniList hands out the new entry's id. Offline it fails with a message.
 
 ## Mutations used in v1
 

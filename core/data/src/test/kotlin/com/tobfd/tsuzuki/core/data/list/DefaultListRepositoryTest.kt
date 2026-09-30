@@ -398,6 +398,25 @@ class DefaultListRepositoryTest {
     }
 
     @Test
+    fun add_putsTheMediaOnTheListAsPlanning() = runTest {
+        apollo.enqueueJson(anySave, saveResponseJson(entryJson(7, mediaId = 154587, status = "PLANNING")))
+
+        val added = repository.add(154587).getOrThrow()
+
+        assertEquals(7, added.id)
+        assertEquals(MediaListStatus.PLANNING, repository.observeEntry(154587).first()?.status)
+        val sent = apollo.operations.filterIsInstance<SaveMediaListEntryMutation>().single()
+        assertEquals(Optional.present(154587), sent.mediaId)
+        assertEquals(Optional.Absent, sent.id)
+    }
+
+    @Test
+    fun add_offline_fails() = runTest {
+        apollo.enqueueOffline(anySave)
+        assertEquals(AppError.Offline, repository.add(1).exceptionOrNull())
+    }
+
+    @Test
     fun scheduleBackgroundSync_schedulesThePeriodicWork() {
         repository.scheduleBackgroundSync()
         assertTrue(scheduler.periodicSyncScheduled)

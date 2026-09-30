@@ -43,6 +43,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
 import com.tobfd.tsuzuki.core.designsystem.component.InitialAvatar
 import com.tobfd.tsuzuki.core.designsystem.component.PlusOneButton
+import com.tobfd.tsuzuki.core.designsystem.component.ProgressButton
 import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.StatusChip
@@ -56,10 +57,14 @@ import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
+import com.tobfd.tsuzuki.core.model.Activity
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.ScoreFormat
+import com.tobfd.tsuzuki.core.model.UserLite
+import com.tobfd.tsuzuki.core.ui.ActivityCard
 import com.tobfd.tsuzuki.core.ui.MediaCover
+import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.MediaListRow
 import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
@@ -70,6 +75,8 @@ import com.tobfd.tsuzuki.feature.lists.editor.ListEditorActions
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorContent
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorUiState
+import com.tobfd.tsuzuki.feature.media.ShareCardSample
+import java.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 
 // Sample data from AniList (Frieren, id 154587), as used across docs/DESIGN.md.
@@ -117,11 +124,15 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_status_chip) { StatusChipSamples() } }
             item { CatalogSection(R.string.catalog_section_score_text) { ScoreSamples() } }
             item { CatalogSection(R.string.catalog_section_section_header) { SectionHeaderSamples() } }
+            item { CatalogSection(R.string.catalog_section_progress_button) { ProgressButtonSamples() } }
             item { CatalogSection(R.string.catalog_section_media_cover) { MediaCoverSamples() } }
             item { CatalogSection(R.string.catalog_section_segmented_toggle) { SegmentedToggleSamples() } }
             item { CatalogSection(R.string.catalog_section_media_list_row) { MediaListRowSamples() } }
             item { CatalogSection(R.string.catalog_section_search_field) { SearchFieldSamples() } }
             item { CatalogSection(R.string.catalog_section_list_editor) { ListEditorSample() } }
+            item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_share_card) { ShareCardSamples() } }
             item { CatalogSection(R.string.catalog_section_top_bar) { TopBarSamples() } }
             item {
                 CatalogSection(R.string.catalog_section_logo) {
@@ -414,6 +425,14 @@ private fun SectionHeaderSamples() {
 }
 
 @Composable
+private fun ProgressButtonSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
+        ProgressButton(text = stringResource(R.string.catalog_load_more), loading = false, onClick = {})
+        ProgressButton(text = stringResource(R.string.catalog_load_more), loading = true, onClick = {})
+    }
+}
+
+@Composable
 private fun MediaListRowSamples() {
     Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
         PreviewListEntries.all.forEach { entry ->
@@ -460,6 +479,45 @@ private fun ListEditorSample() {
             actions = ListEditorActions(),
             modifier = Modifier.padding(vertical = TsuzukiSpacing.large)
         )
+    }
+}
+
+@Composable
+private fun ActivityCardSamples() {
+    val user = UserLite(1, "tobfd", null)
+    ActivityCard(
+        activity = Activity.ListUpdate(
+            id = 1,
+            user = user,
+            createdAt = Instant.now().minusSeconds(600),
+            likeCount = 3,
+            isLiked = true,
+            replyCount = 1,
+            siteUrl = null,
+            status = "watched episode",
+            progress = "18",
+            media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)
+        ),
+        onLikeClick = {},
+        onUserClick = {},
+        onMediaClick = {}
+    )
+}
+
+@Composable
+private fun CoverCardSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+        MediaCoverCard(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER), onClick = {})
+        MediaCoverCard(media = PreviewListEntries.dandadan.media, onClick = {}, label = "Sequel")
+    }
+}
+
+/** The share card in both formats, with the Frieren cover. */
+@Composable
+private fun ShareCardSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap), verticalAlignment = Alignment.Top) {
+        ShareCardSample(square = false, coverUrl = FRIEREN_COVER, modifier = Modifier.weight(9f))
+        ShareCardSample(square = true, coverUrl = FRIEREN_COVER, modifier = Modifier.weight(10f))
     }
 }
 

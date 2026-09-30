@@ -86,6 +86,13 @@ interface ListRepository {
 
     suspend fun delete(entryId: Int)
 
+    /**
+     * Puts a media on the list as Planning ("Add to list" on the detail page). Unlike the other
+     * changes this goes to AniList right away, since only AniList hands out the entry id; offline
+     * it fails with [AppError.Offline].
+     */
+    suspend fun add(mediaId: Int): Result<MediaListEntry>
+
     fun observeChange(changeId: Long): Flow<ChangeState>
 
     /** Keeps the lists fresh in the background (every 6 hours) while someone is logged in. */

@@ -194,7 +194,7 @@ Top bar "Home" + bell + avatar. Scrolling column:
 - Channels "New episodes" / "Neue Folgen", "Activity" / "Aktivität", "Follows", "Other" / "Sonstiges" (low importance). Small icon: the 続 glyph (`ic_stat_tsuzuki`), the system tints it.
 - New episode: title = media title, text "Episode 5 is out" / "Folge 5 ist da", time = airing time; tap opens the detail page. AniList notifications: the same text as the notifications screen, without styling, the subline (list update or reason) as text; tap opens the profile (follow), the detail page (media) or the notifications screen (activity).
 - One group per channel with a summary, so several fold into one.
-- Hint after the login (an `AlertDialog` with the glyph as icon): "Stay up to date?" with what Tsuzuki would announce and that each kind can be switched in Android's settings, "Allow notifications" / "Not now". If Android doesn't allow exact alarms yet, a second one: "Right on time?", "Open settings" / "Not needed". Both only once.
+- Hint after the login (an `AlertDialog` with the glyph as icon): "Stay up to date?" with what Tsuzuki would announce and that each kind can be switched in Android's settings, "Allow notifications" / "Not now", then Android's own permission dialog. Only once.
 
 ### Widgets (not in the prototype)
 

@@ -32,8 +32,4 @@
     <string name="alerts_hint_text">Tsuzuki kann dir Bescheid geben, wenn eine neue Folge eines Animes erscheint, den du gerade schaust, und wenn dir auf AniList jemand ein Like gibt, antwortet oder folgt. Jede Sorte kannst du jederzeit in den Android-Einstellungen an- oder ausschalten.</string>
     <string name="alerts_hint_allow">Benachrichtigungen erlauben</string>
     <string name="alerts_hint_later">Nicht jetzt</string>
-    <string name="alerts_exact_title">Auf die Minute?</string>
-    <string name="alerts_exact_text">Damit neue Folgen genau zur Ausstrahlung gemeldet werden, braucht Tsuzuki die Berechtigung für Wecker und Erinnerungen. Ohne sie zeigt Android die Meldung eventuell etwas später.</string>
-    <string name="alerts_exact_allow">Einstellungen öffnen</string>
-    <string name="alerts_exact_skip">Nicht nötig</string>
 </resources>

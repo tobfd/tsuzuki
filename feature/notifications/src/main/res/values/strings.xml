@@ -32,8 +32,4 @@
     <string name="alerts_hint_text">Tsuzuki can let you know when a new episode of an anime you are watching airs, and when someone likes, replies or follows you on AniList. You can turn each kind on or off in Android\'s settings at any time.</string>
     <string name="alerts_hint_allow">Allow notifications</string>
     <string name="alerts_hint_later">Not now</string>
-    <string name="alerts_exact_title">Right on time?</string>
-    <string name="alerts_exact_text">For new episodes to show up the minute they air, Tsuzuki needs the permission for alarms and reminders. Without it, Android may show them a little later.</string>
-    <string name="alerts_exact_allow">Open settings</string>
-    <string name="alerts_exact_skip">Not needed</string>
 </resources>

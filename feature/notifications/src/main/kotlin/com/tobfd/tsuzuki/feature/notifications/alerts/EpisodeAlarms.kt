@@ -22,8 +22,8 @@ interface EpisodeAlarmScheduler {
 }
 
 /**
- * An `AlarmManager` alarm, exact when the user allows alarms ("Alarms & reminders"), otherwise as close
- * as Android allows without that permission. Either way it also fires in Doze.
+ * An inexact `AlarmManager` alarm that also fires in Doze (`setAndAllowWhileIdle`): no exact alarm
+ * permission, so Android may deliver it a few minutes late (decided by Tobias, 2026-10-01).
  */
 internal class AlarmManagerEpisodeAlarms @Inject constructor(@ApplicationContext private val context: Context) :
     EpisodeAlarmScheduler {
@@ -37,12 +37,7 @@ internal class AlarmManagerEpisodeAlarms @Inject constructor(@ApplicationContext
     )
 
     override fun schedule(at: Instant) {
-        val time = at.toEpochMilli()
-        if (alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent())
-        } else {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent())
-        }
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at.toEpochMilli(), pendingIntent())
     }
 
     override fun cancel() {
@@ -52,8 +47,7 @@ internal class AlarmManagerEpisodeAlarms @Inject constructor(@ApplicationContext
 
 /**
  * Makes the plan again: when an episode aired (the alarm), and after things that change it: a reboot or
- * an app update (alarms are gone), the alarm permission changed, or the user switched the app's
- * notifications or a channel on or off.
+ * an app update (alarms are gone), or the user switched the app's notifications or a channel on or off.
  */
 @AndroidEntryPoint
 class AlertPlanReceiver : BroadcastReceiver() {
@@ -84,7 +78,6 @@ class AlertPlanReceiver : BroadcastReceiver() {
             ACTION_EPISODE_AIRED,
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_MY_PACKAGE_REPLACED,
-            AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED,
             NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED,
             NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED
         )

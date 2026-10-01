@@ -1,12 +1,9 @@
 package com.tobfd.tsuzuki.feature.notifications.alerts
 
 import android.Manifest
-import android.app.AlarmManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.AlertDialog
@@ -23,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,13 +53,9 @@ class NotificationPermissionViewModel @Inject constructor(
     }
 }
 
-/** The steps of the hint: the notification permission, then the permission for exact alarms. */
-private enum class HintStep { Notifications, ExactAlarms, Done }
-
 /**
- * Asks once, after the login, whether Tsuzuki may send notifications, with a short word on what for; then,
- * if Android doesn't allow exact alarms yet, whether new episodes should come right on time. Never on the
- * first start, and never again once answered.
+ * Asks once, after the login, whether Tsuzuki may send notifications, with a short word on what for.
+ * Never on the first start, and never again once answered. The only permission the notifications need.
  */
 @Composable
 fun NotificationPermissionHint() {
@@ -72,48 +64,25 @@ fun NotificationPermissionHint() {
     if (hintShown != false) return
 
     val context = LocalContext.current
-    var step by rememberSaveable { mutableStateOf(firstStep(context)) }
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        step = if (granted && !canScheduleExactAlarms(context)) HintStep.ExactAlarms else HintStep.Done
+    var asking by rememberSaveable { mutableStateOf(needsPermission(context)) }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        asking = false
     }
 
-    when (step) {
-        HintStep.Notifications -> NotificationsHintDialog(
-            onAllow = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            },
-            onLater = { step = HintStep.Done }
+    if (asking && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        NotificationsHintDialog(
+            onAllow = { permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+            onLater = { asking = false }
         )
-
-        HintStep.ExactAlarms -> ExactAlarmHintDialog(
-            onOpenSettings = {
-                step = HintStep.Done
-                context.startActivity(
-                    Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, "package:${context.packageName}".toUri())
-                )
-            },
-            onSkip = { step = HintStep.Done }
-        )
-
-        // Answered, or everything was allowed already (e.g. Android 12 has no runtime permission).
-        HintStep.Done -> LaunchedEffect(Unit) { viewModel.onHintDone() }
+    } else {
+        // Answered, or nothing to ask (Android 12 has no runtime permission, or it was granted already).
+        LaunchedEffect(Unit) { viewModel.onHintDone() }
     }
 }
 
-private fun firstStep(context: Context): HintStep = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
-        PackageManager.PERMISSION_GRANTED -> HintStep.Notifications
-
-    !canScheduleExactAlarms(context) -> HintStep.ExactAlarms
-
-    else -> HintStep.Done
-}
-
-private fun canScheduleExactAlarms(context: Context): Boolean =
-    context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
+private fun needsPermission(context: Context): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+    PackageManager.PERMISSION_GRANTED
 
 @Composable
 private fun NotificationsHintDialog(onAllow: () -> Unit, onLater: () -> Unit) {
@@ -127,26 +96,8 @@ private fun NotificationsHintDialog(onAllow: () -> Unit, onLater: () -> Unit) {
     )
 }
 
-@Composable
-private fun ExactAlarmHintDialog(onOpenSettings: () -> Unit, onSkip: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onSkip,
-        icon = { Icon(painterResource(R.drawable.ic_stat_tsuzuki), contentDescription = null) },
-        title = { Text(stringResource(R.string.alerts_exact_title)) },
-        text = { Text(stringResource(R.string.alerts_exact_text)) },
-        confirmButton = { TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.alerts_exact_allow)) } },
-        dismissButton = { TextButton(onClick = onSkip) { Text(stringResource(R.string.alerts_exact_skip)) } }
-    )
-}
-
 @ThemePreviews
 @Composable
 private fun NotificationsHintDialogPreview() {
     TsuzukiPreview { NotificationsHintDialog(onAllow = {}, onLater = {}) }
-}
-
-@ThemePreviews
-@Composable
-private fun ExactAlarmHintDialogPreview() {
-    TsuzukiPreview { ExactAlarmHintDialog(onOpenSettings = {}, onSkip = {}) }
 }

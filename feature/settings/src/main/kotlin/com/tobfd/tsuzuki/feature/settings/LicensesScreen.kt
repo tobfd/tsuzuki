@@ -54,6 +54,7 @@ data object LicensesRoute : NavKey
 enum class OpenSourceLicense(val title: String, val asset: String) {
     // The app's own license; the asset is a copy of LICENSE in the repository root.
     Gpl3("GNU General Public License v3.0", "licenses/tsuzuki_GPL3.txt"),
+
     // The Material Symbols license file is the full Apache License 2.0 text.
     Apache2("Apache License 2.0", "licenses/material_symbols_LICENSE.txt"),
     Mit("MIT License", "licenses/apollo_kotlin_MIT.txt"),

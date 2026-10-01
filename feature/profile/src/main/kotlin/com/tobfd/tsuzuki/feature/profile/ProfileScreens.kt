@@ -1,6 +1,5 @@
 package com.tobfd.tsuzuki.feature.profile
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

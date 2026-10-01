@@ -3,7 +3,6 @@ package com.tobfd.tsuzuki.feature.browse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -72,7 +71,7 @@ private const val TAG_MATCHES = 24
  * tags and sort, a year stepper, and "Reset" / "Show results". Changes stay a draft until "Show
  * results"; closing the sheet drops them.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BrowseFilterSheet(
     draft: BrowseFilter,
@@ -123,7 +122,6 @@ internal fun BrowseFilterSheet(
 }
 
 /** The chip groups and the footer, in the sheet or in the tablet dialog. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ColumnScope.FilterBody(
     draft: BrowseFilter,
@@ -237,7 +235,6 @@ private fun ColumnScope.FilterBody(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChipGroup(title: String, chips: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)) {
@@ -292,7 +289,6 @@ private fun YearStepper(year: Int?, currentYear: Int, onYearChange: (Int?) -> Un
 }
 
 /** Picked tags as removable chips, then a search over AniList's ~400 tags. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TagPicker(allTags: List<String>, selected: Set<String>, onToggle: (String) -> Unit) {
     var search by rememberSaveable { mutableStateOf("") }

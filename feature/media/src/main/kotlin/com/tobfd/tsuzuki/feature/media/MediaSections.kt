@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -86,7 +85,6 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 
 private val horizontalMargin = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin)
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun OverviewSection(detail: MediaDetail, onOpenMedia: (Int) -> Unit) {
     val uriHandler = LocalUriHandler.current
@@ -145,7 +143,6 @@ internal fun OverviewSection(detail: MediaDetail, onOpenMedia: (Int) -> Unit) {
 }
 
 /** Genres' neighbour: tags with rank %, the first few, "+N tags", spoilers behind a button. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun Tags(detail: MediaDetail) {
     if (detail.tags.isEmpty()) return

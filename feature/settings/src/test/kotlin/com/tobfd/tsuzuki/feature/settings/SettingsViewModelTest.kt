@@ -5,12 +5,14 @@ import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.settings.AniListOptionsChange
 import com.tobfd.tsuzuki.core.model.AppColors
 import com.tobfd.tsuzuki.core.model.AppThemeMode
+import com.tobfd.tsuzuki.core.model.AppUpdate
 import com.tobfd.tsuzuki.core.model.AppearanceSettings
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.model.TitleLanguage
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
 import com.tobfd.tsuzuki.core.testing.FakeSettingsRepository
+import com.tobfd.tsuzuki.core.testing.FakeUpdateRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
 import com.tobfd.tsuzuki.core.testing.SampleData
 import kotlinx.coroutines.CompletableDeferred
@@ -32,11 +34,13 @@ class SettingsViewModelTest {
 
     private val settings = FakeSettingsRepository()
     private val session = FakeSessionRepository(SessionState.LoggedIn(SampleData.viewer, SampleData.tokenExpiry))
+    private val updates = FakeUpdateRepository()
 
-    private fun TestScope.viewModel(): SettingsViewModel = SettingsViewModel(settings, session).also { viewModel ->
-        backgroundScope.launch { viewModel.uiState.collect {} }
-        runCurrent()
-    }
+    private fun TestScope.viewModel(): SettingsViewModel =
+        SettingsViewModel(settings, session, updates).also { viewModel ->
+            backgroundScope.launch { viewModel.uiState.collect {} }
+            runCurrent()
+        }
 
     @Test
     fun appearanceChanges_areStoredRightAway() = runTest {
@@ -105,5 +109,50 @@ class SettingsViewModelTest {
 
         assertFalse(viewModel.uiState.value.options!!.displayAdultContent)
         assertFalse(viewModel.uiState.value.savingOptions)
+    }
+
+    @Test
+    fun checkForUpdates_showsTheResult() = runTest {
+        val viewModel = viewModel()
+        updates.checkResult = Result.success(AppUpdate("1.1.0", "https://github.com/tobfd/tsuzuki/releases/tag/v1.1.0"))
+
+        viewModel.onCheckForUpdates()
+        runCurrent()
+        assertEquals(
+            UpdateCheck.Available(AppUpdate("1.1.0", "https://github.com/tobfd/tsuzuki/releases/tag/v1.1.0")),
+            viewModel.uiState.value.updates?.check
+        )
+
+        updates.checkResult = Result.success(null)
+        viewModel.onCheckForUpdates()
+        runCurrent()
+        assertEquals(UpdateCheck.UpToDate, viewModel.uiState.value.updates?.check)
+    }
+
+    @Test
+    fun checkForUpdates_failure_isShown_notThrown() = runTest {
+        val viewModel = viewModel()
+        updates.checkResult = Result.failure(AppError.Offline)
+
+        viewModel.onCheckForUpdates()
+        runCurrent()
+
+        assertEquals(UpdateCheck.Failed(AppError.Offline), viewModel.uiState.value.updates?.check)
+    }
+
+    @Test
+    fun autoCheckSwitch_isStored() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAutoUpdateCheckChange(false)
+        runCurrent()
+        assertEquals(false, viewModel.uiState.value.updates?.autoCheck)
+    }
+
+    @Test
+    fun buildWithoutUpdateCheck_hasNoUpdateRows() = runTest {
+        val viewModel = SettingsViewModel(settings, session, FakeUpdateRepository(isEnabled = false))
+        backgroundScope.launch { viewModel.uiState.collect {} }
+        runCurrent()
+        assertEquals(null, viewModel.uiState.value.updates)
     }
 }

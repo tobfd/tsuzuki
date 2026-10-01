@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -121,6 +122,8 @@ fun SettingsScreen(
                         .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                 )
             },
+            onCheckForUpdates = viewModel::onCheckForUpdates,
+            onAutoUpdateCheckChange = viewModel::onAutoUpdateCheckChange,
             onOpenLicenses = onOpenLicenses,
             onOpenCatalog = onOpenCatalog
         ),
@@ -139,6 +142,8 @@ internal class SettingsActions(
     val onAdultContentChange: (Boolean) -> Unit = {},
     val onLogOut: () -> Unit = {},
     val onOpenNotificationSettings: () -> Unit = {},
+    val onCheckForUpdates: () -> Unit = {},
+    val onAutoUpdateCheckChange: (Boolean) -> Unit = {},
     val onOpenLicenses: () -> Unit = {},
     val onOpenCatalog: (() -> Unit)? = null
 )
@@ -199,7 +204,7 @@ internal fun SettingsContent(
                 if (state.options != null) ContentSection(state, actions)
                 if (state.viewer != null) NotificationsSection(actions.onOpenNotificationSettings)
                 AccountSection(state.viewer, actions.onLogOut)
-                AboutSection(appVersion, actions.onOpenLicenses, actions.onOpenCatalog)
+                AboutSection(appVersion, state.updates, actions)
             }
         }
     }
@@ -469,7 +474,8 @@ private fun AccountSection(viewer: Viewer?, onLogOut: () -> Unit) {
 }
 
 @Composable
-private fun AboutSection(appVersion: String, onOpenLicenses: () -> Unit, onOpenCatalog: (() -> Unit)?) {
+private fun AboutSection(appVersion: String, updates: UpdateSettings?, actions: SettingsActions) {
+    val onOpenCatalog = actions.onOpenCatalog
     SettingsSection(stringResource(R.string.settings_section_about)) {
         var taps by remember { mutableIntStateOf(0) }
         val hiddenCatalog = if (onOpenCatalog != null) {
@@ -495,8 +501,43 @@ private fun AboutSection(appVersion: String, onOpenLicenses: () -> Unit, onOpenC
             modifier = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin, vertical = TsuzukiSpacing.extraSmall)
         )
         HorizontalDivider(modifier = Modifier.padding(top = TsuzukiSpacing.small))
-        ClickableRow(title = stringResource(R.string.settings_licenses), supporting = null, onClick = onOpenLicenses)
+        if (updates != null) UpdateRows(updates, actions)
+        ClickableRow(
+            title = stringResource(R.string.settings_licenses),
+            supporting = null,
+            onClick = actions.onOpenLicenses
+        )
     }
+}
+
+/**
+ * "Check for updates" with its result (a found release opens its page in the browser on the next tap)
+ * and the switch for the automatic check.
+ */
+@Composable
+private fun UpdateRows(updates: UpdateSettings, actions: SettingsActions) {
+    val uriHandler = LocalUriHandler.current
+    val check = updates.check
+    ClickableRow(
+        title = stringResource(R.string.settings_update_check),
+        supporting = when (check) {
+            UpdateCheck.Idle -> stringResource(R.string.settings_update_idle)
+            UpdateCheck.Checking -> stringResource(R.string.settings_update_checking)
+            UpdateCheck.UpToDate -> stringResource(R.string.settings_update_up_to_date)
+            is UpdateCheck.Available -> stringResource(R.string.settings_update_available, check.update.version)
+            is UpdateCheck.Failed -> stringResource(R.string.settings_update_failed, check.error.message())
+        },
+        onClick = {
+            if (check is UpdateCheck.Available) uriHandler.openUri(check.update.url) else actions.onCheckForUpdates()
+        },
+        enabled = check != UpdateCheck.Checking
+    )
+    SwitchRow(
+        title = stringResource(R.string.settings_update_auto),
+        supporting = stringResource(R.string.settings_update_auto_supporting),
+        checked = updates.autoCheck,
+        onCheckedChange = actions.onAutoUpdateCheckChange
+    )
 }
 
 @Composable

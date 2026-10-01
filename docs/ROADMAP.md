@@ -222,3 +222,19 @@ Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. To
 - [x] Follow-ups from the review: placeholder client ID in tests, made-up user names (Frieren characters) in previews, tests and docs, `navigationevent` declared, unit tests opted into their experimental APIs, keep rules in `src/main/keepRules` (AGP deprecation), D1 in `docs/PRODUCT.md` now "open source (GPL-3.0)".
 - [x] Modern check: all libraries on their latest stable version (Gradle wrapper 9.6.0 → 9.8.0), no deprecated APIs in main code except AniList's `stats.activityHistory` (kept, M9), opt-ins that stable Compose no longer needs removed.
 - [x] `docs/WEAR_OS.md`: assessment of a Wear OS companion.
+
+---
+
+## Android notifications (after v1)
+
+Asked for by Tobias on 2026-10-01. One branch, one PR, one phone test.
+
+- [ ] New episodes: planned locally from the airing times in Room (`nextAiringEpisode` from the list sync), an alarm at the exact airing time, no request; only anime being watched or rewatched.
+- [ ] AniList notifications: WorkManager about every 30 minutes, network required; `unreadNotificationCount` first, the newest notifications only when it went up. Rate-limit and battery friendly, never resets the count.
+- [ ] Own channels (New episodes, Activity, Follows, Other), grouped notifications, a tap opens the right screen (detail page, profile, notifications).
+- [ ] No switches per kind in the app, only the Android channels: Settings gets one entry that opens the app's Android notification settings (`ACTION_APP_NOTIFICATION_SETTINGS`).
+- [ ] Before checking or planning: are the app's notifications and the channel on? If not, no request and no alarm.
+- [ ] Permission (`POST_NOTIFICATIONS`) asked after the login with a short word on what for, never on the first start; logout stops everything.
+- [ ] Tests, phone test.
+
+**Done when:** on Tobias's Pixel a new episode of something he watches shows up at its airing time, a like or follow on AniList shows up within about half an hour, and switching a channel off stops its alarms or requests.

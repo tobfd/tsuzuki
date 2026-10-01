@@ -17,6 +17,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,7 +46,9 @@ sealed interface UserListUiState {
         val query: String,
         /** Scores show in the viewer's format, like everywhere else in the app. */
         val scoreFormat: ScoreFormat,
-        val listEmpty: Boolean
+        val listEmpty: Boolean,
+        /** The rows of every tab, in [tabs] order, for the swipeable pages (search uses [rows]). */
+        val tabRows: ImmutableList<ImmutableList<MediaListEntry>> = persistentListOf()
     ) : UserListUiState
 }
 
@@ -113,7 +116,12 @@ class UserListViewModel @AssistedInject constructor(
                         searchActive = filters.searchActive,
                         query = filters.query,
                         scoreFormat = scoreFormat,
-                        listEmpty = list.list.entries.isEmpty()
+                        listEmpty = list.list.entries.isEmpty(),
+                        // Already loaded in one go: every tab is ready, so swiping makes no request.
+                        tabRows = tabs.map {
+                            rowsOf(list.list, it.key, "", filters.sort, Locale.getDefault()).toImmutableList()
+                        }
+                            .toImmutableList()
                     )
                 }
             }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
@@ -27,7 +28,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -58,9 +58,12 @@ import com.tobfd.tsuzuki.core.data.list.RejectReason
 import com.tobfd.tsuzuki.core.data.list.RejectedChange
 import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
+import com.tobfd.tsuzuki.core.designsystem.component.PagerTabRow
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
+import com.tobfd.tsuzuki.core.designsystem.component.TabPager
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiPullToRefresh
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiSearchField
+import com.tobfd.tsuzuki.core.designsystem.component.rememberTabPagerState
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
@@ -298,14 +301,10 @@ fun ListsScreen(
                     modifier = horizontal.padding(top = TsuzukiSpacing.medium)
                 )
             }
-            if (!searching && state.tabs.isNotEmpty()) {
-                ListTabs(
-                    tabs = state.tabs,
-                    selectedTab = state.selectedTab,
-                    type = state.type,
-                    onTabSelected = onTabSelected,
-                    edgePadding = start
-                )
+            val paged = !searching && state.loaded && state.loadError == null && state.tabs.isNotEmpty()
+            val pagerState = rememberListTabPagerState(state.tabs, state.selectedTab, onTabSelected)
+            if (paged) {
+                ListTabRow(tabs = state.tabs, type = state.type, pagerState = pagerState, edgePadding = start)
             }
             if (state.waitingChanges > 0) {
                 WaitingChangesHint(
@@ -313,27 +312,44 @@ fun ListsScreen(
                     modifier = horizontal.padding(top = TsuzukiSpacing.small)
                 )
             }
+            val listPadding = PaddingValues(
+                start = start,
+                end = end,
+                top = TsuzukiSpacing.medium,
+                bottom = contentPadding.calculateBottomPadding()
+            )
             TsuzukiPullToRefresh(
                 isRefreshing = state.isRefreshing,
                 onRefresh = onRefresh,
                 modifier = Modifier.weight(1f)
             ) {
-                ListBody(
-                    state = state,
-                    searching = searching,
-                    contentPadding = PaddingValues(
-                        start = start,
-                        end = end,
-                        top = TsuzukiSpacing.medium,
-                        bottom = contentPadding.calculateBottomPadding()
-                    ),
-                    onRefresh = onRefresh,
-                    onEditEntry = onEditEntry,
-                    onOpenMedia = onOpenMedia,
-                    onPlusOne = onPlusOne,
-                    onStart = onStart,
-                    onBrowse = onBrowse
-                )
+                if (paged) {
+                    ListTabPages(tabs = state.tabs, type = state.type, pagerState = pagerState) { page ->
+                        ListRows(
+                            rows = state.tabRows.getOrElse(page) { persistentListOf() },
+                            scoreFormat = state.scoreFormat,
+                            contentPadding = listPadding,
+                            isVisiblePage = page == pagerState.currentPage,
+                            onEditEntry = onEditEntry,
+                            onOpenMedia = onOpenMedia,
+                            onPlusOne = onPlusOne,
+                            onStart = onStart,
+                            onBrowse = onBrowse
+                        )
+                    }
+                } else {
+                    ListBody(
+                        state = state,
+                        searching = searching,
+                        contentPadding = listPadding,
+                        onRefresh = onRefresh,
+                        onEditEntry = onEditEntry,
+                        onOpenMedia = onOpenMedia,
+                        onPlusOne = onPlusOne,
+                        onStart = onStart,
+                        onBrowse = onBrowse
+                    )
+                }
             }
         }
         SnackbarHost(
@@ -345,35 +361,60 @@ fun ListsScreen(
     }
 }
 
+/** The pager behind the status and custom list tabs, in step with [selectedTab] (kept by the ViewModel). */
 @Composable
-internal fun ListTabs(
+internal fun rememberListTabPagerState(
     tabs: List<ListTab>,
     selectedTab: ListTabKey,
-    type: MediaType,
-    onTabSelected: (ListTabKey) -> Unit,
-    edgePadding: Dp
-) {
-    val selectedIndex = tabs.indexOfFirst { it.key == selectedTab }.coerceAtLeast(0)
-    PrimaryScrollableTabRow(
-        selectedTabIndex = selectedIndex,
+    onTabSelected: (ListTabKey) -> Unit
+): PagerState = rememberTabPagerState(
+    selectedIndex = tabs.indexOfFirst { it.key == selectedTab }.coerceAtLeast(0),
+    pageCount = tabs.size,
+    onPageSelected = { page -> tabs.getOrNull(page)?.let { onTabSelected(it.key) } }
+)
+
+/** Status tabs, then the custom lists; tapping one or swiping the pages below moves the indicator. */
+@Composable
+internal fun ListTabRow(tabs: List<ListTab>, type: MediaType, pagerState: PagerState, edgePadding: Dp) {
+    PagerTabRow(
+        pagerState = pagerState,
+        scrollable = true,
         edgePadding = edgePadding,
         containerColor = MaterialTheme.colorScheme.surface,
         modifier = Modifier.padding(top = TsuzukiSpacing.small)
-    ) {
-        tabs.forEachIndexed { index, tab ->
-            val label = when (val key = tab.key) {
-                is ListTabKey.Status -> stringResource(key.status.labelRes(type))
-                is ListTabKey.Custom -> key.name
-            }
-            Tab(
-                selected = index == selectedIndex,
-                onClick = { onTabSelected(tab.key) },
-                text = {
-                    Text(if (tab.count > 0) stringResource(R.string.lists_tab_count, label, tab.count) else label)
-                }
-            )
+    ) { index, selected, onClick ->
+        val tab = tabs[index]
+        val label = when (val key = tab.key) {
+            is ListTabKey.Status -> stringResource(key.status.labelRes(type))
+            is ListTabKey.Custom -> key.name
         }
+        Tab(
+            selected = selected,
+            onClick = onClick,
+            text = { Text(if (tab.count > 0) stringResource(R.string.lists_tab_count, label, tab.count) else label) }
+        )
     }
+}
+
+/**
+ * One swipeable page per tab (M12). The rows are all local, so the pages next to the visible one are
+ * kept ready; each page keeps its scroll position, also per list type.
+ */
+@Composable
+internal fun ListTabPages(
+    tabs: List<ListTab>,
+    type: MediaType,
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    page: @Composable (index: Int) -> Unit
+) {
+    TabPager(
+        pagerState = pagerState,
+        pageKey = { index -> "${type.name}/${tabs.getOrNull(index)?.key?.encode() ?: index}" },
+        beyondViewportPageCount = 1,
+        modifier = modifier.fillMaxSize(),
+        content = page
+    )
 }
 
 @Composable
@@ -429,7 +470,34 @@ private fun ListBody(
             )
         }
 
-        state.rows.isEmpty() -> ScrollableState(contentPadding) {
+        else -> ListRows(
+            rows = state.rows,
+            scoreFormat = state.scoreFormat,
+            contentPadding = contentPadding,
+            onEditEntry = onEditEntry,
+            onOpenMedia = onOpenMedia,
+            onPlusOne = onPlusOne,
+            onStart = onStart,
+            onBrowse = onBrowse
+        )
+    }
+}
+
+/** The rows of one tab (or of a search), or its empty state. */
+@Composable
+private fun ListRows(
+    rows: List<MediaListEntry>,
+    scoreFormat: ScoreFormat,
+    contentPadding: PaddingValues,
+    onEditEntry: (MediaListEntry) -> Unit,
+    onOpenMedia: (MediaListEntry) -> Unit,
+    onPlusOne: (MediaListEntry) -> Unit,
+    onStart: (MediaListEntry) -> Unit,
+    onBrowse: () -> Unit,
+    isVisiblePage: Boolean = true
+) {
+    if (rows.isEmpty()) {
+        ScrollableState(contentPadding) {
             EmptyState(
                 icon = painterResource(TsuzukiIcons.List),
                 title = stringResource(R.string.lists_empty_title),
@@ -438,31 +506,30 @@ private fun ListBody(
                 onAction = onBrowse
             )
         }
-
-        else -> {
-            val gridState = rememberLazyGridState()
-            ScrollToTopOnTabReselect(gridState)
-            // One column on phones; two or three on a tablet when no detail pane is open.
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
-                state = gridState,
-                contentPadding = contentPadding,
-                horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
-                verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(state.rows, key = { it.id }) { entry ->
-                    MediaListRow(
-                        entry = entry,
-                        scoreFormat = state.scoreFormat,
-                        onClick = { onEditEntry(entry) },
-                        onLongClick = { onOpenMedia(entry) },
-                        onPlusOne = { onPlusOne(entry) },
-                        onStart = { onStart(entry) },
-                        modifier = Modifier.animateItem()
-                    )
-                }
-            }
+        return
+    }
+    val gridState = rememberLazyGridState()
+    // Pages beside the visible one stay composed; only the visible one scrolls up on reselect.
+    if (isVisiblePage) ScrollToTopOnTabReselect(gridState)
+    // One column on phones; two or three on a tablet when no detail pane is open.
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
+        state = gridState,
+        contentPadding = contentPadding,
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(rows, key = { it.id }) { entry ->
+            MediaListRow(
+                entry = entry,
+                scoreFormat = scoreFormat,
+                onClick = { onEditEntry(entry) },
+                onLongClick = { onOpenMedia(entry) },
+                onPlusOne = { onPlusOne(entry) },
+                onStart = { onStart(entry) },
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }
@@ -493,6 +560,9 @@ private fun previewState(type: MediaType = MediaType.ANIME) = ListsUiState(
         ListTab(ListTabKey.Custom("Favs"), 2)
     ).toImmutableList(),
     rows = PreviewListEntries.all.toImmutableList(),
+    tabRows = List(7) { index ->
+        if (index == 0) PreviewListEntries.all.toImmutableList() else persistentListOf()
+    }.toImmutableList(),
     scoreFormat = ScoreFormat.POINT_10_DECIMAL,
     loaded = true
 )
@@ -524,7 +594,11 @@ private fun ListsScreenPreview() {
 private fun ListsScreenEmptyPreview() {
     TsuzukiPreview {
         ListsScreen(
-            state = previewState().copy(rows = persistentListOf(), waitingChanges = 2),
+            state = previewState().copy(
+                rows = persistentListOf(),
+                tabRows = List(7) { persistentListOf<MediaListEntry>() }.toImmutableList(),
+                waitingChanges = 2
+            ),
             snackbarHostState = remember { SnackbarHostState() },
             onTypeSelected = {},
             onTabSelected = {},

@@ -36,6 +36,7 @@ import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
+import com.tobfd.tsuzuki.core.model.MediaListEntry
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaType
 import com.tobfd.tsuzuki.core.model.ScoreFormat
@@ -183,57 +184,80 @@ private fun UserListBody(
                 modifier = Modifier.padding(start = start, end = end)
             )
         }
-        if (!searching && !state.listEmpty) {
-            ListTabs(
-                tabs = state.tabs,
-                selectedTab = state.selectedTab,
-                type = state.type,
-                onTabSelected = onTabSelected,
-                edgePadding = start
-            )
-        }
         val listPadding = PaddingValues(
             start = start,
             end = end,
             top = TsuzukiSpacing.medium,
             bottom = contentPadding.calculateBottomPadding()
         )
-        when {
-            state.rows.isEmpty() -> ScrollableState(listPadding) {
-                EmptyState(
-                    icon = painterResource(if (searching) TsuzukiIcons.Search else TsuzukiIcons.List),
-                    title = stringResource(
-                        if (searching) R.string.lists_search_empty_title else R.string.lists_user_empty_title
-                    ),
-                    message = if (searching) {
-                        stringResource(R.string.lists_user_search_empty_message, state.query.trim())
-                    } else {
-                        stringResource(R.string.lists_user_empty_message)
-                    }
+        val pagerState = rememberListTabPagerState(state.tabs, state.selectedTab, onTabSelected)
+        if (!searching && !state.listEmpty && state.tabs.isNotEmpty()) {
+            ListTabRow(tabs = state.tabs, type = state.type, pagerState = pagerState, edgePadding = start)
+            ListTabPages(tabs = state.tabs, type = state.type, pagerState = pagerState) { page ->
+                UserListRows(
+                    rows = state.tabRows.getOrElse(page) { persistentListOf() },
+                    state = state,
+                    searching = false,
+                    listPadding = listPadding,
+                    onOpenMedia = onOpenMedia
                 )
             }
+        } else {
+            UserListRows(
+                rows = state.rows,
+                state = state,
+                searching = searching,
+                listPadding = listPadding,
+                onOpenMedia = onOpenMedia
+            )
+        }
+    }
+}
 
-            else -> LazyVerticalGrid(
-                columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
-                state = rememberLazyGridState(),
-                contentPadding = listPadding,
-                horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
-                verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(state.rows, key = { it.id }) { entry ->
-                    MediaListRow(
-                        entry = entry,
-                        scoreFormat = state.scoreFormat,
-                        onClick = { onOpenMedia(entry.mediaId) },
-                        onLongClick = { onOpenMedia(entry.mediaId) },
-                        onPlusOne = {},
-                        onStart = {},
-                        readOnly = true,
-                        modifier = Modifier.animateItem()
-                    )
+/** The rows of one tab (or of a search), or its empty state. */
+@Composable
+private fun UserListRows(
+    rows: List<MediaListEntry>,
+    state: UserListUiState.Content,
+    searching: Boolean,
+    listPadding: PaddingValues,
+    onOpenMedia: (mediaId: Int) -> Unit
+) {
+    if (rows.isEmpty()) {
+        ScrollableState(listPadding) {
+            EmptyState(
+                icon = painterResource(if (searching) TsuzukiIcons.Search else TsuzukiIcons.List),
+                title = stringResource(
+                    if (searching) R.string.lists_search_empty_title else R.string.lists_user_empty_title
+                ),
+                message = if (searching) {
+                    stringResource(R.string.lists_user_search_empty_message, state.query.trim())
+                } else {
+                    stringResource(R.string.lists_user_empty_message)
                 }
-            }
+            )
+        }
+        return
+    }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(TsuzukiSizes.rowGridMinWidth),
+        state = rememberLazyGridState(),
+        contentPadding = listPadding,
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(rows, key = { it.id }) { entry ->
+            MediaListRow(
+                entry = entry,
+                scoreFormat = state.scoreFormat,
+                onClick = { onOpenMedia(entry.mediaId) },
+                onLongClick = { onOpenMedia(entry.mediaId) },
+                onPlusOne = {},
+                onStart = {},
+                readOnly = true,
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }

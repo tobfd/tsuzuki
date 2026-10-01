@@ -28,7 +28,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 
 - **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
 - **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). After v1 (2026-10-01): GitHub ready, then Android notifications. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
 - **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`), `<package>/<short-topic>` for unnumbered packages (e.g. `widgets/glance`). Conventional Commits (`feat(lists): add +1 with undo`).
 - **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
 - **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
@@ -154,6 +154,13 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - Glance pitfalls: a `Chronometer` (through `AndroidRemoteViews`) doesn't tick inside a `LazyColumn`, and put directly into a `Row` it drops the row's other children (wrap it in a `Box`). RemoteViews layouts (also the static picker previews) only allow the RemoteViews view classes (no plain `View`).
 - Debug builds have `PinWidgetActivity` (pins a widget through the launcher's dialog) and `WidgetSampleDataActivity` (a made-up session and sample data, emulator only and offline) for checks without an account.
 
+### Android notifications (since the Android notifications package)
+
+- `feature/notifications` (package `alerts`) holds them; `AlertCoordinator`, started by the `Application`, follows the session and the airing times in Room. New episodes: one `AlarmManager` alarm for the next airing time (`EpisodePlan`, no request; inexact `setAndAllowWhileIdle`, a few minutes late is fine: no exact alarm permission, decided by Tobias 2026-10-01). AniList notifications: periodic `NotificationCheckWorker` about every 30 minutes through `AlertsRepository.newNotifications()` in `core/data` (unread count first, the newest page only when it rose). Details and request budget in `docs/ANILIST_API.md`, Android notifications.
+- Channels (`AlertChannel`: New episodes, Activity, Follows, Other) are the only switches; Settings opens the app's Android notification settings. Before every plan and every check `AlertGate` asks whether the app's notifications and the channel are on; if not, no alarm and no periodic work. `AlertPlanReceiver` plans again after a reboot, an update or a change to the app's notifications or a channel, and `MainActivity` on every resume.
+- Taps open screens through `tsuzuki://open/...` links like the widgets (`AppDestination.Notifications` for activity notifications). Opening the notifications screen removes the posted AniList notifications.
+- The permission is asked once after the login (`NotificationPermissionHint` in `AppShell`), the only permission they need; never on the first start. The bookkeeping (`AlertStateStore`, DataStore `alerts`, not backed up) is cleared on logout, except that the hint was shown.
+
 ### Settings (since M11)
 
 - The look (colors, theme mode, pure black) is `AppearanceSettings` in its own DataStore (`SettingsStore`, file `settings`), kept on logout; `MainActivity` themes the app from it. The AniList options (title language, score format, adult content) live with the cached viewer and change only through `SettingsRepository.updateAniListOptions` (`UpdateUser`), which also clears the Apollo cache and re-picks the list titles in Room.
@@ -201,7 +208,7 @@ Details in `docs/ANILIST_API.md`. The short version:
 
 ## Don'ts
 
-- Don't add a forum, review writing or airing reminders before v1 is done (see `docs/PRODUCT.md`, "Later"). Widgets are part of v1 since 2026-09-30.
+- Don't add a forum or review writing without Tobias (see `docs/PRODUCT.md`, "Later"). Widgets are part of v1 since 2026-09-30; Android notifications (new episodes, AniList notifications) came after v1 as their own package.
 - Don't hardcode the client ID, colors, strings or spacing.
 - Don't call the API from composables or from `init {}` of anything but a ViewModel/repository.
 - Don't swallow errors; map them to `AppError` and show them.

@@ -2,6 +2,7 @@
 <!-- Same exclusions as data_extraction_rules.xml, for the older backup format. -->
 <full-backup-content>
     <exclude domain="file" path="datastore/session.preferences_pb" />
+    <exclude domain="file" path="datastore/alerts.preferences_pb" />
     <exclude domain="sharedpref" path="tsuzuki_keyset_prefs.xml" />
     <exclude domain="database" path="tsuzuki.db" />
 </full-backup-content>

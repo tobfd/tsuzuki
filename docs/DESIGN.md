@@ -183,10 +183,18 @@ Top bar "Home" + bell + avatar. Scrolling column:
 - **Appearance:** "Colors" as two selectable cards side by side (Material You with wallpaper swatches, AniList blue swatch), Theme segmented button (System / Light / Dark), "Pure black" switch ("Black background in the dark theme"). The cards are `ColorChoiceCard` in `core/designsystem`; the whole app recolors at once, which is the live preview.
 - **Language:** App language row ("System default"; a dialog with System default / English / Deutsch; Android 13+ only, hidden on Android 12, which has no per-app languages), Title language segmented (Romaji / English / Native) with "Synced with your AniList settings" and a live example ("Sousou no Frieren").
 - **Lists and content:** Score format row ("10 point decimal (8.5/10)") opening a picker, "Show adult content" switch ("Hidden by default"; when on: "Shown in search, trending and lists").
+- **Notifications** (logged in only): one row "New episodes, activity, follows" / "Choose in Android's settings" that opens the app's Android notification settings; the channels there are the only switches.
 - **Account:** avatar, name, "Logged in with AniList", outlined "Log out" with a confirm dialog. Guests see "Log in with AniList" instead, and no title language or "Lists and content" (AniList options).
 - **About:** "Tsuzuki for AniList · 0.1.0", "Unofficial app. Not affiliated with AniList. Data from the AniList API.", Open-source licenses (a screen listing the shipped libraries by license, each license text expandable from the bundled assets).
 - Pure black (AMOLED): in the dark theme `background`, `surface`, `surfaceDim` and `surfaceContainerLowest` are black and the other surface containers move towards black, keeping 60 % of their color (`design/tokens.json`, `color.pureBlack`). Works with both color sources.
 - The settings column is capped at the reading width on large screens.
+
+### Android notifications (not in the prototype)
+
+- Channels "New episodes" / "Neue Folgen", "Activity" / "Aktivität", "Follows", "Other" / "Sonstiges" (low importance). Small icon: the 続 glyph (`ic_stat_tsuzuki`), the system tints it.
+- New episode: title = media title, text "Episode 5 is out" / "Folge 5 ist da", time = airing time; tap opens the detail page. AniList notifications: the same text as the notifications screen, without styling, the subline (list update or reason) as text; tap opens the profile (follow), the detail page (media) or the notifications screen (activity).
+- One group per channel with a summary, so several fold into one.
+- Hint after the login (an `AlertDialog` with the glyph as icon): "Stay up to date?" with what Tsuzuki would announce and that each kind can be switched in Android's settings, "Allow notifications" / "Not now", then Android's own permission dialog. Only once.
 
 ### Widgets (not in the prototype)
 

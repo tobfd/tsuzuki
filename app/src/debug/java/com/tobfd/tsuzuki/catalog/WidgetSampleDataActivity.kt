@@ -24,6 +24,8 @@ import kotlinx.coroutines.runBlocking
  * (`--es mode clear` removes them again). The token is not real, so keep the emulator offline while
  * using it: `adb shell cmd connectivity airplane-mode enable`, then
  * `adb shell am start -n com.tobfd.tsuzuki/.catalog.WidgetSampleDataActivity`.
+ * `--ei episode_in_seconds 60` lets Ao no Hako's next episode air that soon, to check the new-episode
+ * notification.
  */
 @AndroidEntryPoint
 class WidgetSampleDataActivity : ComponentActivity() {
@@ -40,13 +42,14 @@ class WidgetSampleDataActivity : ComponentActivity() {
                 database.clearAllTables()
                 sessionStore.clear()
             } else {
-                seed(Instant.now())
+                val episodeIn = intent.getIntExtra("episode_in_seconds", -1)
+                seed(Instant.now(), episodeIn.takeIf { it >= 0 }?.let { Duration.ofSeconds(it.toLong()) })
             }
         }
         finish()
     }
 
-    private suspend fun seed(now: Instant) {
+    private suspend fun seed(now: Instant, episodeIn: Duration?) {
         sessionStore.saveToken("debug-sample-token", now + Duration.ofDays(300))
         sessionStore.saveViewer(
             Viewer(
@@ -88,7 +91,8 @@ class WidgetSampleDataActivity : ComponentActivity() {
                 )
             ),
             Sample(
-                5, 170942, "ANIME", "Ao no Hako", 19, 25, "RELEASING", 20, now + Duration.ofMinutes(40), "#5daee4",
+                5, 170942, "ANIME", "Ao no Hako", 19, 25, "RELEASING", 20, now + (episodeIn ?: Duration.ofMinutes(40)),
+                "#5daee4",
                 cover("anime/cover/medium/bx170942-KKcLfQzV57nG.jpg")
             )
         )

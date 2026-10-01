@@ -35,7 +35,7 @@ Decided with Tobias during planning (2026-09-28). Changing any of these needs hi
 - Replying to activities and writing status posts.
 - Forum (read first), reviews (read, then write), voting on recommendations.
 - Detailed stats pages, favourites management, full followers/following management.
-- Local episode reminders, system notifications for AniList notifications, deep links for anilist.co URLs. (Home-screen widgets, including the airing countdown, moved into v1 on 2026-09-30.)
+- Deep links for anilist.co URLs. (Home-screen widgets, including the airing countdown, moved into v1 on 2026-09-30. Local episode notifications and Android notifications for AniList notifications are the "Android notifications" package after v1, asked for by Tobias on 2026-10-01.)
 - Tablet layouts beyond the adaptive basics (the basics are required in v1).
 
 ## Ideas parked for later

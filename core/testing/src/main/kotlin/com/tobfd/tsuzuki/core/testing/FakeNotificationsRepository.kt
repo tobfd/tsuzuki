@@ -3,6 +3,7 @@ package com.tobfd.tsuzuki.core.testing
 import androidx.paging.PagingData
 import com.tobfd.tsuzuki.core.data.notifications.NotificationVisit
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
+import com.tobfd.tsuzuki.core.model.Notification
 import com.tobfd.tsuzuki.core.model.NotificationEntry
 import com.tobfd.tsuzuki.core.model.NotificationFilter
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,18 @@ class FakeNotificationsRepository(initialCount: Int = 0) : NotificationsReposito
     var markAllReadCalls = 0
         private set
 
+    /** The next [fetchUnreadCount] result; by default the current [unreadCount]. */
+    var fetchUnreadCountResult: Result<Int>? = null
+
+    /** The next [newestNotifications] result. */
+    var newestResult: Result<List<Notification>> = Result.success(emptyList())
+
+    var fetchUnreadCountCalls = 0
+        private set
+
+    var newestCalls = 0
+        private set
+
     override suspend fun refreshUnreadCount(force: Boolean) {
         refreshCalls += force
     }
@@ -45,5 +58,15 @@ class FakeNotificationsRepository(initialCount: Int = 0) : NotificationsReposito
     override suspend fun markAllRead(): Result<Unit> {
         markAllReadCalls++
         return markAllReadResult.onSuccess { unreadCount.value = 0 }
+    }
+
+    override suspend fun fetchUnreadCount(): Result<Int> {
+        fetchUnreadCountCalls++
+        return (fetchUnreadCountResult ?: Result.success(unreadCount.value)).onSuccess { unreadCount.value = it }
+    }
+
+    override suspend fun newestNotifications(): Result<List<Notification>> {
+        newestCalls++
+        return newestResult
     }
 }

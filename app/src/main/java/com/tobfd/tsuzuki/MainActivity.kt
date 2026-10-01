@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.tobfd.tsuzuki.core.common.AppLink
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.ThemeMode
@@ -22,14 +23,19 @@ import com.tobfd.tsuzuki.core.model.AppColors
 import com.tobfd.tsuzuki.core.model.AppThemeMode
 import com.tobfd.tsuzuki.core.model.AppearanceSettings
 import com.tobfd.tsuzuki.feature.auth.AuthRedirects
+import com.tobfd.tsuzuki.feature.notifications.alerts.AlertCoordinator
 import com.tobfd.tsuzuki.ui.TsuzukiApp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var authRedirects: AuthRedirects
+
+    @Inject
+    lateinit var alertCoordinator: AlertCoordinator
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -47,6 +53,8 @@ class MainActivity : ComponentActivity() {
             val destination by viewModel.destination.collectAsStateWithLifecycle()
             LifecycleResumeEffect(viewModel) {
                 viewModel.onAppResumed()
+                // Permissions or channels may have changed outside the app.
+                lifecycleScope.launch { alertCoordinator.replan() }
                 onPauseOrDispose {}
             }
             val appearance = viewModel.appearance.collectAsStateWithLifecycle().value ?: AppearanceSettings()

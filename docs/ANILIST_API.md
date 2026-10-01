@@ -98,6 +98,14 @@ The home-screen widgets (`feature/widgets`, Glance) read Room like the Lists tab
 - A logout clears the widget data with the rest of the database; the workers then stop at `Unauthorized` and the widgets show the log-in state.
 - Images (covers, avatars) come from Coil's cache at their drawn size; they are not AniList API requests.
 
+## Android notifications
+
+The Android notifications (`feature/notifications`, `alerts` package) add at most one small request every 30 minutes, and none when they are switched off (`AlertCoordinator`):
+
+- **New episodes:** no request. A local `AlarmManager` alarm fires at the next `next_airing_at` in Room (anime being watched or rewatched, filled by the list sync and the Next episode widget) and announces every episode that aired since the last plan, at most 6 hours late. The alarm is inexact (`setAndAllowWhileIdle`, no exact alarm permission), so an episode may be announced a few minutes late. AniList's own `AIRING` notifications are never shown as Android notifications, they would be duplicates.
+- **AniList notifications:** periodic WorkManager work about every 30 minutes (network and battery not low required). `UnreadNotificationCount` first; only if the count went up since the last check, one `Notifications(page: 1, reset: false)` (`NetworkOnly`) for the newest page, of which the new ones are shown (consecutive likes on one activity as one). Failures wait for the next period, no retry. The first check of a session only remembers the count, and every count the app showed itself (badge refresh, opening the notifications screen, mark all read) counts as seen, so nothing already seen in the app is announced. Never resets the unread count.
+- Before planning an alarm or sending a request the app checks that its notifications and the matching channels are on; otherwise there is no alarm and no periodic work. Logout or guest mode cancels both and removes the posted notifications.
+
 ## Caching (Apollo normalized cache)
 
 The cache is the `com.apollographql.cache` library (memory in front of SQLite `apollo.db`). `extra.graphqls` gives `Media`, `MediaList`, `User`, `Character` and `Staff` an `id`-based cache key (`@typePolicy`), so one record per object is shared by every query; the compiler plugin generates the `Cache` object that `NetworkModule` installs. Logout clears the whole cache, and so does a saved change to the AniList options (see Mutations).

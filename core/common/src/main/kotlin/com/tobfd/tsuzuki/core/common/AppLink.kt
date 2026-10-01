@@ -10,7 +10,7 @@ enum class AppTab {
     Lists
 }
 
-/** A screen that the home-screen widgets open in the app. */
+/** A screen that the home-screen widgets and the Android notifications open in the app. */
 sealed interface AppDestination {
     data class Tab(val tab: AppTab) : AppDestination
 
@@ -20,11 +20,14 @@ sealed interface AppDestination {
     data class ListEditor(val mediaId: Int) : AppDestination
 
     data class User(val id: Int, val name: String) : AppDestination
+
+    /** The notifications screen, over the Home tab. */
+    data object Notifications : AppDestination
 }
 
 /**
- * `tsuzuki://open/...` links for [AppDestination]s: widgets start `MainActivity` with one, restricted to
- * the app's own package, and the app shell navigates there.
+ * `tsuzuki://open/...` links for [AppDestination]s: widgets and Android notifications start `MainActivity`
+ * with one, restricted to the app's own package, and the app shell navigates there.
  */
 object AppLink {
     const val SCHEME = "tsuzuki"
@@ -42,6 +45,8 @@ object AppLink {
                 destination.name,
                 Charsets.UTF_8
             )}"
+
+            AppDestination.Notifications -> "notifications"
         }
         return "$SCHEME://$HOST/$path"
     }
@@ -68,6 +73,8 @@ object AppLink {
                 val name = query["name"]
                 if (id != null && name != null) AppDestination.User(id, name) else null
             }
+
+            "notifications" -> AppDestination.Notifications
 
             else -> null
         }

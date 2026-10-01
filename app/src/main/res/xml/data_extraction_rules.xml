@@ -4,15 +4,18 @@
     transferred: the keyset is encrypted with an Android Keystore key that does not leave the device,
     so a restored copy could not be decrypted. After a restore the user logs in again.
     The list database belongs to that session too: it is synced again after the next login.
+    The notifications' bookkeeping (alerts) is device state and starts fresh after a login.
 -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="file" path="datastore/session.preferences_pb" />
+        <exclude domain="file" path="datastore/alerts.preferences_pb" />
         <exclude domain="sharedpref" path="tsuzuki_keyset_prefs.xml" />
         <exclude domain="database" path="tsuzuki.db" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="file" path="datastore/session.preferences_pb" />
+        <exclude domain="file" path="datastore/alerts.preferences_pb" />
         <exclude domain="sharedpref" path="tsuzuki_keyset_prefs.xml" />
         <exclude domain="database" path="tsuzuki.db" />
     </device-transfer>

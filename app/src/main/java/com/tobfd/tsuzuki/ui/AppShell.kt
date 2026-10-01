@@ -64,6 +64,7 @@ import com.tobfd.tsuzuki.feature.media.MediaRoute
 import com.tobfd.tsuzuki.feature.media.MediaScreen
 import com.tobfd.tsuzuki.feature.notifications.NotificationsRoute
 import com.tobfd.tsuzuki.feature.notifications.NotificationsScreen
+import com.tobfd.tsuzuki.feature.notifications.alerts.NotificationPermissionHint
 import com.tobfd.tsuzuki.feature.people.CharacterRoute
 import com.tobfd.tsuzuki.feature.people.CharacterScreen
 import com.tobfd.tsuzuki.feature.people.StaffRoute
@@ -105,7 +106,7 @@ fun AppShell(
     val isGuest = chrome.viewer == null
     val navigator = rememberTopLevelNavigator()
 
-    // A widget tap: its screen on top of the matching tab.
+    // A widget or notification tap: its screen on top of the matching tab.
     LaunchedEffect(destination) {
         when (destination) {
             null -> return@LaunchedEffect
@@ -113,9 +114,13 @@ fun AppShell(
             is AppDestination.Media -> navigator.open(destination.tab.toTopLevelTab(), MediaRoute(destination.id))
             is AppDestination.ListEditor -> navigator.open(TopLevelTab.Lists, ListEditorRoute(destination.mediaId))
             is AppDestination.User -> navigator.open(TopLevelTab.Home, UserRoute(destination.id, destination.name))
+            AppDestination.Notifications -> navigator.open(TopLevelTab.Home, NotificationsRoute)
         }
         onDestinationOpened()
     }
+
+    // Once after the login: may Tsuzuki send notifications, and what for.
+    if (!isGuest) NotificationPermissionHint()
 
     val entryProvider = entryProvider {
         entry<HomeRoute> {

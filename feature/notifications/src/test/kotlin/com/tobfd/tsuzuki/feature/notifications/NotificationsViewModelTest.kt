@@ -14,6 +14,7 @@ import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.testing.FakeNotificationsRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
 import com.tobfd.tsuzuki.core.testing.SampleData
+import com.tobfd.tsuzuki.feature.notifications.alerts.FakeAlertPoster
 import java.time.Clock
 import java.time.DayOfWeek
 import java.time.Instant
@@ -41,15 +42,22 @@ class NotificationsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = FakeNotificationsRepository(initialCount = 3)
+    private val alertPoster = FakeAlertPoster()
 
     // A Wednesday.
     private val clock = Clock.fixed(Instant.parse("2026-09-30T10:00:00Z"), ZoneOffset.UTC)
 
     private fun TestScope.viewModel(): NotificationsViewModel =
-        NotificationsViewModel(repository, clock).also { viewModel ->
+        NotificationsViewModel(repository, clock, alertPoster).also { viewModel ->
             backgroundScope.launch { viewModel.notifications(NotificationFilter.All).collect {} }
             runCurrent()
         }
+
+    @Test
+    fun opening_removesTheAndroidNotificationsOfAniList() = runTest {
+        viewModel()
+        assertEquals(1, alertPoster.aniListCancels)
+    }
 
     @Test
     fun opening_loadsAll_andAFilterLoadsOnlyWhenItsPageShows() = runTest {

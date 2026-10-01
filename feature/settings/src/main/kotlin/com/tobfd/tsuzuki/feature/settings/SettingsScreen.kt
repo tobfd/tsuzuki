@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki.feature.settings
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -93,6 +95,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onOpenCatalog: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<SettingsViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val languageController = rememberAppLanguageController()
@@ -111,6 +114,13 @@ fun SettingsScreen(
             onScoreFormatChange = viewModel::onScoreFormatChange,
             onAdultContentChange = viewModel::onAdultContentChange,
             onLogOut = onLogOut,
+            onOpenNotificationSettings = {
+                // The channels are the only switches (docs/ROADMAP.md, Android notifications).
+                context.startActivity(
+                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                )
+            },
             onOpenLicenses = onOpenLicenses,
             onOpenCatalog = onOpenCatalog
         ),
@@ -128,6 +138,7 @@ internal class SettingsActions(
     val onScoreFormatChange: (ScoreFormat) -> Unit = {},
     val onAdultContentChange: (Boolean) -> Unit = {},
     val onLogOut: () -> Unit = {},
+    val onOpenNotificationSettings: () -> Unit = {},
     val onOpenLicenses: () -> Unit = {},
     val onOpenCatalog: (() -> Unit)? = null
 )
@@ -186,6 +197,7 @@ internal fun SettingsContent(
                 AppearanceSection(state, actions)
                 LanguageSection(state, appLanguage, actions)
                 if (state.options != null) ContentSection(state, actions)
+                if (state.viewer != null) NotificationsSection(actions.onOpenNotificationSettings)
                 AccountSection(state.viewer, actions.onLogOut)
                 AboutSection(appVersion, actions.onOpenLicenses, actions.onOpenCatalog)
             }
@@ -385,6 +397,18 @@ private fun ContentSection(state: SettingsUiState, actions: SettingsActions) {
                 if (it != options.scoreFormat) actions.onScoreFormatChange(it)
             },
             onDismiss = { choosingFormat = false }
+        )
+    }
+}
+
+/** One entry that opens the app's page in Android's notification settings, where the channels are. */
+@Composable
+private fun NotificationsSection(onOpenNotificationSettings: () -> Unit) {
+    SettingsSection(stringResource(R.string.settings_section_notifications)) {
+        ClickableRow(
+            title = stringResource(R.string.settings_notifications),
+            supporting = stringResource(R.string.settings_notifications_supporting),
+            onClick = onOpenNotificationSettings
         )
     }
 }

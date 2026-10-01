@@ -18,4 +18,18 @@
     <string name="notifications_empty_media">Changes to titles on your lists show up here.</string>
     <string name="notifications_error_title">Couldn\'t load notifications</string>
     <string name="notifications_more_failed">Couldn\'t load more notifications.</string>
+    <!-- Android notifications (channels, texts, the post-login hint) -->
+    <string name="alerts_channel_episodes">New episodes</string>
+    <string name="alerts_channel_episodes_description">When a new episode of an anime you are watching airs.</string>
+    <string name="alerts_channel_activity">Activity</string>
+    <string name="alerts_channel_activity_description">Likes, replies, mentions and messages on AniList.</string>
+    <string name="alerts_channel_follows">Follows</string>
+    <string name="alerts_channel_follows_description">When someone follows you on AniList.</string>
+    <string name="alerts_channel_other">Other</string>
+    <string name="alerts_channel_other_description">Changes to titles on your lists, such as new related titles.</string>
+    <string name="alerts_episode_text">Episode %1$d is out</string>
+    <string name="alerts_hint_title">Stay up to date?</string>
+    <string name="alerts_hint_text">Tsuzuki can let you know when a new episode of an anime you are watching airs, and when someone likes, replies or follows you on AniList. You can turn each kind on or off in Android\'s settings at any time.</string>
+    <string name="alerts_hint_allow">Allow notifications</string>
+    <string name="alerts_hint_later">Not now</string>
 </resources>

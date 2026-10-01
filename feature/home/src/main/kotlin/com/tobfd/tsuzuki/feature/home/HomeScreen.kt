@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -71,6 +72,7 @@ import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.ui.ActivityCard
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
+import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.ScrollToTopOnTabReselect
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
@@ -382,60 +384,58 @@ private fun FeedError(error: AppError, onRetry: () -> Unit) {
     }
 }
 
-/** A 144 dp card: cover with "EP x / y" and progress bar, title, progress and +1. */
+/**
+ * A filled card (M3 filled card, `surfaceContainerHighest`) with a 144 dp cover and its progress
+ * bar, title, progress and +1. Tobias chose the filled card over a plain and an outlined one
+ * (2026-10-01) and dropped the "EP x / y" badge on the cover, which repeated the progress below.
+ */
 @Composable
-internal fun InProgressCard(
-    entry: MediaListEntry,
-    onClick: () -> Unit,
-    onPlusOne: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun InProgressCard(entry: MediaListEntry, onClick: () -> Unit, onPlusOne: () -> Unit, modifier: Modifier = Modifier) {
     val media = entry.media
     val total = media.total
     val done = total != null && entry.progress >= total
-    Column(
-        modifier = modifier
-            .width(TsuzukiSizes.inProgressCover.width)
-            .clickable(
-                onClickLabel = stringResource(com.tobfd.tsuzuki.core.ui.R.string.ui_list_edit_entry),
-                onClick = onClick
-            ),
-        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
-    ) {
-        MediaCover(
-            imageUrl = media.coverUrl,
-            contentDescription = null,
-            placeholderColor = coverColorOrNull(media.coverColor),
-            badge = stringResource(
-                if (media.type == MediaType.ANIME) R.string.home_badge_episode else R.string.home_badge_chapter,
-                progressText(entry.progress, total)
-            ),
-            progress = total?.let { entry.progress.toFloat() / it },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            text = media.title.userPreferred,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.height(InProgressTitleHeight)
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = progressText(entry.progress, total),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
-            )
-            if (done) {
-                CompletedChip()
-            } else if (ListEntryActions.canPlusOne(entry)) {
-                PlusOneButton(
-                    onClick = onPlusOne,
-                    dense = true,
-                    completesEntry =
-                        total != null && entry.progress + 1 >= total
+    Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
+        Column(
+            modifier = Modifier
+                .clickable(
+                    onClickLabel = stringResource(com.tobfd.tsuzuki.core.ui.R.string.ui_list_edit_entry),
+                    onClick = onClick
                 )
+                .padding(TsuzukiSpacing.small)
+                .width(TsuzukiSizes.inProgressCover.width),
+            verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
+        ) {
+            MediaCover(
+                imageUrl = media.coverUrl,
+                contentDescription = null,
+                placeholderColor = coverColorOrNull(media.coverColor),
+                progress = total?.let { entry.progress.toFloat() / it },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = media.title.userPreferred,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.height(InProgressTitleHeight)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = progressText(entry.progress, total),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
+                )
+                if (done) {
+                    CompletedChip()
+                } else if (ListEntryActions.canPlusOne(entry)) {
+                    PlusOneButton(
+                        onClick = onPlusOne,
+                        dense = true,
+                        completesEntry =
+                            total != null && entry.progress + 1 >= total
+                    )
+                }
             }
         }
     }
@@ -536,5 +536,16 @@ private fun FeedFooterPreview() {
             onLoadMore = {},
             onRetry = {}
         )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun InProgressCardPreview() {
+    TsuzukiPreview {
+        Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+            InProgressCard(entry = PreviewListEntries.frieren, onClick = {}, onPlusOne = {})
+            InProgressCard(entry = PreviewListEntries.onePiece, onClick = {}, onPlusOne = {})
+        }
     }
 }

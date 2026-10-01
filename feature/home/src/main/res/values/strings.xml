@@ -10,8 +10,6 @@
     <string name="home_feed_empty_global">No activity right now.</string>
     <string name="home_retry">Retry</string>
     <string name="home_load_more">Load more</string>
-    <string name="home_badge_episode">EP %1$s</string>
-    <string name="home_badge_chapter">CH %1$s</string>
     <string name="home_completed_chip">Completed</string>
     <string name="home_completed_anime">%1$s marked as completed</string>
     <string name="home_completed_manga">%1$s marked as completed</string>

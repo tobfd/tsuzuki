@@ -24,11 +24,9 @@ android {
     buildTypes {
         release {
             // R8 in full mode (AGP's default): code and resource shrinking, obfuscation, optimization.
+            // The app's own keep rules live in src/main/keepRules, which AGP picks up by itself.
             optimization {
                 enable = true
-                keepRules {
-                    files.add(file("proguard-rules.pro"))
-                }
             }
         }
     }
@@ -97,6 +95,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigationevent)
+    implementation(libs.androidx.navigationevent.compose)
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.navigation.suite)

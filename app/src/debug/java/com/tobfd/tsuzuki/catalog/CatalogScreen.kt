@@ -1,6 +1,7 @@
 package com.tobfd.tsuzuki.catalog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -83,6 +85,7 @@ import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
 import com.tobfd.tsuzuki.core.ui.statusColor
+import com.tobfd.tsuzuki.feature.home.InProgressCard
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorActions
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorContent
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
@@ -97,6 +100,8 @@ private const val FRIEREN_TITLE = "Sousou no Frieren"
 private const val FRIEREN_COVER =
     "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/" + "bx154587-qQTzQnEJJ3oB.jpg"
 private const val FRIEREN_COLOR = "#bbf1a1"
+private const val APOTHECARY_COVER =
+    "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/" + "bx161645-QLbzHXiYRgV2.jpg"
 private const val FRIEREN_EPISODES = 28
 private const val SAMPLE_PROGRESS = 18
 private const val SAMPLE_VIEWER = "tobfd"
@@ -158,6 +163,7 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
             item { CatalogSection(R.string.catalog_section_notification_row) { NotificationRowSamples() } }
             item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_in_progress_card) { InProgressCardSamples() } }
             item { CatalogSection(R.string.catalog_section_result_row) { ResultRowSamples() } }
             item { CatalogSection(R.string.catalog_section_person_card) { PersonCardSamples() } }
             item { CatalogSection(R.string.catalog_section_heatmap) { HeatmapSample() } }
@@ -566,7 +572,7 @@ private fun ColorChoiceSamples(colorSource: ColorSource, darkTheme: Boolean) {
 @Composable
 private fun NotificationRowSamples() {
     val now = Instant.now()
-    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    val users = listOf(UserLite(1, "Himmel", null), UserLite(2, "Eisen", null), UserLite(3, "Fern", null))
     Column {
         NotificationRow(
             entry = NotificationEntry(
@@ -606,6 +612,30 @@ private fun CoverCardSamples() {
     Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
         MediaCoverCard(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER), onClick = {})
         MediaCoverCard(media = PreviewListEntries.dandadan.media, onClick = {}, label = "Sequel")
+    }
+}
+
+/** The Home In Progress card, side by side as in Home's row. */
+@Composable
+private fun InProgressCardSamples() {
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+    ) {
+        InProgressCard(
+            entry = PreviewListEntries.frieren.copy(
+                media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)
+            ),
+            onClick = {},
+            onPlusOne = {}
+        )
+        InProgressCard(
+            entry = PreviewListEntries.apothecary.copy(
+                media = PreviewListEntries.apothecary.media.copy(coverUrl = APOTHECARY_COVER, coverColor = "#f1865d")
+            ),
+            onClick = {},
+            onPlusOne = {}
+        )
     }
 }
 

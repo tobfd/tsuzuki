@@ -21,7 +21,7 @@ class LoginViewModelTest {
     private val sessionRepository = FakeSessionRepository()
     private val authRedirects = AuthRedirects()
 
-    private fun viewModel() = LoginViewModel(sessionRepository, authRedirects, clientId = "52236")
+    private fun viewModel() = LoginViewModel(sessionRepository, authRedirects, clientId = "12345")
 
     @Test
     fun logInClick_opensTheAniListAuthorizePageWithTheClientId() = runTest {
@@ -30,7 +30,7 @@ class LoginViewModelTest {
             viewModel.onLogInClick()
             assertEquals(
                 LoginEffect.OpenAuthorizePage(
-                    "https://anilist.co/api/v2/oauth/authorize?client_id=52236&response_type=token"
+                    "https://anilist.co/api/v2/oauth/authorize?client_id=12345&response_type=token"
                 ),
                 awaitItem()
             )

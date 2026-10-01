@@ -285,7 +285,7 @@ private fun UserListContentPreview() {
                 scoreFormat = ScoreFormat.POINT_10_DECIMAL,
                 listEmpty = false
             ),
-            userName = "GeckoTV",
+            userName = "Fern",
             type = MediaType.ANIME,
             onBack = {},
             onRetry = {},
@@ -305,7 +305,7 @@ private fun UserListPrivatePreview() {
     TsuzukiTheme {
         UserListContent(
             state = UserListUiState.Private,
-            userName = "GeckoTV",
+            userName = "Fern",
             type = MediaType.MANGA,
             onBack = {},
             onRetry = {},

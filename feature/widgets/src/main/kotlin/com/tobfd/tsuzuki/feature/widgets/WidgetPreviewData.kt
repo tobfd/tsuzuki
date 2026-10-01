@@ -36,12 +36,12 @@ internal object WidgetPreviewData {
     )
 
     fun friendActivity(now: Instant): List<Activity> {
-        val gecko = UserLite(1, "GeckoTV", null)
-        val sora = UserLite(2, "Sora", null)
+        val fern = UserLite(1, "Fern", null)
+        val stark = UserLite(2, "Stark", null)
         return listOf(
             listUpdate(
                 1,
-                gecko,
+                fern,
                 now - Duration.ofMinutes(12),
                 "watched episode",
                 "5",
@@ -49,8 +49,8 @@ internal object WidgetPreviewData {
                 "Sousou no Frieren",
                 "#e4a15d"
             ),
-            listUpdate(2, sora, now - Duration.ofHours(2), "completed", null, 16498, "Shingeki no Kyojin", "#e4ae5d"),
-            listUpdate(3, gecko, now - Duration.ofHours(5), "read chapter", "120", 30002, "Berserk", "#e4a143")
+            listUpdate(2, stark, now - Duration.ofHours(2), "completed", null, 16498, "Shingeki no Kyojin", "#e4ae5d"),
+            listUpdate(3, fern, now - Duration.ofHours(5), "read chapter", "120", 30002, "Berserk", "#e4a143")
         )
     }
 

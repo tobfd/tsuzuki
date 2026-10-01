@@ -41,7 +41,7 @@ class ProfileViewModelTest {
 
     private val text = Activity.Text(
         id = 101,
-        user = UserLite(9, "GeckoTV", null),
+        user = UserLite(9, "Fern", null),
         createdAt = Instant.EPOCH,
         likeCount = 2,
         isLiked = false,
@@ -52,7 +52,7 @@ class ProfileViewModelTest {
 
     private fun profile(id: Int) = UserProfile(
         id = id,
-        name = "GeckoTV",
+        name = "Fern",
         aboutHtml = null,
         avatarUrl = null,
         bannerUrl = null,
@@ -95,7 +95,7 @@ class ProfileViewModelTest {
         profiles.profileResult = Result.success(profile(9))
         viewModel.onRetry()
         runCurrent()
-        assertEquals("GeckoTV", viewModel.content().profile.name)
+        assertEquals("Fern", viewModel.content().profile.name)
     }
 
     @Test

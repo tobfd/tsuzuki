@@ -72,9 +72,9 @@
     <string name="widget_preview_episode_20">Episode 20 · Tue 6:00 PM</string>
     <string name="widget_preview_in_2_days">in 2 days</string>
     <string name="widget_preview_in_4_days">in 4 days</string>
-    <string name="widget_preview_activity_1">GeckoTV watched episode 5 of Sousou no Frieren</string>
-    <string name="widget_preview_activity_2">Sora completed Shingeki no Kyojin</string>
-    <string name="widget_preview_activity_3">GeckoTV read chapter 120 of Berserk</string>
+    <string name="widget_preview_activity_1">Fern watched episode 5 of Sousou no Frieren</string>
+    <string name="widget_preview_activity_2">Stark completed Shingeki no Kyojin</string>
+    <string name="widget_preview_activity_3">Fern read chapter 120 of Berserk</string>
     <string name="widget_preview_time_1">2:48 PM</string>
     <string name="widget_preview_time_2">12:30 PM</string>
     <string name="widget_preview_time_3">Mon 9:10 PM</string>

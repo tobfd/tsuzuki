@@ -1,6 +1,5 @@
 package com.tobfd.tsuzuki.core.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import com.tobfd.tsuzuki.core.ui.score.ScoreText
  * With [readOnly] (someone else's list) there is no +1 or Start and a tap opens [onClick] as the
  * detail page.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MediaListRow(
     entry: MediaListEntry,

@@ -52,26 +52,39 @@ data object LicensesRoute : NavKey
 
 /** A license and where its full text lies in the assets. */
 enum class OpenSourceLicense(val title: String, val asset: String) {
+    // The app's own license; the asset is a copy of LICENSE in the repository root.
+    Gpl3("GNU General Public License v3.0", "licenses/tsuzuki_GPL3.txt"),
+
     // The Material Symbols license file is the full Apache License 2.0 text.
     Apache2("Apache License 2.0", "licenses/material_symbols_LICENSE.txt"),
     Mit("MIT License", "licenses/apollo_kotlin_MIT.txt"),
+    Bsd3("BSD 3-Clause License", "licenses/protobuf_BSD3.txt"),
     Ofl("SIL Open Font License 1.1", "licenses/google_sans_flex_OFL.txt")
 }
 
-/** Libraries and assets the app ships, by license. Test-only libraries are left out. */
+/**
+ * Libraries and assets the app ships, by license, as found on the release runtime classpath
+ * (`./gradlew :app:dependencies --configuration releaseRuntimeClasspath`). Test-only libraries are left out.
+ */
 internal val OpenSourceLibraries: Map<OpenSourceLicense, List<String>> = mapOf(
+    OpenSourceLicense.Gpl3 to listOf("Tsuzuki"),
     OpenSourceLicense.Apache2 to listOf(
         "AndroidX (Activity, Browser, Core, DataStore, Glance, Hilt, Lifecycle, Navigation 3, Paging, ProfileInstaller, Room, SQLite, WorkManager)",
         "Jetpack Compose and Material 3",
         "Kotlin, kotlinx.coroutines, kotlinx.serialization, kotlinx.collections.immutable",
         "Dagger and Hilt",
         "OkHttp and Okio",
-        "Coil",
+        "Coil and Accompanist Drawable Painter",
+        "SQLDelight",
         "Tink",
+        "Gson",
+        "Guava ListenableFuture",
+        "Annotations (JetBrains, JSpecify, Error Prone, JSR 305, javax.inject, Jakarta Inject)",
         "Material Symbols"
     ),
-    OpenSourceLicense.Mit to listOf("Apollo Kotlin", "Apollo Kotlin normalized cache"),
-    OpenSourceLicense.Ofl to listOf("Google Sans Flex")
+    OpenSourceLicense.Mit to listOf("Apollo Kotlin", "Apollo Kotlin normalized cache", "uuid (Ben Asher)"),
+    OpenSourceLicense.Bsd3 to listOf("Protocol Buffers (bundled in Tink)"),
+    OpenSourceLicense.Ofl to listOf("Google Sans Flex", "Noto Sans JP (the 続 glyph in the app icon)")
 )
 
 @HiltViewModel

@@ -19,7 +19,7 @@ Claude may squash-merge a package's PR once CI is green and Tobias has written "
 Before M0, Tobias does two things by hand:
 
 - [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
-- [ ] Create the GitHub repository (private) and copy this handoff folder into its root.
+- [x] Create the GitHub repository (private) and copy this handoff folder into its root. (`tobfd/tsuzuki`, 2026-09-28.)
 
 ---
 
@@ -142,7 +142,7 @@ Before M0, Tobias does two things by hand:
 - [x] Top bar on own profile: bell and settings. (The Profile tab shows settings and the bell instead of the avatar.)
 - [x] Other users' lists (added by Tobias, 2026-09-30): "Anime list" / "Manga list" on other profiles open the Lists view read only (`UserListRoute`): `MediaListCollection` by user id, status and custom tabs, sort, search, no +1 or editor, tap → detail. Kept in the Apollo cache only, never in Room. Private lists ("Private User", status 404) show their own state. (Chunks of 500 are loaded one after the other when the list opens, at most 10.)
 
-**Done when:** Tobias's and GeckoTV's profiles render correctly.
+**Done when:** Tobias's profile and a friend's render correctly.
 
 ## Tablet · Adaptive layouts (added by Tobias, 2026-09-30)
 
@@ -206,3 +206,19 @@ Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack
 **Done when:** Tobias has used v1 as his only AniList app for a week.
 
 **Status:** v1 is feature complete. The week test runs from 2026-10-01: Tobias uses Tsuzuki as his only AniList app; the open boxes above (a hands-on TalkBack run, the logged-in airplane mode run, expressive motion once material3 1.5 is stable) happen along the way.
+
+---
+
+## GitHub ready (after v1)
+
+Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. Tobias changes the visibility himself.
+
+- [x] `LICENSE`: GPL-3.0. The licenses screen lists it first and now covers everything the release runtime classpath ships (SQLDelight, Accompanist Drawable Painter, Gson, uuid, the annotation libraries, Protocol Buffers bundled in Tink under BSD 3-Clause, the Noto Sans JP icon glyph under the OFL).
+- [x] Secret check of the current tree and the whole Git history (result in the PR).
+- [x] README for an open-source app: banner, badges, features, screenshot gallery (light and dark, phone and tablet, widgets), tech stack, build from source, roadmap, disclaimer, license.
+- [x] `.github`: issue templates (bug, feature), PR template, `CONTRIBUTING.md`.
+- [x] Product images from the Pixel (Home, Lists, Frieren detail, share card, Browse, profile) and the emulator (tablet, widgets), framed for the README and captioned for a store listing, in `docs/images`.
+- [x] Home In Progress card: three variants (plain, tonal, outlined) in the catalog; Tobias chose the filled (tonal) card and dropped the "EP x / y" badge on the cover.
+- [x] Follow-ups from the review: placeholder client ID in tests, made-up user names (Frieren characters) in previews, tests and docs, `navigationevent` declared, unit tests opted into their experimental APIs, keep rules in `src/main/keepRules` (AGP deprecation), D1 in `docs/PRODUCT.md` now "open source (GPL-3.0)".
+- [x] Modern check: all libraries on their latest stable version (Gradle wrapper 9.6.0 → 9.8.0), no deprecated APIs in main code except AniList's `stats.activityHistory` (kept, M9), opt-ins that stable Compose no longer needs removed.
+- [x] `docs/WEAR_OS.md`: assessment of a Wear OS companion.

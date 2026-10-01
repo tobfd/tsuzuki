@@ -70,6 +70,7 @@ dependencies {
     implementation(project(":feature:profile"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:auth"))
+    implementation(project(":feature:widgets"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

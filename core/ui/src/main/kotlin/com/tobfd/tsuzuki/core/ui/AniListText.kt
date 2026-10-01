@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.core.ui
 
+import android.text.Html
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.widthIn
@@ -41,6 +42,17 @@ fun withSpoilers(html: String, reveal: Boolean, placeholder: String): String = S
 }
 
 fun hasSpoilers(html: String): Boolean = SpoilerPattern.containsMatchIn(html)
+
+/**
+ * [html] as one line of plain text with spoilers replaced by [spoilerPlaceholder] and images left
+ * out, for places without rich text (the home-screen widgets).
+ */
+fun plainText(html: String, spoilerPlaceholder: String): String {
+    val safe = ImagePattern.replace(withSpoilers(html, reveal = false, placeholder = spoilerPlaceholder), " ")
+    return Html.fromHtml(safe, Html.FROM_HTML_MODE_COMPACT).toString()
+        .replace(Regex("""\s+"""), " ")
+        .trim()
+}
 
 /** `<img>` tags; their `src` is kept. */
 private val ImagePattern = Regex("""<img\b[^>]*?src=['"]([^'"]+)['"][^>]*>""", RegexOption.IGNORE_CASE)

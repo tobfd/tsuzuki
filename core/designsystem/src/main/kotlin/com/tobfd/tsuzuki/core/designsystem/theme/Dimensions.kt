@@ -68,4 +68,16 @@ object TsuzukiSizes {
 
     /** Width of a dialog that replaces a bottom sheet on large screens. */
     val sheetDialogWidth = 560.dp
+
+    /** Cover in a widget row (docs/DESIGN.md, Widgets). */
+    val widgetCover = DpSize(40.dp, 60.dp)
+
+    /** Cover next to the title of a small (2 × 2) widget. */
+    val widgetCoverSmall = DpSize(32.dp, 48.dp)
+
+    /** Avatar in the friends' activity widget. */
+    val widgetAvatar = 32.dp
+
+    /** Height of a widget's progress bar. */
+    val widgetProgressBar = 4.dp
 }

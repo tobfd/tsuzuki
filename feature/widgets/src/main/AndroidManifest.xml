@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <receiver
+            android:name=".inprogress.InProgressWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_in_progress_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_in_progress_info" />
+        </receiver>
+
+        <receiver
+            android:name=".nextepisode.NextEpisodeWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_next_episode_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_episode_info" />
+        </receiver>
+
+        <receiver
+            android:name=".friends.FriendActivityWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_friends_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_friends_info" />
+        </receiver>
+    </application>
+
+</manifest>

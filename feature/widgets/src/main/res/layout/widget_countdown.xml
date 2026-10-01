@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The live countdown of the "Next episode" widget; its color is set in code from the widget theme. -->
+<Chronometer xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_countdown"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:countDown="true"
+    android:fontFeatureSettings="tnum"
+    android:singleLine="true"
+    android:textSize="16sp"
+    android:textStyle="bold" />

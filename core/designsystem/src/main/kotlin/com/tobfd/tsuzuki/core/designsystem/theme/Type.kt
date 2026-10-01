@@ -36,8 +36,11 @@ private fun TextStyle.fromToken(size: Int, lineHeight: Int, weight: Int) = copy(
     fontWeight = FontWeight(weight)
 )
 
-/** Type scale from design/tokens.json; styles the tokens leave out keep Material defaults. */
-internal val TsuzukiTypography = Typography(
+/**
+ * Type scale from design/tokens.json; styles the tokens leave out keep Material defaults. Public for
+ * the home-screen widgets, which take sizes and weights from it (Glance can't use app fonts).
+ */
+val TsuzukiTypography = Typography(
     displayLarge = baseline.displayLarge.withFont(),
     displayMedium = baseline.displayMedium.withFont(),
     displaySmall = baseline.displaySmall.fromToken(36, 44, 600),

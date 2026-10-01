@@ -61,7 +61,7 @@ enum class OpenSourceLicense(val title: String, val asset: String) {
 /** Libraries and assets the app ships, by license. Test-only libraries are left out. */
 internal val OpenSourceLibraries: Map<OpenSourceLicense, List<String>> = mapOf(
     OpenSourceLicense.Apache2 to listOf(
-        "AndroidX (Activity, Browser, Core, DataStore, Hilt, Lifecycle, Navigation 3, Paging, Room, SQLite, WorkManager)",
+        "AndroidX (Activity, Browser, Core, DataStore, Glance, Hilt, Lifecycle, Navigation 3, Paging, ProfileInstaller, Room, SQLite, WorkManager)",
         "Jetpack Compose and Material 3",
         "Kotlin, kotlinx.coroutines, kotlinx.serialization, kotlinx.collections.immutable",
         "Dagger and Hilt",

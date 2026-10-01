@@ -235,6 +235,18 @@ Asked for by Tobias on 2026-10-01. One branch, one PR, one phone test.
 - [x] No switches per kind in the app, only the Android channels: Settings gets one entry that opens the app's Android notification settings (`ACTION_APP_NOTIFICATION_SETTINGS`).
 - [x] Before checking or planning: are the app's notifications and the channel on? If not, no request and no alarm.
 - [x] Permission (`POST_NOTIFICATIONS`) asked after the login with a short word on what for, never on the first start; logout stops everything.
-- [ ] Tests, phone test. (Unit tests for the plan, the coordinator and the repository; checked on the emulator with the sample session: hint and permission, the alarm, the notification at the airing time and its tap, and that a revoked permission removes the alarm and the periodic check. Open: the phone test with real AniList notifications.)
+- [x] Tests, phone test. (Unit tests for the plan, the coordinator and the repository; checked on the emulator with the sample session: hint and permission, the alarm, the notification at the airing time and its tap, and that a revoked permission removes the alarm and the periodic check. Phone test by Tobias, 2026-10-01.)
 
 **Done when:** on Tobias's Pixel a new episode of something he watches shows up at (or a few minutes after) its airing time, a like or follow on AniList shows up within about half an hour, and switching a channel off stops its alarms or requests.
+
+---
+
+## README & Releases (after v1)
+
+Asked for by Tobias on 2026-10-01.
+
+- [x] Product images again, one look: English, AniList blue, dark only. Home, list, Frieren detail and share card from the Pixel; widgets and one tablet image from the emulator; the old light, browse and profile images removed.
+- [x] Slim README: banner, one sentence, a row of four screenshots, short features, download link (GitHub Releases), build from source, disclaimer, license.
+- [x] Release workflow: a `v*` tag builds a signed release APK (version from the tag, keystore and client ID from GitHub secrets) and attaches it to a GitHub release with generated notes (`docs/RELEASING.md`).
+- [x] Dependabot for Gradle and GitHub Actions, weekly, grouped.
+- [ ] First release v1.0.0 (Tobias: keystore, secrets, tag).

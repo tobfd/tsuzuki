@@ -21,6 +21,7 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 | `graphql/` | Starting GraphQL operations, already checked against the AniList schema. They move into `core/network` in M2. |
 | `docs/WEAR_OS.md` | Assessment of a possible Wear OS companion (not planned, no code). |
 | `docs/images/` | README and store images and how to make them again (`docs/images/README.md`). |
+| `docs/RELEASING.md` | How releases are built and signed (tag `v*`, GitHub secrets). |
 
 The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh388ZqzPNPR8. It is private to Tobias; `docs/DESIGN.md` describes everything you need, so you never have to open it.
 
@@ -28,7 +29,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 
 - **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
 - **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). After v1 (2026-10-01): GitHub ready, then Android notifications. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). After v1 (2026-10-01): GitHub ready, then Android notifications, then README & Releases. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
 - **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`), `<package>/<short-topic>` for unnumbered packages (e.g. `widgets/glance`). Conventional Commits (`feat(lists): add +1 with undo`).
 - **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
 - **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
@@ -36,6 +37,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 - **Ask Tobias first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches his AniList account in bulk (mass edits, deletes).
 - **Keep docs true.** When a decision or behavior changes, update the matching doc in the same PR. Tick roadmap boxes in the PR that finishes them.
 - **Licenses screen:** a new runtime dependency (or a new transitive one in `./gradlew :app:dependencies --configuration releaseRuntimeClasspath`) goes into `OpenSourceLibraries` in `feature/settings` (`LicensesScreen.kt`), with its license text in the assets if the license is new.
+- **Releases:** pushing a tag `v1.2.3` builds the signed APK and the GitHub release (`docs/RELEASING.md`). The version comes from the tag; signing only from GitHub secrets, never a keystore in the repo. Dependabot opens one grouped update PR per week for Gradle and for GitHub Actions; review it like any PR (stable versions only).
 - **No secrets in git.** The AniList client ID goes in `local.properties` (`anilist.clientId=...`) and reaches code via `BuildConfig`. Never log or print the access token.
 
 ## Commands

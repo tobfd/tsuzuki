@@ -87,5 +87,9 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.navigation.suite)
 
+    // The debug-only widget sample data writes straight into the app's storage.
+    debugImplementation(project(":core:database"))
+    debugImplementation(project(":core:datastore"))
+
     testImplementation(project(":core:testing"))
 }

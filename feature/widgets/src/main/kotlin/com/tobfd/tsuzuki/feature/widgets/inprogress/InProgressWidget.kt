@@ -28,6 +28,7 @@ import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
+import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
@@ -242,11 +243,10 @@ private fun InProgressRow(item: InProgressItem, cover: Bitmap?, showCover: Boole
 @Composable
 private fun InProgressSingle(item: InProgressItem, cover: Bitmap?) {
     val context = LocalContext.current
-    Column(modifier = GlanceModifier.fillMaxWidth()) {
+    Column(modifier = GlanceModifier.fillMaxSize()) {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .defaultWeight()
                 .clickable(openAction(context, AppDestination.Media(item.mediaId, AppTab.Lists)))
                 .semantics { contentDescription = rowDescription(context, item) }
         ) {
@@ -254,6 +254,7 @@ private fun InProgressSingle(item: InProgressItem, cover: Bitmap?) {
             Spacer(GlanceModifier.width(TsuzukiSpacing.small))
             Text(text = item.title, style = WidgetText.title, maxLines = 3, modifier = GlanceModifier.defaultWeight())
         }
+        Spacer(GlanceModifier.defaultWeight())
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             Column(modifier = GlanceModifier.defaultWeight()) {
                 Text(text = progressText(context, item), style = WidgetText.emphasis, maxLines = 1)

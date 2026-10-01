@@ -19,13 +19,13 @@ import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
+import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
@@ -84,7 +84,9 @@ internal data class NextEpisodeRender(
  */
 class NextEpisodeWidget : GlanceAppWidget() {
 
-    override val sizeMode: SizeMode = WidgetSizes.mode
+    // Exact: the list doesn't scroll (see NextEpisodeContent), so it needs the real height to know
+    // how many rows fit.
+    override val sizeMode: SizeMode = SizeMode.Exact
 
     override val previewSizeMode = WidgetSizes.mode
 
@@ -177,8 +179,10 @@ internal fun NextEpisodeContent(render: NextEpisodeRender, problem: RefreshProbl
                     layout == WidgetLayout.Single -> UpcomingSingle(state.items.first(), render, now)
 
                     else -> {
-                        LazyColumn(modifier = GlanceModifier.defaultWeight()) {
-                            items(state.items, itemId = { it.mediaId.toLong() }) { item ->
+                        // Not a LazyColumn: chronometers in widget collections don't tick. The list
+                        // shows as many rows as fit instead of scrolling.
+                        Column(modifier = GlanceModifier.defaultWeight()) {
+                            state.items.take(WidgetSizes.listRows(size, footer = problem != null)).forEach { item ->
                                 Column(modifier = GlanceModifier.padding(bottom = TsuzukiSpacing.small)) {
                                     UpcomingRow(item = item, render = render, now = now, showCover = true)
                                 }
@@ -221,15 +225,16 @@ private fun UpcomingSingle(item: UpcomingItem, render: NextEpisodeRender, now: I
     val context = LocalContext.current
     Column(
         modifier = GlanceModifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .clickable(openAction(context, AppDestination.Media(item.mediaId, AppTab.Lists)))
             .semantics { contentDescription = rowDescription(context, item, now) }
     ) {
-        Row(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
+        Row(modifier = GlanceModifier.fillMaxWidth()) {
             WidgetCover(render.covers[item.coverUrl], item.coverColor, TsuzukiSizes.widgetCoverSmall)
             Spacer(GlanceModifier.width(TsuzukiSpacing.small))
             Text(text = item.title, style = WidgetText.title, maxLines = 3, modifier = GlanceModifier.defaultWeight())
         }
+        Spacer(GlanceModifier.defaultWeight())
         CountdownText(item, render, now, large = true)
         Text(text = episodeLine(context, item, now), style = WidgetText.meta, maxLines = 1)
     }
@@ -282,7 +287,8 @@ private fun LiveCountdown(remaining: Duration, palette: WidgetPalette, @LayoutRe
             palette.dark.primary.toArgb()
         )
     }
-    AndroidRemoteViews(views)
+    // Directly inside a row, Glance drops the row's other children; a box keeps the views apart.
+    Box { AndroidRemoteViews(views) }
 }
 
 @Composable

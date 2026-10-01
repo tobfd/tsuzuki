@@ -14,6 +14,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Debug-only: pins a widget for emulator checks (see PinWidgetActivity). -->
+        <activity
+            android:name=".catalog.PinWidgetActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- Debug-only: sample session and data for widget checks (see WidgetSampleDataActivity). -->
+        <activity
+            android:name=".catalog.WidgetSampleDataActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>

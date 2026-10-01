@@ -12,7 +12,7 @@ private const val TIMEOUT_MS = 10_000L
 
 /**
  * The journeys work without an account: a fresh install continues as a guest, so neither the profile
- * nor the benchmarks need Tobias's login. The texts are the English ones (the emulator's language).
+ * nor the benchmarks need a login. The texts are the English ones (the emulator's language).
  */
 internal fun MacrobenchmarkScope.continueAsGuestIfAsked() {
     device.wait(Until.hasObject(By.text("Home").pkg(PACKAGE_NAME)), 3_000)

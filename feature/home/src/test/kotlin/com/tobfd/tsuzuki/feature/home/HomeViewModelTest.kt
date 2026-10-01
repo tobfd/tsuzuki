@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.home.FeedScope
 import com.tobfd.tsuzuki.core.model.Activity
+import com.tobfd.tsuzuki.core.model.AppUpdate
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaStatus
 import com.tobfd.tsuzuki.core.model.MediaType
@@ -14,6 +15,7 @@ import com.tobfd.tsuzuki.core.testing.FakeHomeRepository
 import com.tobfd.tsuzuki.core.testing.FakeHomeRepository.PageRequest
 import com.tobfd.tsuzuki.core.testing.FakeListRepository
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
+import com.tobfd.tsuzuki.core.testing.FakeUpdateRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
 import com.tobfd.tsuzuki.core.testing.SampleData
 import com.tobfd.tsuzuki.core.testing.SampleData.listEntry
@@ -43,6 +45,7 @@ class HomeViewModelTest {
     private val lists = FakeListRepository(listOf(watching, reading, almostDone))
     private val home = FakeHomeRepository()
     private val session = FakeSessionRepository(SessionState.LoggedIn(SampleData.viewer, SampleData.tokenExpiry))
+    private val updates = FakeUpdateRepository()
 
     private val activity = Activity.Text(
         id = 7,
@@ -57,7 +60,7 @@ class HomeViewModelTest {
 
     private fun activities(ids: IntRange) = ids.map { activity.copy(id = it) }
 
-    private fun viewModel() = HomeViewModel(SavedStateHandle(), home, lists, session)
+    private fun viewModel() = HomeViewModel(SavedStateHandle(), home, lists, session, updates)
 
     private fun TestScope.state(viewModel: HomeViewModel): HomeUiState {
         backgroundScope.launch { viewModel.uiState.collect {} }
@@ -261,5 +264,19 @@ class HomeViewModelTest {
     fun withLike_appliesTheTappedLike() {
         assertEquals(activity.copy(isLiked = true, likeCount = 5), activity.withLike(LikeState(true, 5)))
         assertEquals(activity, activity.withLike(null))
+    }
+
+    @Test
+    fun availableUpdate_showsOnHome_untilDismissed() = runTest {
+        val update = AppUpdate("1.1.0", "https://github.com/tobfd/tsuzuki/releases/tag/v1.1.0")
+        updates.availableUpdate.value = update
+        val viewModel = viewModel()
+        assertEquals(update, state(viewModel).update)
+
+        viewModel.onUpdateDismissed(update)
+        runCurrent()
+
+        assertNull(viewModel.uiState.value.update)
+        assertEquals(listOf(update), updates.dismissed)
     }
 }

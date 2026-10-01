@@ -1,0 +1,21 @@
+# Weekly dependency updates, one grouped pull request per ecosystem (labelled "dependencies"). Pre-releases
+# are only offered for dependencies that are on one already; CLAUDE.md asks for the latest stable versions.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      gradle:
+        patterns: ['*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns: ['*']

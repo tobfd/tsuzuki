@@ -11,7 +11,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
 
 ## Login (OAuth implicit grant)
 
-1. Tobias registers the client once at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect `tsuzuki://auth`. The client ID is not secret, but it lives in `local.properties` → `BuildConfig.ANILIST_CLIENT_ID`.
+1. The developer registers a client once at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect `tsuzuki://auth`. The client ID is not secret, but it lives in `local.properties` → `BuildConfig.ANILIST_CLIENT_ID`.
 2. "Log in with AniList" opens a Custom Tab with
    `https://anilist.co/api/v2/oauth/authorize?client_id=<ID>&response_type=token`
 3. The user approves; AniList redirects to `tsuzuki://auth#access_token=<JWT>&token_type=Bearer&expires_in=<seconds>`. The token is in the **fragment**, not the query string.
@@ -146,4 +146,3 @@ Own lists are not read from Apollo but from Room (offline first).
 ## Useful ids for manual testing
 
 - Frieren: Beyond Journey's End: media id `154587`
-- Tobias: user `tobfd`

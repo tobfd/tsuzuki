@@ -11,3 +11,8 @@ build/
 local.properties
 .kotlin
 .claude/settings.local.json
+# Signing keys never go into Git (release signing comes from GitHub secrets, docs/RELEASING.md).
+*.jks
+*.keystore
+*.p12
+keystore.properties

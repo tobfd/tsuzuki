@@ -1,8 +1,8 @@
 import com.android.build.api.dsl.LibraryExtension
-import com.tobfd.tsuzuki.buildlogic.TsuzukiSdk
 import com.tobfd.tsuzuki.buildlogic.configureKotlinAndroid
 import com.tobfd.tsuzuki.buildlogic.library
 import com.tobfd.tsuzuki.buildlogic.libs
+import com.tobfd.tsuzuki.buildlogic.tsuzukiSdk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -16,8 +16,8 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                testOptions.targetSdk = TsuzukiSdk.TARGET
-                lint.targetSdk = TsuzukiSdk.TARGET
+                testOptions.targetSdk = tsuzukiSdk.target
+                lint.targetSdk = tsuzukiSdk.target
             }
 
             dependencies {

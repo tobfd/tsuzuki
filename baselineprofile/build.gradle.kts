@@ -7,11 +7,11 @@ plugins {
 // API 36 emulator or a phone: ./gradlew :app:generateBaselineProfile
 android {
     namespace = "com.tobfd.tsuzuki.baselineprofile"
-    compileSdk { version = release(37) }
+    compileSdk { version = release(libs.versions.compileSdk.get().toInt()) }
 
     defaultConfig {
-        minSdk = 31
-        targetSdk = 37
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // The emulator is fine for collecting the profile; its benchmark numbers are only a rough guide.
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"

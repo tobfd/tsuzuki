@@ -8,13 +8,37 @@ plugins {
     alias(libs.plugins.baselineprofile)
 }
 
+// Release builds get their version from the Git tag (.github/workflows/release.yml passes
+// -Ptsuzuki.versionName=1.2.3 -Ptsuzuki.versionCode=10203); local builds keep the defaults.
+val releaseVersionName: String? = providers.gradleProperty("tsuzuki.versionName").orNull
+val releaseVersionCode: Int? = providers.gradleProperty("tsuzuki.versionCode").orNull?.toInt()
+
+// The GitHub update check (docs/RELEASING.md) is on unless a build turns it off, e.g. a later Play Store
+// build with -Ptsuzuki.updateCheck=false.
+val updateCheck: Boolean = providers.gradleProperty("tsuzuki.updateCheck").orNull?.toBooleanStrict() ?: true
+
+// Signing for releases comes only from environment variables that the release workflow fills from
+// GitHub secrets. Without them (local builds, CI) the release build is unsigned.
+val releaseKeystore: String? = providers.environmentVariable("TSUZUKI_KEYSTORE_FILE").orNull
+
 android {
     namespace = "com.tobfd.tsuzuki"
 
     defaultConfig {
         applicationId = "com.tobfd.tsuzuki"
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = releaseVersionCode ?: 1
+        versionName = releaseVersionName ?: "0.1.0"
+    }
+
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = file(releaseKeystore)
+                storePassword = providers.environmentVariable("TSUZUKI_KEYSTORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("TSUZUKI_KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("TSUZUKI_KEY_PASSWORD").get()
+            }
+        }
     }
 
     buildFeatures {
@@ -28,6 +52,7 @@ android {
             optimization {
                 enable = true
             }
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 }
@@ -49,6 +74,10 @@ androidComponents {
         variant.shrinkResources = false
     }
     onVariants { variant ->
+        variant.buildConfigFields?.put(
+            "UPDATE_CHECK",
+            BuildConfigField("boolean", updateCheck.toString(), "Whether the app checks GitHub Releases for updates")
+        )
         variant.buildConfigFields?.put(
             "ANILIST_CLIENT_ID",
             anilistClientId.map { clientId ->

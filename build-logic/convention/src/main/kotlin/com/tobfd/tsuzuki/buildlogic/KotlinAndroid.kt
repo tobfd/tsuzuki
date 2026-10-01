@@ -10,12 +10,15 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-/** SDK levels shared by every Android module (see docs/PRODUCT.md, D6). */
-internal object TsuzukiSdk {
-    const val COMPILE = 37
-    const val TARGET = 37
-    const val MIN = 31
-}
+/** SDK levels shared by every Android module (docs/PRODUCT.md, D6), from `[versions]` in libs.versions.toml. */
+internal class TsuzukiSdk(val compile: Int, val target: Int, val min: Int)
+
+internal val Project.tsuzukiSdk: TsuzukiSdk
+    get() = TsuzukiSdk(
+        compile = libs.intVersion("compileSdk"),
+        target = libs.intVersion("targetSdk"),
+        min = libs.intVersion("minSdk")
+    )
 
 private val javaVersion = JavaVersion.VERSION_17
 
@@ -25,8 +28,8 @@ private val javaVersion = JavaVersion.VERSION_17
  */
 internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     commonExtension.apply {
-        compileSdk { version = release(TsuzukiSdk.COMPILE) }
-        defaultConfig.minSdk = TsuzukiSdk.MIN
+        compileSdk { version = release(tsuzukiSdk.compile) }
+        defaultConfig.minSdk = tsuzukiSdk.min
         defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         compileOptions.sourceCompatibility = javaVersion

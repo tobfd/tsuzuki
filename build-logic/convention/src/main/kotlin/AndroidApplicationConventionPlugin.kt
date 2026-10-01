@@ -1,6 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
-import com.tobfd.tsuzuki.buildlogic.TsuzukiSdk
 import com.tobfd.tsuzuki.buildlogic.configureKotlinAndroid
+import com.tobfd.tsuzuki.buildlogic.tsuzukiSdk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -13,7 +13,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = TsuzukiSdk.TARGET
+                defaultConfig.targetSdk = tsuzukiSdk.target
                 // Lint the app together with all modules it depends on.
                 lint.checkDependencies = true
             }

@@ -6,8 +6,10 @@ import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.settings.AniListOptionsChange
 import com.tobfd.tsuzuki.core.data.settings.SettingsRepository
+import com.tobfd.tsuzuki.core.data.update.UpdateRepository
 import com.tobfd.tsuzuki.core.model.AppColors
 import com.tobfd.tsuzuki.core.model.AppThemeMode
+import com.tobfd.tsuzuki.core.model.AppUpdate
 import com.tobfd.tsuzuki.core.model.AppearanceSettings
 import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.SessionState
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,8 +39,26 @@ data class SettingsUiState(
      */
     val options: ViewerOptions? = null,
     /** True while a change is on its way to AniList; the AniList controls wait for it. */
-    val savingOptions: Boolean = false
+    val savingOptions: Boolean = false,
+    /** The GitHub update check; null in builds without it. */
+    val updates: UpdateSettings? = null
 )
+
+/** Settings > About: the manual check and the automatic one. */
+data class UpdateSettings(val autoCheck: Boolean = true, val check: UpdateCheck = UpdateCheck.Idle)
+
+/** The state of the manual update check. */
+sealed interface UpdateCheck {
+    data object Idle : UpdateCheck
+
+    data object Checking : UpdateCheck
+
+    data object UpToDate : UpdateCheck
+
+    data class Available(val update: AppUpdate) : UpdateCheck
+
+    data class Failed(val error: AppError) : UpdateCheck
+}
 
 sealed interface SettingsEvent {
     data class SaveFailed(val error: AppError) : SettingsEvent
@@ -50,10 +71,17 @@ sealed interface SettingsEvent {
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    sessionRepository: SessionRepository
+    sessionRepository: SessionRepository,
+    private val updateRepository: UpdateRepository
 ) : ViewModel() {
 
     private val pending = MutableStateFlow<ViewerOptions?>(null)
+    private val updateCheck = MutableStateFlow<UpdateCheck>(UpdateCheck.Idle)
+    private val updates: Flow<UpdateSettings?> = if (updateRepository.isEnabled) {
+        combine(updateRepository.autoCheck, updateCheck, ::UpdateSettings)
+    } else {
+        flowOf(null)
+    }
 
     private val events = Channel<SettingsEvent>(Channel.BUFFERED)
     val eventFlow: Flow<SettingsEvent> = events.receiveAsFlow()
@@ -61,14 +89,16 @@ class SettingsViewModel @Inject constructor(
     val uiState: StateFlow<SettingsUiState> = combine(
         settingsRepository.appearance,
         sessionRepository.session,
-        pending
-    ) { appearance, session, pending ->
+        pending,
+        updates
+    ) { appearance, session, pending, updates ->
         val viewer = (session as? SessionState.LoggedIn)?.viewer
         SettingsUiState(
             appearance = appearance,
             viewer = viewer,
             options = viewer?.let { pending ?: it.options },
-            savingOptions = pending != null
+            savingOptions = pending != null,
+            updates = updates
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
@@ -82,6 +112,22 @@ class SettingsViewModel @Inject constructor(
 
     fun onPureBlackChange(enabled: Boolean) {
         viewModelScope.launch { settingsRepository.setPureBlack(enabled) }
+    }
+
+    /** "Check for updates": one request to GitHub, the result shows in the row. */
+    fun onCheckForUpdates() {
+        if (updateCheck.value == UpdateCheck.Checking) return
+        updateCheck.value = UpdateCheck.Checking
+        viewModelScope.launch {
+            updateCheck.value = updateRepository.checkNow().fold(
+                onSuccess = { update -> update?.let(UpdateCheck::Available) ?: UpdateCheck.UpToDate },
+                onFailure = { UpdateCheck.Failed(it as? AppError ?: AppError.Unknown(it.message, it)) }
+            )
+        }
+    }
+
+    fun onAutoUpdateCheckChange(enabled: Boolean) {
+        viewModelScope.launch { updateRepository.setAutoCheck(enabled) }
     }
 
     fun onTitleLanguageChange(language: TitleLanguage) =

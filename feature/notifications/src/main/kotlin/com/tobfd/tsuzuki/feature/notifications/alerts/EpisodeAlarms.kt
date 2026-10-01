@@ -23,7 +23,7 @@ interface EpisodeAlarmScheduler {
 
 /**
  * An inexact `AlarmManager` alarm that also fires in Doze (`setAndAllowWhileIdle`): no exact alarm
- * permission, so Android may deliver it a few minutes late (decided by Tobias, 2026-10-01).
+ * permission, so Android may deliver it a few minutes late (decided 2026-10-01).
  */
 internal class AlarmManagerEpisodeAlarms @Inject constructor(@ApplicationContext private val context: Context) :
     EpisodeAlarmScheduler {

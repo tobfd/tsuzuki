@@ -151,9 +151,10 @@ def logo_tile(size, light=True):
 
 # ---------------------------------------------------------------- inputs
 
-PHONE = ['home', 'lists', 'detail', 'share', 'browse', 'profile']
-TABLET = [('detail', 'light'), ('detail', 'dark'), ('lists', 'light'), ('lists', 'dark'), ('browse', 'light'),
-          ('login', 'light')]
+PHONE = ['home', 'lists', 'detail', 'share']
+
+# The row of screenshots in the README.
+README_ROW = ['home', 'lists', 'detail', 'widgets']
 
 
 def load(name):
@@ -166,48 +167,34 @@ def main():
 
     clean = {}
     for n in PHONE:
-        for m in ('light', 'dark'):
-            im = clean_status_bar(load(f'phone_{n}_{m}'), 'phone')
-            clean[f'phone_{n}_{m}'] = im
-            im.save(os.path.join(OUT, 'screenshots/phone', f'{n}-{m}.jpg'), quality=90, optimize=True)
-    for n, m in TABLET:
-        im = clean_status_bar(load(f'tablet_{n}_{m}'), 'tablet')
-        clean[f'tablet_{n}_{m}'] = im
-        im.save(os.path.join(OUT, 'screenshots/tablet', f'{n}-{m}.jpg'), quality=90, optimize=True)
-    for m in ('light', 'dark'):
-        for i in (1, 2):
-            im = clean_status_bar(load(f'w_{m}_{i}'), 'emu')
-            clean[f'widgets{i}_{m}'] = im
-        clean[f'widgets1_{m}'].save(os.path.join(OUT, 'screenshots/widgets', f'home-screen-{m}.jpg'), quality=90,
-                                    optimize=True)
+        im = clean_status_bar(load(f'phone_{n}_dark'), 'phone')
+        clean[n] = im
+        im.save(os.path.join(OUT, 'screenshots/phone', f'{n}.jpg'), quality=90, optimize=True)
+    clean['tablet'] = clean_status_bar(load('tablet_detail_dark'), 'tablet')
+    clean['tablet'].save(os.path.join(OUT, 'screenshots/tablet', 'detail.jpg'), quality=90, optimize=True)
+    widgets = [clean_status_bar(load(f'w_dark_{i}'), 'emu') for i in (1, 2)]
+    widgets[0].save(os.path.join(OUT, 'screenshots/widgets', 'home-screen.jpg'), quality=90, optimize=True)
+    clean['widgets'] = widgets[0]
 
-    # Framed, transparent images for the README gallery.
+    # Framed, transparent images (the README row is saved; all of them go into the banner and store images).
     framed = {}
     for key, im in clean.items():
-        kind = 'tablet' if key.startswith('tablet') else 'phone'
-        f = frame(im, kind)
-        framed[key] = f
-        if key.startswith('widgets2'):
-            continue
-        name = key.replace('phone_', '').replace('tablet_', 'tablet-').replace('widgets1_', 'widgets_').replace('_', '-')
-        width = 1000 if kind == 'tablet' else 400
-        scaled(f, width=width).save(os.path.join(OUT, 'framed', f'{name}.webp'), quality=88, method=6)
+        kind = 'tablet' if key == 'tablet' else 'phone'
+        framed[key] = frame(im, kind)
+        if key in README_ROW:
+            scaled(framed[key], width=400).save(os.path.join(OUT, 'framed', f'{key}.webp'), quality=88, method=6)
 
-    # Widget cards on their own (for the store image).
-    cards = {}
-    for m in ('light', 'dark'):
-        a, b = clean[f'widgets1_{m}'], clean[f'widgets2_{m}']
-        boxes = [(a, (78, 201, 1266, 951)), (a, (78, 999, 1266, 1749)), (b, (78, 201, 1266, 951))]
-        cards[m] = []
-        for src, box in boxes:
-            c = src.crop(box).convert('RGBA')
-            c.putalpha(rounded_mask(c.size, 72))
-            cards[m].append(c)
+    # The three widget cards on their own, for the store image.
+    boxes = [(widgets[0], (78, 201, 1266, 951)), (widgets[0], (78, 999, 1266, 1749)), (widgets[1], (78, 201, 1266, 951))]
+    cards = []
+    for src, box in boxes:
+        c = src.crop(box).convert('RGBA')
+        c.putalpha(rounded_mask(c.size, 72))
+        cards.append(c)
 
     banner(framed)
     feature_graphic(framed)
     store_images(framed, cards)
-    widgets_showcase(cards)
 
 
 def banner(framed):
@@ -216,16 +203,14 @@ def banner(framed):
     glow(c, (980, 260), 330, BLUE, 70)
     glow(c, (150, 600), 260, BLUE_DEEP, 60)
     d = ImageDraw.Draw(c)
-    tile = logo_tile(104)
-    c.alpha_composite(tile, (84, 104))
+    c.alpha_composite(logo_tile(104), (84, 104))
     d.text((80, 318), 'Tsuzuki', font=font(92, 650), fill=(255, 255, 255), anchor='ls')
     d.text((86, 372), 'for AniList', font=font(36, 500), fill=(165, 214, 245), anchor='ls')
     d.text((86, 452), 'Keep track of what comes next.', font=font(30, 450), fill=(225, 236, 245), anchor='ls')
     d.text((86, 494), 'A native Android client, made with', font=font(24, 400), fill=(150, 170, 190), anchor='ls')
     d.text((86, 528), 'Jetpack Compose and Material 3.', font=font(24, 400), fill=(150, 170, 190), anchor='ls')
-    phones = [('phone_detail_light', 660, 120, 380), ('phone_home_dark', 900, 70, 430), ('phone_browse_light', 1100, 150, 360)]
-    order = [phones[0], phones[2], phones[1]]
-    for key, x, y, h in order:
+    # Back phones first, the middle one on top.
+    for key, x, y, h in [('detail', 660, 120, 380), ('share', 1100, 150, 360), ('home', 900, 70, 430)]:
         p = shadow(scaled(framed[key], height=h * 2), 18, 10, 110)
         p = scaled(p, height=round(p.height / 2))
         c.alpha_composite(p, (x - p.width // 2 + 60, y))
@@ -241,7 +226,7 @@ def feature_graphic(framed):
     d.text((60, 262), 'Tsuzuki', font=font(76, 650), fill=(255, 255, 255), anchor='ls')
     d.text((66, 308), 'for AniList', font=font(30, 500), fill=(165, 214, 245), anchor='ls')
     d.text((66, 372), 'Keep track of what comes next.', font=font(26, 450), fill=(225, 236, 245), anchor='ls')
-    for key, x, y, h in [('phone_detail_light', 640, 70, 420), ('phone_home_dark', 840, 40, 460)]:
+    for key, x, y, h in [('detail', 640, 70, 420), ('home', 840, 40, 460)]:
         p = shadow(scaled(framed[key], height=h * 2), 16, 8, 110)
         p = scaled(p, height=round(p.height / 2))
         c.alpha_composite(p, (x - p.width // 2 + 40, y))
@@ -249,28 +234,22 @@ def feature_graphic(framed):
 
 
 CAPTIONS = [
-    ('phone_home_dark', 'Pick up where you left off', 'In Progress with +1, and what to start next'),
-    ('phone_lists_light', 'Your lists, offline first', 'Changes are saved at once and sent when you are online'),
-    ('phone_detail_dark', 'Everything about a title', 'Score, ranking, characters, staff and where to watch'),
-    ('phone_share_light', 'Share your progress', 'As a story or a square image'),
-    ('phone_browse_dark', 'Find what comes next', 'Search with filters, trending and this season'),
-    ('phone_profile_light', 'Your profile at a glance', 'Stats, activity history and favourites'),
+    ('home', 'Pick up where you left off', 'In Progress with +1, and what to start next'),
+    ('lists', 'Your lists, offline first', 'Changes are saved at once and sent when you are online'),
+    ('detail', 'Everything about a title', 'Score, ranking, characters, staff and where to watch'),
+    ('share', 'Share your progress', 'As a story or a square image'),
 ]
 
 
-def promo(screen_framed, title, subtitle, size, light_bg, device_height, top):
+def promo(screen_framed, title, subtitle, size, device_height, top):
     W, H = size
-    if light_bg:
-        c = gradient((W, H), (222, 240, 252), (190, 225, 248))
-        tcol, scol = (11, 22, 34), (52, 72, 92)
-    else:
-        c = gradient((W, H), NAVY2, NAVY)
-        glow(c, (int(W * 0.8), int(H * 0.25)), int(W * 0.45), BLUE, 60)
-        tcol, scol = (255, 255, 255), (170, 195, 215)
+    c = gradient((W, H), NAVY2, NAVY)
+    glow(c, (int(W * 0.8), int(H * 0.25)), int(W * 0.45), BLUE, 60)
     d = ImageDraw.Draw(c)
     s = min(W, H) / 1080 if W > H else W / 1080
-    d.text((W // 2, int(top * 0.42)), title, font=font(int(76 * s), 650), fill=tcol, anchor='mm')
-    d.text((W // 2, int(top * 0.42) + int(84 * s)), subtitle, font=font(int(38 * s), 450), fill=scol, anchor='mm')
+    d.text((W // 2, int(top * 0.42)), title, font=font(int(76 * s), 650), fill=(255, 255, 255), anchor='mm')
+    d.text((W // 2, int(top * 0.42) + int(84 * s)), subtitle, font=font(int(38 * s), 450), fill=(170, 195, 215),
+           anchor='mm')
     p = shadow(scaled(screen_framed, height=device_height), int(30 * s), int(14 * s), 120)
     c.alpha_composite(p, ((W - p.width) // 2, top))
     return c.convert('RGB')
@@ -278,8 +257,9 @@ def promo(screen_framed, title, subtitle, size, light_bg, device_height, top):
 
 def store_images(framed, cards):
     for i, (key, title, sub) in enumerate(CAPTIONS, start=1):
-        img = promo(framed[key], title, sub, (1080, 1920), key.endswith('_light'), 1440, 330)
-        img.save(os.path.join(OUT, 'store', f'phone-{i:02d}.jpg'), quality=92, optimize=True)
+        promo(framed[key], title, sub, (1080, 1920), 1440, 330).save(
+            os.path.join(OUT, 'store', f'phone-{i:02d}.jpg'), quality=92, optimize=True
+        )
     # Widgets: the three cards stacked.
     W, H = 1080, 1920
     c = gradient((W, H), NAVY2, NAVY)
@@ -289,33 +269,15 @@ def store_images(framed, cards):
     d.text((W // 2, 223), 'In Progress with +1, the next episode, friends', font=font(38, 450),
            fill=(170, 195, 215), anchor='mm')
     y = 320
-    for card in cards['light'][:1] + cards['dark'][1:2] + cards['light'][2:3]:
+    for card in cards:
         card = scaled(card, width=740)
         h = card.height
-        card = shadow(card, 24, 10, 110)
-        c.alpha_composite(card, ((W - card.width) // 2, y - 72))
+        shadowed = shadow(card, 24, 10, 110)
+        c.alpha_composite(shadowed, ((W - shadowed.width) // 2, y - 72))
         y += h + 56
     c.convert('RGB').save(os.path.join(OUT, 'store', f'phone-{len(CAPTIONS) + 1:02d}.jpg'), quality=92, optimize=True)
-    # Tablet promos.
-    for i, (key, title, sub) in enumerate([
-        ('tablet_detail_light', 'Made for big screens too', 'Lists and details side by side on tablets and foldables'),
-        ('tablet_lists_dark', 'Light, dark and Material You', 'Your wallpaper colours, or AniList blue'),
-    ], start=1):
-        img = promo(framed[key], title, sub, (1920, 1080), key.endswith('_light'), 740, 250)
-        img.save(os.path.join(OUT, 'store', f'tablet-{i:02d}.jpg'), quality=92, optimize=True)
-
-
-def widgets_showcase(cards):
-    for m in ('light', 'dark'):
-        W = 1300
-        gap = 36
-        cs = [scaled(cd, width=600) for cd in cards[m]]
-        H = cs[0].height + cs[1].height + gap * 3
-        c = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        c.alpha_composite(cs[0], (gap, gap))
-        c.alpha_composite(cs[1], (gap, gap * 2 + cs[0].height))
-        c.alpha_composite(cs[2], (W - 600 - gap, gap))
-        c.save(os.path.join(OUT, 'framed', f'widgets-cards-{m}.webp'), quality=90, method=6)
+    promo(framed['tablet'], 'Made for big screens too', 'Lists and details side by side on tablets and foldables',
+          (1920, 1080), 740, 250).save(os.path.join(OUT, 'store', 'tablet-01.jpg'), quality=92, optimize=True)
 
 
 if __name__ == '__main__':

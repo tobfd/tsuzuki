@@ -22,4 +22,8 @@
         <item quantity="one">%d Kapitel</item>
         <item quantity="other">%d Kapitel</item>
     </plurals>
+    <string name="home_update_title">Tsuzuki %1$s ist da</string>
+    <string name="home_update_text">Die neue Version gibt es auf GitHub.</string>
+    <string name="home_update_download">Download</string>
+    <string name="home_update_dismiss">Schließen</string>
 </resources>

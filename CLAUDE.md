@@ -6,36 +6,35 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 - Package / applicationId: `com.tobfd.tsuzuki`
 - OAuth redirect: `tsuzuki://auth`
 - minSdk 31 (Android 12), targetSdk and compileSdk 37 (Android 17)
-- Owner: Tobias (GitHub `tobfd`). Open source, built Play-Store-ready (`docs/PRODUCT.md`, D1).
-- License: GPL-3.0 (`LICENSE`, decided by Tobias 2026-10-01). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
+- Repository: [`tobfd/tsuzuki`](https://github.com/tobfd/tsuzuki). Open source, built Play-Store-ready (`docs/PRODUCT.md`, D1).
+- License: GPL-3.0 (`LICENSE`). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
 
 ## Read these first
 
 | File | What it is |
 |---|---|
-| `docs/PRODUCT.md` | Decisions, v1 scope, what is explicitly out of scope. Do not change a decision without asking Tobias. |
+| `docs/PRODUCT.md` | Decisions, v1 scope, what is explicitly out of scope. Do not change a decision without asking the maintainer. |
 | `docs/ROADMAP.md` | Milestones M0 to M12 with tasks and "done when" criteria. **Work through it in order** and tick boxes as you go. |
 | `docs/ANILIST_API.md` | API rules: auth, rate limit, errors, pagination, which query each screen uses. |
 | `docs/DESIGN.md` | Design system and a spec for every v1 screen. |
 | `design/tokens.json` | Colors, type scale, shapes, spacing, component sizes. The single source for theme values. |
-| `graphql/` | Starting GraphQL operations, already checked against the AniList schema. They move into `core/network` in M2. |
 | `docs/WEAR_OS.md` | Assessment of a possible Wear OS companion (not planned, no code). |
 | `docs/images/` | README and store images and how to make them again (`docs/images/README.md`). |
-
-The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh388ZqzPNPR8. It is private to Tobias; `docs/DESIGN.md` describes everything you need, so you never have to open it.
+| `docs/RELEASING.md` | How releases are built and signed (tag `v*`, GitHub secrets). |
 
 ## How to work in this repo
 
-- **Language:** Tobias writes in German, so answer him in German. Everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs.
-- **GitHub:** use the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. If the GitHub MCP server isn't configured, ask Tobias to add it. Plain `git` for local commits and pushes is fine.
-- **Work in packages** (decided by Tobias, 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). After v1 (2026-10-01): GitHub ready, then Android notifications. One branch, one PR and one phone test by Tobias per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
+- **Language:** everything in the repo is English: code, comments, KDoc, commit messages, PR texts, docs. App strings come in English and German.
+- **GitHub:** Claude Code uses the GitHub MCP tools for everything on GitHub (repo, issues, PRs, reviews), not the `gh` CLI. Plain `git` for local commits and pushes is fine.
+- **Work in packages** (decided 2026-09-28; Tablet and widgets added and reordered 2026-09-30): M4 alone, then M5+M6, then M7+M8+M9, then Tablet (adaptive layouts), then M10+M11, then Widgets (formerly M13, part of v1), then M12 (polish, last before v1, includes the widgets). After v1 (2026-10-01): GitHub ready, then Android notifications, then README & Releases. One branch, one PR and one test on a real device per package. Inside a package, work through the milestones in order: start each session by reading `docs/ROADMAP.md`, pick the first unchecked task, and finish it before starting another. Small tasks, one commit each.
 - **Branches and commits:** branch `m<N>/<short-topic>` for a single milestone (e.g. `m4/lists`), `m<N>-m<M>/<short-topic>` for a package (e.g. `m5-m6/home-detail`), `<package>/<short-topic>` for unnumbered packages (e.g. `widgets/glance`). Conventional Commits (`feat(lists): add +1 with undo`).
-- **Merging:** Claude may squash-merge a PR itself once CI is green **and** Tobias has written "passt" for it. Without both, Tobias merges.
-- **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from Tobias is needed.
+- **Merging:** PRs are squash-merged once CI is green and the maintainer approved them.
+- **After a merge:** start the next package from the updated `main` right away, without waiting for a new prompt, unless a decision from the maintainer is needed.
 - **Before saying "done":** `./gradlew spotlessApply` then `./gradlew build` (compiles, unit tests, lint). Report failures honestly with the output.
-- **Ask Tobias first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches his AniList account in bulk (mass edits, deletes).
+- **Ask the maintainer first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches a real AniList account in bulk (mass edits, deletes).
 - **Keep docs true.** When a decision or behavior changes, update the matching doc in the same PR. Tick roadmap boxes in the PR that finishes them.
 - **Licenses screen:** a new runtime dependency (or a new transitive one in `./gradlew :app:dependencies --configuration releaseRuntimeClasspath`) goes into `OpenSourceLibraries` in `feature/settings` (`LicensesScreen.kt`), with its license text in the assets if the license is new.
+- **Releases:** pushing a tag `v1.2.3` builds the signed APK and the GitHub release (`docs/RELEASING.md`). The app's update check (`core/data/update`) asks GitHub with its own plain OkHttp client: never give it the AniList client or any interceptor, the token must not reach GitHub (`GitHubClientTest`). The version comes from the tag; signing only from GitHub secrets, never a keystore in the repo. Dependabot opens one grouped update PR per week for Gradle and for GitHub Actions; review it like any PR (stable versions only).
 - **No secrets in git.** The AniList client ID goes in `local.properties` (`anilist.clientId=...`) and reaches code via `BuildConfig`. Never log or print the access token.
 
 ## Commands
@@ -55,7 +54,7 @@ ANDROID_SERIAL=emulator-5554 ./gradlew :baselineprofile:connectedBenchmarkReleas
 
 ## Tech stack
 
-Use the latest **stable** version of each library at project start (M0) and pin it in `gradle/libs.versions.toml`. Versions known from the Android docs Tobias provided: Compose BOM `2026.09.00`, Lifecycle `2.11.0`. Alpha/beta versions only when a needed API exists nowhere else, and then say so in the PR.
+Use the latest **stable** version of each library at project start (M0) and pin it in `gradle/libs.versions.toml`. Versions known from the Android docs at project start: Compose BOM `2026.09.00`, Lifecycle `2.11.0`. Alpha/beta versions only when a needed API exists nowhere else, and then say so in the PR.
 
 | Area | Library | Notes |
 |---|---|---|
@@ -65,7 +64,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |
 | DI | Hilt (KSP) | `hilt-navigation-compose` or the Nav3 ViewModel integration for scoped ViewModels. |
-| Local data | Room 3 (`androidx.room3`, KSP) with the framework SQLite driver (`androidx.sqlite:sqlite-framework`, decided by Tobias) | Own lists (offline first) and the pending-mutation queue. Room 3 is the current stable major: package `androidx.room3`, Kotlin codegen only, DAOs are `suspend` or return `Flow`. |
+| Local data | Room 3 (`androidx.room3`, KSP) with the framework SQLite driver (`androidx.sqlite:sqlite-framework`) | Own lists (offline first) and the pending-mutation queue. Room 3 is the current stable major: package `androidx.room3`, Kotlin codegen only, DAOs are `suspend` or return `Flow`. |
 | Settings | DataStore (Preferences) | App settings. |
 | Token storage | DataStore + Tink AEAD with an Android Keystore master key | `EncryptedSharedPreferences` is deprecated; do not use it. |
 | Background | WorkManager (+ Hilt worker factory) | Flush queued mutations, periodic list sync. |
@@ -73,9 +72,9 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Paging | Paging 3 (`paging-compose`) | Search, notifications. The Home feed loads more by button, without Paging. |
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
-| Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
+| Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
-| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profiles live in `app/src/release/generated/baselineProfiles` (`baseline-prof.txt` from the whole guest journey, `startup-prof.txt` from the cold start only; marked `linguist-generated` in `.gitattributes`); regenerate them after big UI changes, with network on the emulator. Release builds use R8 full mode (`app/src/main/keepRules/rules.keep`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on Tobias's phone. |
+| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profiles live in `app/src/release/generated/baselineProfiles` (`baseline-prof.txt` from the whole guest journey, `startup-prof.txt` from the cold start only; marked `linguist-generated` in `.gitattributes`); regenerate them after big UI changes, with network on the emulator. Release builds use R8 full mode (`app/src/main/keepRules/rules.keep`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on a personal phone that is also connected. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture
@@ -156,7 +155,7 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 
 ### Android notifications (since the Android notifications package)
 
-- `feature/notifications` (package `alerts`) holds them; `AlertCoordinator`, started by the `Application`, follows the session and the airing times in Room. New episodes: one `AlarmManager` alarm for the next airing time (`EpisodePlan`, no request; inexact `setAndAllowWhileIdle`, a few minutes late is fine: no exact alarm permission, decided by Tobias 2026-10-01). AniList notifications: periodic `NotificationCheckWorker` about every 30 minutes through `AlertsRepository.newNotifications()` in `core/data` (unread count first, the newest page only when it rose). Details and request budget in `docs/ANILIST_API.md`, Android notifications.
+- `feature/notifications` (package `alerts`) holds them; `AlertCoordinator`, started by the `Application`, follows the session and the airing times in Room. New episodes: one `AlarmManager` alarm for the next airing time (`EpisodePlan`, no request; inexact `setAndAllowWhileIdle`, a few minutes late is fine: no exact alarm permission, decided 2026-10-01). AniList notifications: periodic `NotificationCheckWorker` about every 30 minutes through `AlertsRepository.newNotifications()` in `core/data` (unread count first, the newest page only when it rose). Details and request budget in `docs/ANILIST_API.md`, Android notifications.
 - Channels (`AlertChannel`: New episodes, Activity, Follows, Other) are the only switches; Settings opens the app's Android notification settings. Before every plan and every check `AlertGate` asks whether the app's notifications and the channel are on; if not, no alarm and no periodic work. `AlertPlanReceiver` plans again after a reboot, an update or a change to the app's notifications or a channel, and `MainActivity` on every resume.
 - Taps open screens through `tsuzuki://open/...` links like the widgets (`AppDestination.Notifications` for activity notifications). Opening the notifications screen removes the posted AniList notifications.
 - The permission is asked once after the login (`NotificationPermissionHint` in `AppShell`), the only permission they need; never on the first start. The bookkeeping (`AlertStateStore`, DataStore `alerts`, not backed up) is cleared on logout, except that the hint was shown.
@@ -203,12 +202,12 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Compose UI tests for the list editor sheet, +1 with undo, and login redirect handling.
 - Test names describe behavior: `plusOne_whenReachingTotal_marksCompletedAndOffersUndo`.
 - Room is tested with an in-memory database on Robolectric (`@Config(sdk = [35])`: Robolectric's SDK 36 setup fails on the JDK 25 test runtime). Apollo responses in these tests are parsed from JSON (`ListTestData.kt`), shaped like AniList's.
-- Compose UI tests (`connectedDebugAndroidTest`) run on the emulator (API 36) only. On Android 17 (API 37) every one fails inside Espresso 3.7.0 (`NoSuchMethodException: InputManager.getInstance`); as of 2026-09-30 there is no newer stable Espresso / androidx.test release. Update and retry on the Pixel once one ships.
+- Compose UI tests (`connectedDebugAndroidTest`) run on the emulator (API 36) only. On Android 17 (API 37) every one fails inside Espresso 3.7.0 (`NoSuchMethodException: InputManager.getInstance`); as of 2026-09-30 there is no newer stable Espresso / androidx.test release. Update and retry on a real API 37 device once one ships.
 - `core/testing` holds sample data built from real AniList responses (Frieren id 154587 is used across the design), `MainDispatcherRule`, fakes like `FakeSessionRepository`, and `InMemoryDataStore`. Unit tests never use the file-backed DataStore: it can't replace its file on Windows JVMs, so such tests fail locally while CI (Linux) passes.
 
 ## Don'ts
 
-- Don't add a forum or review writing without Tobias (see `docs/PRODUCT.md`, "Later"). Widgets are part of v1 since 2026-09-30; Android notifications (new episodes, AniList notifications) came after v1 as their own package.
+- Don't add a forum or review writing without the maintainer (see `docs/PRODUCT.md`, "Later"). Widgets are part of v1 since 2026-09-30; Android notifications (new episodes, AniList notifications) came after v1 as their own package.
 - Don't hardcode the client ID, colors, strings or spacing.
 - Don't call the API from composables or from `init {}` of anything but a ViewModel/repository.
 - Don't swallow errors; map them to `AppError` and show them.

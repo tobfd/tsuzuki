@@ -8,6 +8,7 @@ import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
 import com.tobfd.tsuzuki.core.data.session.expiryWarningDays
 import com.tobfd.tsuzuki.core.data.settings.SettingsRepository
+import com.tobfd.tsuzuki.core.data.update.UpdateRepository
 import com.tobfd.tsuzuki.core.model.AppearanceSettings
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.model.Viewer
@@ -44,6 +45,7 @@ class MainViewModel @Inject constructor(
     private val notificationsRepository: NotificationsRepository,
     private val listRepository: ListRepository,
     settingsRepository: SettingsRepository,
+    private val updateRepository: UpdateRepository,
     private val clock: Clock
 ) : ViewModel() {
     /** The app's look; null until read, so the splash screen stays up instead of flashing the wrong theme. */
@@ -85,6 +87,8 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { sessionRepository.validate() }
+        // GitHub Releases, at most once a day and never in debug builds; failures stay silent.
+        viewModelScope.launch { updateRepository.checkOnStart() }
         // A new login (or app start while logged in) gets a fresh badge count right away, and the lists
         // sync (unless they did within 15 minutes) and keep syncing in the background.
         viewModelScope.launch {

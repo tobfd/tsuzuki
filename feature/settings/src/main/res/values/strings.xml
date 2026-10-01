@@ -53,4 +53,12 @@
     <string name="settings_section_notifications">Notifications</string>
     <string name="settings_notifications">New episodes, activity, follows</string>
     <string name="settings_notifications_supporting">Choose in Android\'s settings</string>
+    <string name="settings_update_check">Check for updates</string>
+    <string name="settings_update_idle">Looks for a newer version on GitHub</string>
+    <string name="settings_update_checking">Checking…</string>
+    <string name="settings_update_up_to_date">Up to date</string>
+    <string name="settings_update_available">v%1$s available · tap to download</string>
+    <string name="settings_update_failed">Couldn\'t check: %1$s</string>
+    <string name="settings_update_auto">Check for updates automatically</string>
+    <string name="settings_update_auto_supporting">At most once a day when the app starts</string>
 </resources>

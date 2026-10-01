@@ -1,6 +1,6 @@
 # Profile (own and others) in ONE request: user data + first page of their activity.
 # `stats.activityHistory` is deprecated in the schema without a replacement in `statistics`
-# (checked 2026-09-30); Tobias decided to keep using it (docs/ROADMAP.md, M9).
+# (checked 2026-09-30); it stays in use (docs/ROADMAP.md, M9).
 query UserProfile($id: Int!) {
   User(id: $id) {
     id

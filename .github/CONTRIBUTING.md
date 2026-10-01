@@ -1,6 +1,6 @@
 # Contributing to Tsuzuki
 
-Thanks for wanting to help. Tsuzuki is a small, personal project, so please open an issue before you start on anything bigger than a bug fix; that way nobody builds something that doesn't fit the plan in `docs/PRODUCT.md`.
+Thanks for wanting to help. Tsuzuki is a small project, so please open an issue before you start on anything bigger than a bug fix; that way nobody builds something that doesn't fit the plan in `docs/PRODUCT.md`.
 
 ## Getting set up
 

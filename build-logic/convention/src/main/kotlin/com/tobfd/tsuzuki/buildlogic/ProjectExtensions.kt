@@ -16,3 +16,7 @@ internal fun VersionCatalog.library(alias: String): Provider<MinimalExternalModu
 internal fun VersionCatalog.pluginId(alias: String): String =
     findPlugin(alias).orElseThrow { IllegalStateException("Plugin '$alias' missing in libs.versions.toml") }
         .get().pluginId
+
+internal fun VersionCatalog.intVersion(alias: String): Int =
+    findVersion(alias).orElseThrow { IllegalStateException("Version '$alias' missing in libs.versions.toml") }
+        .requiredVersion.toInt()

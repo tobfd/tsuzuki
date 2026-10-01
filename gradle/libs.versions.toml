@@ -1,4 +1,9 @@
 [versions]
+# Android SDK levels (docs/PRODUCT.md, D6); build-logic and the README's Min SDK badge read them here.
+compileSdk = "37"
+targetSdk = "37"
+minSdk = "31"
+
 # Build
 agp = "9.4.1"
 kotlin = "2.4.20"

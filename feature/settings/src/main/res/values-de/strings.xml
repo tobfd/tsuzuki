@@ -48,4 +48,12 @@
     <string name="settings_section_notifications">Benachrichtigungen</string>
     <string name="settings_notifications">Neue Folgen, Aktivität, Follows</string>
     <string name="settings_notifications_supporting">In den Android-Einstellungen festlegen</string>
+    <string name="settings_update_check">Nach Updates suchen</string>
+    <string name="settings_update_idle">Sucht auf GitHub nach einer neueren Version</string>
+    <string name="settings_update_checking">Wird gesucht …</string>
+    <string name="settings_update_up_to_date">Aktuell</string>
+    <string name="settings_update_available">v%1$s verfügbar · zum Herunterladen tippen</string>
+    <string name="settings_update_failed">Suche fehlgeschlagen: %1$s</string>
+    <string name="settings_update_auto">Automatisch nach Updates suchen</string>
+    <string name="settings_update_auto_supporting">Höchstens einmal am Tag beim Start der App</string>
 </resources>

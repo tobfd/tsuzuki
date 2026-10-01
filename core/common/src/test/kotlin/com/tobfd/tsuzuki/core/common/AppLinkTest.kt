@@ -15,7 +15,8 @@ class AppLinkTest {
             AppDestination.Media(1, AppTab.Home),
             AppDestination.ListEditor(154587),
             AppDestination.User(5424000, "tobfd"),
-            AppDestination.User(7, "Gecko TV & Co/?")
+            AppDestination.User(7, "Fern & Stark/?"),
+            AppDestination.Notifications
         )
         destinations.forEach { assertEquals(it, AppLink.parse(AppLink.uri(it))) }
     }

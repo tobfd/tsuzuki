@@ -37,7 +37,9 @@ internal fun MacrobenchmarkScope.browseAndOpenDetail() {
     device.findObject(By.text("Trending"))?.click()
     device.waitForIdle()
     flingFirstScrollable()
-    device.findObject(By.textContains("TV ·"))?.click()
+    // The cards arrive from the network; without waiting the detail page is often never opened.
+    device.wait(Until.findObject(By.textContains("TV ·")), TIMEOUT_MS)?.click()
+    device.wait(Until.hasObject(By.text("Overview").pkg(PACKAGE_NAME)), TIMEOUT_MS)
     device.waitForIdle()
     flingFirstScrollable()
     device.pressBack()

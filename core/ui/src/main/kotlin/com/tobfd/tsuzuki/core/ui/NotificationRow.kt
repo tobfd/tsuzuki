@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -233,47 +234,8 @@ private fun activityEventText(event: Notification.ActivityEvent): AnnotatedStrin
 
 /** The context under the text: the list update the activity was about, or a moderator's reason. */
 @Composable
-private fun notificationSubline(notification: Notification): String? = when (notification) {
-    is Notification.ActivityEvent -> notification.listActivity?.let { listActivitySubline(it) }
-    is Notification.MediaEvent -> notification.reason
-    else -> null
-}
-
-@Composable
-private fun listActivitySubline(summary: ListActivitySummary): String? {
-    val progress = summary.progress
-    val title = summary.mediaTitle ?: return untitledListActivitySubline(summary)
-    val withProgress = when (summary.status) {
-        "watched episode" -> R.string.ui_notification_subline_watched
-        "rewatched episode" -> R.string.ui_notification_subline_rewatched
-        "read chapter" -> R.string.ui_notification_subline_read
-        "reread chapter" -> R.string.ui_notification_subline_reread
-        else -> null
-    }
-    if (withProgress != null && progress != null) return stringResource(withProgress, progress, title)
-    val withoutProgress = when (summary.status) {
-        "completed" -> R.string.ui_notification_subline_completed
-        "plans to watch", "plans to read" -> R.string.ui_notification_subline_planning
-        "dropped" -> R.string.ui_notification_subline_dropped
-        "paused watching", "paused reading" -> R.string.ui_notification_subline_paused
-        else -> null
-    }
-    return if (withoutProgress != null) stringResource(withoutProgress, title) else title
-}
-
-/** "Watched episodes 2 - 16" when AniList left the media out; nothing for status changes without progress. */
-@Composable
-private fun untitledListActivitySubline(summary: ListActivitySummary): String? {
-    val progress = summary.progress ?: return null
-    val template = when (summary.status) {
-        "watched episode" -> R.string.ui_notification_subline_watched_untitled
-        "rewatched episode" -> R.string.ui_notification_subline_rewatched_untitled
-        "read chapter" -> R.string.ui_notification_subline_read_untitled
-        "reread chapter" -> R.string.ui_notification_subline_reread_untitled
-        else -> return null
-    }
-    return stringResource(template, progress)
-}
+private fun notificationSubline(notification: Notification): String? =
+    notificationSubline(LocalResources.current, notification)
 
 @ThemePreviews
 @Composable

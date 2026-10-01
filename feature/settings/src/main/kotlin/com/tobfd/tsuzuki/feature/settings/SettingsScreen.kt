@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.feature.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -29,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -80,14 +82,16 @@ private val TitleLanguages = listOf(TitleLanguage.ROMAJI, TitleLanguage.ENGLISH,
 
 /**
  * Settings (docs/DESIGN.md, Settings). [onLogOut] also leads guests to the login screen, like every
- * "Log in" in the app.
+ * "Log in" in the app. [onOpenCatalog] is set in debug builds only: tapping the version
+ * [CATALOG_TAPS] times opens the component catalog.
  */
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     onLogOut: () -> Unit,
     onOpenLicenses: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onOpenCatalog: (() -> Unit)? = null
 ) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -107,7 +111,8 @@ fun SettingsScreen(
             onScoreFormatChange = viewModel::onScoreFormatChange,
             onAdultContentChange = viewModel::onAdultContentChange,
             onLogOut = onLogOut,
-            onOpenLicenses = onOpenLicenses
+            onOpenLicenses = onOpenLicenses,
+            onOpenCatalog = onOpenCatalog
         ),
         modifier = modifier
     )
@@ -123,8 +128,12 @@ internal class SettingsActions(
     val onScoreFormatChange: (ScoreFormat) -> Unit = {},
     val onAdultContentChange: (Boolean) -> Unit = {},
     val onLogOut: () -> Unit = {},
-    val onOpenLicenses: () -> Unit = {}
+    val onOpenLicenses: () -> Unit = {},
+    val onOpenCatalog: (() -> Unit)? = null
 )
+
+/** Taps on the version that open the debug catalog. */
+internal const val CATALOG_TAPS = 7
 
 @Composable
 private fun rememberAppVersion(): String {
@@ -178,7 +187,7 @@ internal fun SettingsContent(
                 LanguageSection(state, appLanguage, actions)
                 if (state.options != null) ContentSection(state, actions)
                 AccountSection(state.viewer, actions.onLogOut)
-                AboutSection(appVersion, actions.onOpenLicenses)
+                AboutSection(appVersion, actions.onOpenLicenses, actions.onOpenCatalog)
             }
         }
     }
@@ -436,12 +445,24 @@ private fun AccountSection(viewer: Viewer?, onLogOut: () -> Unit) {
 }
 
 @Composable
-private fun AboutSection(appVersion: String, onOpenLicenses: () -> Unit) {
+private fun AboutSection(appVersion: String, onOpenLicenses: () -> Unit, onOpenCatalog: (() -> Unit)?) {
     SettingsSection(stringResource(R.string.settings_section_about)) {
+        var taps by remember { mutableIntStateOf(0) }
+        val hiddenCatalog = if (onOpenCatalog != null) {
+            Modifier.clickable(interactionSource = null, indication = null) {
+                taps += 1
+                if (taps >= CATALOG_TAPS) {
+                    taps = 0
+                    onOpenCatalog()
+                }
+            }
+        } else {
+            Modifier
+        }
         Text(
             text = stringResource(R.string.settings_about_app, appVersion),
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(horizontal = TsuzukiSpacing.screenMargin)
+            modifier = hiddenCatalog.padding(horizontal = TsuzukiSpacing.screenMargin)
         )
         Text(
             text = stringResource(R.string.settings_about_disclaimer),

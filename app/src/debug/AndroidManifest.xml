@@ -2,18 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <!-- Debug-only component catalog with its own launcher entry. -->
+        <!-- Debug-only component catalog: no launcher entry, opened by tapping the version in
+             Settings > About 7 times. Release builds don't contain it. -->
         <activity
             android:name=".catalog.CatalogActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/catalog_launcher_label"
-            android:theme="@style/Theme.Tsuzuki">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Tsuzuki" />
         <!-- Debug-only: pins a widget for emulator checks (see PinWidgetActivity). -->
         <activity
             android:name=".catalog.PinWidgetActivity"

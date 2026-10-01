@@ -229,12 +229,12 @@ Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. To
 
 Asked for by Tobias on 2026-10-01. One branch, one PR, one phone test.
 
-- [ ] New episodes: planned locally from the airing times in Room (`nextAiringEpisode` from the list sync), an alarm at the exact airing time, no request; only anime being watched or rewatched.
-- [ ] AniList notifications: WorkManager about every 30 minutes, network required; `unreadNotificationCount` first, the newest notifications only when it went up. Rate-limit and battery friendly, never resets the count.
-- [ ] Own channels (New episodes, Activity, Follows, Other), grouped notifications, a tap opens the right screen (detail page, profile, notifications).
-- [ ] No switches per kind in the app, only the Android channels: Settings gets one entry that opens the app's Android notification settings (`ACTION_APP_NOTIFICATION_SETTINGS`).
-- [ ] Before checking or planning: are the app's notifications and the channel on? If not, no request and no alarm.
-- [ ] Permission (`POST_NOTIFICATIONS`) asked after the login with a short word on what for, never on the first start; logout stops everything.
-- [ ] Tests, phone test.
+- [x] New episodes: planned locally from the airing times in Room (`nextAiringEpisode` from the list sync), an alarm at the exact airing time, no request; only anime being watched or rewatched. (Exact with "Alarms & reminders", which the hint asks for; otherwise as close as Android allows. Missed by more than 6 hours: skipped. AniList's own airing notifications are never shown, they would be duplicates.)
+- [x] AniList notifications: WorkManager about every 30 minutes, network required; `unreadNotificationCount` first, the newest notifications only when it went up. Rate-limit and battery friendly, never resets the count.
+- [x] Own channels (New episodes, Activity, Follows, Other), grouped notifications, a tap opens the right screen (detail page, profile, notifications).
+- [x] No switches per kind in the app, only the Android channels: Settings gets one entry that opens the app's Android notification settings (`ACTION_APP_NOTIFICATION_SETTINGS`).
+- [x] Before checking or planning: are the app's notifications and the channel on? If not, no request and no alarm.
+- [x] Permission (`POST_NOTIFICATIONS`) asked after the login with a short word on what for, never on the first start; logout stops everything.
+- [ ] Tests, phone test. (Unit tests for the plan, the coordinator and the repository; checked on the emulator with the sample session: hint, both permissions, the exact alarm, the notification at the airing time and its tap, and that a revoked permission removes the alarm and the periodic check. Open: the phone test with real AniList notifications.)
 
 **Done when:** on Tobias's Pixel a new episode of something he watches shows up at its airing time, a like or follow on AniList shows up within about half an hour, and switching a channel off stops its alarms or requests.

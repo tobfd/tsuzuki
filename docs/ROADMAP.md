@@ -19,7 +19,7 @@ Claude may squash-merge a package's PR once CI is green and Tobias has written "
 Before M0, Tobias does two things by hand:
 
 - [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
-- [ ] Create the GitHub repository (private) and copy this handoff folder into its root.
+- [x] Create the GitHub repository (private) and copy this handoff folder into its root. (`tobfd/tsuzuki`, 2026-09-28.)
 
 ---
 

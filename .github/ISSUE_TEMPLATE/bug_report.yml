@@ -1,0 +1,54 @@
+name: Bug report
+description: Something in Tsuzuki doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please never paste your AniList access token or any other secret here.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Lists tab
+        2. Tap +1 on an entry
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings > About.
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: Pixel 9, Android 17
+    validations:
+      required: true
+  - type: dropdown
+    id: account
+    attributes:
+      label: Account
+      options:
+        - Logged in
+        - Guest (browsing without an account)
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or logs
+      description: Optional. Debug builds log AniList requests under the logcat tag `AniListRequest` (never the token).

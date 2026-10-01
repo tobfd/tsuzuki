@@ -28,7 +28,7 @@ Source: docs.anilist.co (read 2026-09-28). Official docs: https://docs.anilist.c
   - At most 2 requests in flight and at least ~300 ms between request starts (burst limiter).
   - On 429: block all requests until `Retry-After` has passed, then retry the request once. Surface `AppError.RateLimited` so the UI can show "AniList is busy, retrying in 30 s".
   - Log remaining quota in debug builds.
-- Budget per screen (keep to it): Home 1 (+1 per extra feed page), Lists 0 (Room; sync = 1 per type per chunk), Detail 1, Browse 1 per results page, Profile 1, Notifications 1 per page, Settings 0 (+1 per change).
+- Budget per screen (keep to it): Home 1 (+1 per extra feed page), Lists 0 (Room; sync = 1 per type per chunk), Detail 1, Browse 1 per results page, Profile 1, Notifications 1 per page, Settings 0 (+1 per change). Widgets: see Widgets below.
 - Search: debounce 400 ms, min 2 characters, cancel in-flight searches when the text changes.
 
 ## Errors
@@ -87,6 +87,16 @@ All of them are optimistic in the UI and rolled back on error. List mutations go
 - The API has no per-item read state. The first page of each visit to the screen sends `resetNotificationCount: true` and, in the same request, `Viewer { unreadNotificationCount }` before `Page` (`@include(if: $reset)`), so the count from before the reset comes back. The newest that many notifications of the All list are unread; filtered lists highlight the ones All marked. In case AniList resolves the reset first (count 0), the badge count from when the screen opened is used when higher. A page from the cache (offline) doesn't count as reset; the next load sends it again.
 - "Mark all as read" is `MarkNotificationsRead` (`perPage: 1`, reset), one request.
 - Consecutive `ACTIVITY_LIKE` notifications on the same `activityId` are grouped into one row, also across a page break (a like run at the end of a page waits for the next page unless it is all the page has).
+
+## Widgets
+
+The home-screen widgets (`feature/widgets`, Glance) read Room like the Lists tab. Only two of them make requests, only while one of them is on a home screen, and never in a loop (`WidgetWork`):
+
+- **In Progress:** no request of its own. Its +1 is `ListRepository.plusOne`, so it goes through the mutation queue like the app's.
+- **Next episode:** `NextEpisodes(ids)` (`widgets.graphql`): `Page(perPage: 50) { media(id_in: $ids, type: ANIME) { id status episodes nextAiringEpisode { episode airingAt } } }` for the viewer's watched or rewatched anime that are releasing or not yet released, soonest first (more than 50 are left to the list sync). `NetworkOnly` without storing, written into `media_lite` (`next_airing_episode`, `next_airing_at`). The next request goes out 2 minutes after the soonest episode airs, but never sooner than an hour after the last one and never later than 12 hours; temporary errors back off exponentially from an hour. Between requests a request-free redraw runs when an episode airs. The list sync fills the same columns from `MediaCard.nextAiringEpisode`, so the widget is filled before its first request.
+- **Friends' activity:** `ActivityFeed(page: 1, isFollowing: true)` every 3 hours (periodic WorkManager work, network required), exponential backoff from 15 minutes on offline, 429 or API errors. The newest 10 are kept in Room (`friend_activity`, replaced as a whole) and shown in between and offline. One extra request right after a login.
+- A logout clears the widget data with the rest of the database; the workers then stop at `Unauthorized` and the widgets show the log-in state.
+- Images (covers, avatars) come from Coil's cache at their drawn size; they are not AniList API requests.
 
 ## Caching (Apollo normalized cache)
 

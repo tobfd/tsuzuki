@@ -187,6 +187,19 @@ Top bar "Home" + bell + avatar. Scrolling column:
 - Pure black (AMOLED): in the dark theme `background`, `surface`, `surfaceDim` and `surfaceContainerLowest` are black and the other surface containers move towards black, keeping 60 % of their color (`design/tokens.json`, `color.pureBlack`). Works with both color sources.
 - The settings column is capped at the reading width on large screens.
 
+### Widgets (not in the prototype)
+
+Three Glance widgets (`feature/widgets`): "In Progress" / "Aktuell dabei", "Next episode" / "Nächste Folge", "Friends' activity" / "Freunde-Aktivität". 4 × 2 by default, resizable down to 2 × 1.
+
+- **Theme:** the app's appearance settings. Material You with the system theme mode uses Glance's dynamic colors, which follow wallpaper changes by themselves; AniList blue, a forced light or dark mode and pure black use the app's schemes (`colorScheme(context, ...)` in `core/designsystem`). Background `surfaceContainer` (Glance's dynamic default for Material You), text `onSurface` / `onSurfaceVariant`, accents `primary`. Glance draws the system font; sizes and weights come from `TsuzukiTypography`.
+- **Layouts** (`WidgetLayout`): *row* for low widgets (2 × 1, 4 × 1): one item, cover from 180 dp width; *single* for narrow ones (2 × 2): one item with a small cover, title and a large value at the bottom; *list* from 200 × 130 dp: a title bar (続 glyph + name, opens the tab) and the items.
+- **Rows:** 40 × 60 cover with the cover color while loading (small radius), title (titleSmall, 2 lines), meta line (labelMedium). Tapping a row opens the media (In Progress and Next episode in the Lists tab, so tablets get list-detail; Friends' activity in the Home tab, status posts open the author's profile).
+- **In Progress:** Home's In Progress (watching, reading, repeating; last changed first), progress "x / y", the +1 button (primary, 48 dp, medium radius; RemoteViews can't morph). No +1 at the total. A footer "1 change waiting to be sent" while changes are queued. The single layout adds a progress bar.
+- **Next episode:** soonest first; meta "Episode 6 · Fri 17:30 · 2 behind" (aired episodes not watched yet). Within a day a live countdown ("4:57:12", a `Chronometer`, so it ticks without redraws), further away "in 2 days", after airing "Aired" until the next update. No scrolling list (chronometers in widget collections don't tick): it shows as many whole rows as fit. Footer when the last update failed ("Offline · times may have changed").
+- **Friends' activity:** avatar, the activity as plain text ("GeckoTV watched episode 5 of Frieren"; status posts as "Name: text" with spoilers replaced), its time (clock time today, weekday this week, else the date: never stale like "3 hours ago"), the cover on the right from 180 dp. Footer "Updated 14:05" / "Offline · updated 14:05".
+- **States:** logged out or guest: "Log in to Tsuzuki" with a line per widget, tap opens the app. Empty: "Nothing in progress", "No episodes coming up", "Nothing new yet". Before the first fetch: "Loading…".
+- **Picker previews:** Android 15+ shows previews the widgets draw themselves with sample data (`providePreview`, published once per installed version); Android 12 to 14 show static layouts (`res/layout/widget_preview_*`) in the system's Material You palette.
+
 ### Character / Staff (not in the prototype)
 
 Follow the detail screen's language: header with 112 × 160 image, name (headlineMedium), native name, favourite toggle; description with "Read more" and spoilers; then a grid of media covers with role labels (character) or a list of characters voiced + production roles (staff).

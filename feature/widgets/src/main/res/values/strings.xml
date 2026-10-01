@@ -62,6 +62,10 @@
     <string name="widget_preview_berserk" translatable="false">Berserk</string>
     <string name="widget_preview_one_piece" translatable="false">ONE PIECE</string>
     <string name="widget_preview_blue_box" translatable="false">Blue Box</string>
+    <string name="widget_preview_progress_frieren" translatable="false">18 / 28</string>
+    <string name="widget_preview_progress_berserk" translatable="false">364 / ?</string>
+    <string name="widget_preview_progress_one_piece" translatable="false">1071 / ?</string>
+    <string name="widget_preview_countdown" translatable="false">5:07:12</string>
     <string name="widget_preview_episode_6">Episode 6 · Fri 5:30 PM</string>
     <string name="widget_preview_episode_1146">Episode 1146 · Sun 1:15 AM</string>
     <string name="widget_preview_episode_20">Episode 20 · Tue 6:00 PM</string>

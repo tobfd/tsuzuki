@@ -180,10 +180,10 @@ For medium and expanded widths (Pixel Tablet, foldables open, phones in landscap
 
 Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack Glance (latest stable) is approved and listed in `CLAUDE.md`.
 
-- [ ] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes.
-- [ ] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop.
-- [ ] "Friends' activity": the newest activities of the people the viewer follows, one request per periodic update (every few hours, backed off on errors and rate limits), shown from the last result in between.
-- [ ] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline.
+- [x] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes. (Named "In Progress" / "Aktuell dabei" like Home's row. `WidgetUpdater` watches Room, the session and the appearance while the app process runs, which is where every change happens, and redraws a widget only when what it shows changed.)
+- [x] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop. (`nextAiringEpisode` of up to 50 ids in one `NextEpisodes` request, 2 minutes after the soonest episode airs but at least an hour apart and at most 12 hours; a request-free redraw when an episode airs. The airing time is a new Room column, so the list sync fills it too. Live `Chronometer` countdown within a day.)
+- [x] "Friends' activity": the newest activities of the people the viewer follows, one request per periodic update (every few hours, backed off on errors and rate limits), shown from the last result in between. (Every 3 hours, the newest 10 kept in Room; one extra request right after a login.)
+- [x] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline. (Pure black too. Taps go through `tsuzuki://open/...` links (`AppLink`), restricted to the app's package. Row, single and list layouts; picker previews drawn by the widgets on Android 15+, static layouts below.)
 
 **Done when:** all three widgets run on Tobias's home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.
 

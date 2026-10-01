@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.feature.widgets
 
 import android.content.Context
 import android.os.Build
+import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import com.tobfd.tsuzuki.core.common.ApplicationScope
@@ -158,7 +159,7 @@ class WidgetUpdater @Inject constructor(
             FriendActivityWidgetReceiver::class
         ).map { runCatching { manager.setWidgetPreviews(it) }.getOrNull() }
         if (results.all { it == GlanceAppWidgetManager.SET_WIDGET_PREVIEWS_RESULT_SUCCESS }) {
-            prefs.edit().putString(KEY_PREVIEWS, version).apply()
+            prefs.edit { putString(KEY_PREVIEWS, version) }
         }
     }
 

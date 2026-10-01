@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -26,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,8 +49,10 @@ import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.designsystem.R as DesignR
 import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
+import com.tobfd.tsuzuki.core.designsystem.component.TabPager
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBackTopBar
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiPullToRefresh
+import com.tobfd.tsuzuki.core.designsystem.component.rememberTabPagerState
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
@@ -66,6 +71,7 @@ import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 /** The viewer's notifications, opened from the bell. */
@@ -82,10 +88,9 @@ fun NotificationsScreen(
 ) {
     val viewModel = hiltViewModel<NotificationsViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val notifications = viewModel.notifications.collectAsLazyPagingItems()
     NotificationsContent(
         state = state,
-        notifications = notifications,
+        notifications = { filter -> viewModel.notifications(filter).collectAsLazyPagingItems() },
         events = viewModel.eventFlow,
         onBack = onBack,
         onFilterChange = viewModel::onFilterChange,
@@ -116,10 +121,14 @@ internal fun Notification.open(onOpenMedia: (Int) -> Unit, onOpenUser: (Int, Str
     }
 }
 
+/**
+ * [notifications] gives each filter's list; it is called only for the filter pages that are composed
+ * (the visible one, and its neighbour while swiping), so only those load.
+ */
 @Composable
 internal fun NotificationsContent(
     state: NotificationsUiState,
-    notifications: LazyPagingItems<NotificationListItem>,
+    notifications: @Composable (NotificationFilter) -> LazyPagingItems<NotificationListItem>,
     events: Flow<NotificationsEvent>,
     onBack: () -> Unit,
     onFilterChange: (NotificationFilter) -> Unit,
@@ -167,34 +176,53 @@ internal fun NotificationsContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            FilterChips(selected = state.filter, onSelect = onFilterChange)
-            val refresh = notifications.loadState.refresh
-            TsuzukiPullToRefresh(
-                isRefreshing = refresh is LoadState.Loading && notifications.itemCount > 0,
-                onRefresh = notifications::refresh,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                NotificationList(
-                    notifications = notifications,
-                    filter = state.filter,
-                    allRead = state.allRead,
-                    onOpenNotification = onOpenNotification
-                )
+            val filters = NotificationFilter.entries
+            val pagerState = rememberTabPagerState(
+                selectedIndex = filters.indexOf(state.filter),
+                pageCount = filters.size,
+                onPageSelected = { onFilterChange(filters[it]) }
+            )
+            FilterChips(pagerState = pagerState)
+            // Swipe between the filters (M12); each keeps its scroll position.
+            TabPager(pagerState = pagerState, pageKey = {
+                filters[it].name
+            }, modifier = Modifier.fillMaxSize()) { page ->
+                val filter = filters[page]
+                val items = notifications(filter)
+                val refresh = items.loadState.refresh
+                TsuzukiPullToRefresh(
+                    isRefreshing = refresh is LoadState.Loading && items.itemCount > 0,
+                    onRefresh = items::refresh,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    NotificationList(
+                        notifications = items,
+                        filter = filter,
+                        allRead = state.allRead,
+                        onOpenNotification = onOpenNotification
+                    )
+                }
             }
         }
     }
 }
 
+/** The filters as chips above the pager: the chip of the page being shown is selected and kept in view. */
 @Composable
-private fun FilterChips(selected: NotificationFilter, onSelect: (NotificationFilter) -> Unit) {
+private fun FilterChips(pagerState: PagerState) {
+    val scope = rememberCoroutineScope()
+    val chipsState = rememberLazyListState()
+    val current = pagerState.currentPage
+    LaunchedEffect(current) { chipsState.animateScrollToItem(current) }
     LazyRow(
+        state = chipsState,
         contentPadding = PaddingValues(horizontal = TsuzukiSpacing.screenMargin),
         horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
     ) {
-        items(NotificationFilter.entries, key = { it.name }) { filter ->
+        itemsIndexed(NotificationFilter.entries, key = { _, filter -> filter.name }) { index, filter ->
             FilterChip(
-                selected = filter == selected,
-                onClick = { onSelect(filter) },
+                selected = index == current,
+                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
                 label = { Text(stringResource(filter.labelRes())) }
             )
         }
@@ -226,8 +254,8 @@ private fun NotificationList(
             modifier = Modifier.fillMaxSize()
         )
 
-        // One list per filter, so switching chips starts at the top.
-        else -> androidx.compose.runtime.key(filter) {
+        // Each filter is its own page, which keeps its own scroll position.
+        else -> {
             LazyColumn(
                 state = rememberLazyListState(),
                 modifier = Modifier.fillMaxSize(),
@@ -374,7 +402,10 @@ private fun NotificationsContentPreview() {
     TsuzukiPreview {
         NotificationsContent(
             state = NotificationsUiState(),
-            notifications = flowOf(PagingData.from(items)).collectAsLazyPagingItems(),
+            notifications = { filter ->
+                flowOf(if (filter == NotificationFilter.All) PagingData.from(items) else PagingData.empty())
+                    .collectAsLazyPagingItems()
+            },
             events = emptyFlow(),
             onBack = {},
             onFilterChange = {},
@@ -390,7 +421,7 @@ private fun NotificationsEmptyPreview() {
     TsuzukiPreview {
         NotificationsContent(
             state = NotificationsUiState(filter = NotificationFilter.Airing),
-            notifications = flowOf(PagingData.empty<NotificationListItem>()).collectAsLazyPagingItems(),
+            notifications = { flowOf(PagingData.empty<NotificationListItem>()).collectAsLazyPagingItems() },
             events = emptyFlow(),
             onBack = {},
             onFilterChange = {},

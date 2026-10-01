@@ -47,19 +47,30 @@ class NotificationsViewModelTest {
 
     private fun TestScope.viewModel(): NotificationsViewModel =
         NotificationsViewModel(repository, clock).also { viewModel ->
-            backgroundScope.launch { viewModel.notifications.collect {} }
+            backgroundScope.launch { viewModel.notifications(NotificationFilter.All).collect {} }
             runCurrent()
         }
 
     @Test
-    fun opening_loadsAllAndSwitchingChipsLoadsThatFilter() = runTest {
+    fun opening_loadsAll_andAFilterLoadsOnlyWhenItsPageShows() = runTest {
         val viewModel = viewModel()
+        assertEquals(listOf(NotificationFilter.All), repository.requestedFilters)
 
         viewModel.onFilterChange(NotificationFilter.Airing)
+        backgroundScope.launch { viewModel.notifications(NotificationFilter.Airing).collect {} }
         runCurrent()
 
         assertEquals(listOf(NotificationFilter.All, NotificationFilter.Airing), repository.requestedFilters)
         assertEquals(NotificationFilter.Airing, viewModel.uiState.value.filter)
+    }
+
+    @Test
+    fun swipingBack_reusesTheFilterThatWasShown() = runTest {
+        val viewModel = viewModel()
+
+        val again = viewModel.notifications(NotificationFilter.All)
+
+        assertTrue(again === viewModel.notifications(NotificationFilter.All))
     }
 
     @Test

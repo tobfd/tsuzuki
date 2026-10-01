@@ -22,4 +22,8 @@
         <item quantity="one">%d chapter</item>
         <item quantity="other">%d chapters</item>
     </plurals>
+    <string name="home_update_title">Tsuzuki %1$s is available</string>
+    <string name="home_update_text">Get the new version on GitHub.</string>
+    <string name="home_update_download">Download</string>
+    <string name="home_update_dismiss">Close</string>
 </resources>

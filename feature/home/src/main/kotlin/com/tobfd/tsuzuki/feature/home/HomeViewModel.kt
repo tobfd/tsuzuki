@@ -9,7 +9,9 @@ import com.tobfd.tsuzuki.core.data.home.FeedScope
 import com.tobfd.tsuzuki.core.data.home.HomeRepository
 import com.tobfd.tsuzuki.core.data.list.ListRepository
 import com.tobfd.tsuzuki.core.data.session.SessionRepository
+import com.tobfd.tsuzuki.core.data.update.UpdateRepository
 import com.tobfd.tsuzuki.core.model.Activity
+import com.tobfd.tsuzuki.core.model.AppUpdate
 import com.tobfd.tsuzuki.core.model.MediaListEntry
 import com.tobfd.tsuzuki.core.model.MediaListStatus
 import com.tobfd.tsuzuki.core.model.MediaLite
@@ -87,7 +89,9 @@ data class HomeUiState(
     val trending: ImmutableList<MediaLite> = persistentListOf(),
     val feedScope: FeedScope = FeedScope.Following,
     val feed: FeedUiState = FeedUiState(),
-    val likes: ImmutableMap<Int, LikeState> = persistentMapOf()
+    val likes: ImmutableMap<Int, LikeState> = persistentMapOf(),
+    /** A newer release on GitHub, shown as a small card until it is closed or used. */
+    val update: AppUpdate? = null
 )
 
 sealed interface HomeEvent {
@@ -107,7 +111,8 @@ class HomeViewModel @Inject constructor(
     private val savedState: SavedStateHandle,
     private val homeRepository: HomeRepository,
     private val listRepository: ListRepository,
-    sessionRepository: SessionRepository
+    sessionRepository: SessionRepository,
+    private val updateRepository: UpdateRepository
 ) : ViewModel() {
 
     private val isGuest = sessionRepository.session.map { it !is SessionState.LoggedIn }.distinctUntilChanged()
@@ -137,14 +142,14 @@ class HomeViewModel @Inject constructor(
             anime.entries + manga.entries
         }
 
-    private val feedAndLikes = combine(feed, likes, ::Pair)
+    private val feedLikesAndUpdate = combine(feed, likes, updateRepository.availableUpdate, ::Triple)
 
-    val uiState: StateFlow<HomeUiState> = combine(isGuest, lists, homeRepository.trending, scope, feedAndLikes) {
+    val uiState: StateFlow<HomeUiState> = combine(isGuest, lists, homeRepository.trending, scope, feedLikesAndUpdate) {
             guest,
             entries,
             trending,
             scope,
-            (feed, likes)
+            (feed, likes, update)
         ->
         HomeUiState(
             isGuest = guest,
@@ -153,7 +158,8 @@ class HomeViewModel @Inject constructor(
             trending = trending.toImmutableList(),
             feedScope = scope,
             feed = feed,
-            likes = likes.toPersistentMap()
+            likes = likes.toPersistentMap(),
+            update = update
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
@@ -161,6 +167,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             scope.collect { scope -> loadFirstPage(scope, fromCache = true) }
         }
+    }
+
+    /** The update card was closed, or its Download button opened the release page: not again for this version. */
+    fun onUpdateDismissed(update: AppUpdate) {
+        viewModelScope.launch { updateRepository.dismiss(update) }
     }
 
     /**

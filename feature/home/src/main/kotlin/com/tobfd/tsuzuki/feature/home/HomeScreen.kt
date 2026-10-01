@@ -23,8 +23,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -43,6 +46,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -58,6 +63,7 @@ import com.tobfd.tsuzuki.core.designsystem.component.ProgressButton
 import com.tobfd.tsuzuki.core.designsystem.component.SectionHeader
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiPullToRefresh
+import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.preview.TsuzukiPreview
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
@@ -65,6 +71,7 @@ import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSpacing
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
 import com.tobfd.tsuzuki.core.designsystem.theme.bleedHorizontally
 import com.tobfd.tsuzuki.core.model.Activity
+import com.tobfd.tsuzuki.core.model.AppUpdate
 import com.tobfd.tsuzuki.core.model.ListEntryActions
 import com.tobfd.tsuzuki.core.model.MediaListEntry
 import com.tobfd.tsuzuki.core.model.MediaType
@@ -125,6 +132,7 @@ internal fun HomeContent(
     contentPadding: PaddingValues = PaddingValues()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
     var actionError by remember { mutableStateOf<AppError?>(null) }
@@ -184,7 +192,13 @@ internal fun HomeContent(
                 onFeedScopeSelected = viewModel::onFeedScopeSelected,
                 onToggleLike = viewModel::onToggleLike,
                 onLoadMore = viewModel::onLoadMore,
-                onRetryFeed = viewModel::onRetryFeed
+                onRetryFeed = viewModel::onRetryFeed,
+                onDownloadUpdate = { update ->
+                    // The release page opens in the browser; the app installs nothing itself.
+                    uriHandler.openUri(update.url)
+                    viewModel.onUpdateDismissed(update)
+                },
+                onDismissUpdate = viewModel::onUpdateDismissed
             )
         }
         SnackbarHost(
@@ -209,7 +223,9 @@ private fun HomeList(
     onFeedScopeSelected: (FeedScope) -> Unit,
     onToggleLike: (Activity) -> Unit,
     onLoadMore: () -> Unit,
-    onRetryFeed: () -> Unit
+    onRetryFeed: () -> Unit,
+    onDownloadUpdate: (AppUpdate) -> Unit,
+    onDismissUpdate: (AppUpdate) -> Unit
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val start = contentPadding.calculateStartPadding(layoutDirection)
@@ -241,6 +257,14 @@ private fun HomeList(
                 modifier = Modifier.bleedHorizontally(start, end),
                 verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
             ) {
+                state.update?.let { update ->
+                    UpdateCard(
+                        update = update,
+                        onDownload = { onDownloadUpdate(update) },
+                        onDismiss = { onDismissUpdate(update) },
+                        modifier = horizontal.padding(top = TsuzukiSpacing.small)
+                    )
+                }
                 if (state.inProgress.isNotEmpty()) {
                     SectionHeader(
                         title = stringResource(R.string.home_in_progress),
@@ -441,6 +465,44 @@ fun InProgressCard(entry: MediaListEntry, onClick: () -> Unit, onPlusOne: () -> 
     }
 }
 
+/** A small card about a newer release on GitHub: "Download" opens its page, the cross closes it. */
+@Composable
+private fun UpdateCard(
+    update: AppUpdate,
+    onDownload: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = TsuzukiSpacing.large, end = TsuzukiSpacing.extraSmall)
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(vertical = TsuzukiSpacing.medium)) {
+                Text(
+                    text = stringResource(R.string.home_update_title, update.version),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(text = stringResource(R.string.home_update_text), style = MaterialTheme.typography.bodyMedium)
+            }
+            TextButton(onClick = onDownload) { Text(stringResource(R.string.home_update_download)) }
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    painter = painterResource(TsuzukiIcons.Close),
+                    contentDescription = stringResource(R.string.home_update_dismiss)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun CompletedChip() {
     val colors = TsuzukiTheme.statusColors.completed
@@ -535,6 +597,18 @@ private fun FeedFooterPreview() {
             isGuest = false,
             onLoadMore = {},
             onRetry = {}
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun UpdateCardPreview() {
+    TsuzukiPreview {
+        UpdateCard(
+            update = AppUpdate("1.1.0", "https://github.com/tobfd/tsuzuki/releases/tag/v1.1.0"),
+            onDownload = {},
+            onDismiss = {}
         )
     }
 }

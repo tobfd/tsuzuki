@@ -86,7 +86,6 @@ import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
 import com.tobfd.tsuzuki.core.ui.statusColor
 import com.tobfd.tsuzuki.feature.home.InProgressCard
-import com.tobfd.tsuzuki.feature.home.InProgressCardStyle
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorActions
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorContent
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
@@ -573,7 +572,7 @@ private fun ColorChoiceSamples(colorSource: ColorSource, darkTheme: Boolean) {
 @Composable
 private fun NotificationRowSamples() {
     val now = Instant.now()
-    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    val users = listOf(UserLite(1, "Himmel", null), UserLite(2, "Eisen", null), UserLite(3, "Fern", null))
     Column {
         NotificationRow(
             entry = NotificationEntry(
@@ -616,27 +615,27 @@ private fun CoverCardSamples() {
     }
 }
 
-/** The Home In Progress card in each candidate style, side by side as in Home's row. */
+/** The Home In Progress card, side by side as in Home's row. */
 @Composable
 private fun InProgressCardSamples() {
-    val entries = listOf(
-        PreviewListEntries.frieren.copy(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)),
-        PreviewListEntries.apothecary.copy(
-            media = PreviewListEntries.apothecary.media.copy(coverUrl = APOTHECARY_COVER, coverColor = "#f1865d")
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+    ) {
+        InProgressCard(
+            entry = PreviewListEntries.frieren.copy(
+                media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)
+            ),
+            onClick = {},
+            onPlusOne = {}
         )
-    )
-    listOf(
-        InProgressCardStyle.Plain to R.string.catalog_in_progress_plain,
-        InProgressCardStyle.Tonal to R.string.catalog_in_progress_tonal,
-        InProgressCardStyle.Outlined to R.string.catalog_in_progress_outlined
-    ).forEach { (style, label) ->
-        CatalogVariantLabel(label)
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
-        ) {
-            entries.forEach { entry -> InProgressCard(entry = entry, onClick = {}, onPlusOne = {}, style = style) }
-        }
+        InProgressCard(
+            entry = PreviewListEntries.apothecary.copy(
+                media = PreviewListEntries.apothecary.media.copy(coverUrl = APOTHECARY_COVER, coverColor = "#f1865d")
+            ),
+            onClick = {},
+            onPlusOne = {}
+        )
     }
 }
 

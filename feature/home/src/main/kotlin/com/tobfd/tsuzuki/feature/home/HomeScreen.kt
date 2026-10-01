@@ -23,11 +23,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -49,7 +47,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -388,105 +385,57 @@ private fun FeedError(error: AppError, onRetry: () -> Unit) {
 }
 
 /**
- * How an In Progress card sets itself apart from the page. Home uses [Plain]; the others are
- * candidates Tobias compares in the component catalog before choosing one.
- */
-enum class InProgressCardStyle {
-    /** No container: cover, title and progress sit on the page (the current look). */
-    Plain,
-
-    /** A filled card in `surfaceContainerHighest` (M3 filled card). */
-    Tonal,
-
-    /** A card with a thin `outlineVariant` border on the page color (M3 outlined card). */
-    Outlined
-}
-
-/**
- * A card with a 144 dp cover: "EP x / y" and progress bar on the cover, title, progress and +1.
- * [style] other than [InProgressCardStyle.Plain] wraps it in an M3 card with an inner padding.
+ * A filled card (M3 filled card, `surfaceContainerHighest`) with a 144 dp cover and its progress
+ * bar, title, progress and +1. Tobias chose the filled card over a plain and an outlined one
+ * (2026-10-01) and dropped the "EP x / y" badge on the cover, which repeated the progress below.
  */
 @Composable
-fun InProgressCard(
-    entry: MediaListEntry,
-    onClick: () -> Unit,
-    onPlusOne: () -> Unit,
-    modifier: Modifier = Modifier,
-    style: InProgressCardStyle = InProgressCardStyle.Plain
-) {
-    when (style) {
-        InProgressCardStyle.Plain -> InProgressCardContent(entry, onClick, onPlusOne, modifier, padding = null)
-
-        InProgressCardStyle.Tonal -> Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
-            InProgressCardContent(entry, onClick, onPlusOne, padding = TsuzukiSpacing.small)
-        }
-
-        InProgressCardStyle.Outlined -> OutlinedCard(
-            modifier = modifier,
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-            InProgressCardContent(entry, onClick, onPlusOne, padding = TsuzukiSpacing.small)
-        }
-    }
-}
-
-/** The card's content; [padding] keeps it off the edges of a card container, null for none. */
-@Composable
-private fun InProgressCardContent(
-    entry: MediaListEntry,
-    onClick: () -> Unit,
-    onPlusOne: () -> Unit,
-    modifier: Modifier = Modifier,
-    padding: Dp?
-) {
+fun InProgressCard(entry: MediaListEntry, onClick: () -> Unit, onPlusOne: () -> Unit, modifier: Modifier = Modifier) {
     val media = entry.media
     val total = media.total
     val done = total != null && entry.progress >= total
-    Column(
-        modifier = modifier
-            .clickable(
-                onClickLabel = stringResource(com.tobfd.tsuzuki.core.ui.R.string.ui_list_edit_entry),
-                onClick = onClick
-            )
-            .then(if (padding != null) Modifier.padding(padding) else Modifier)
-            .width(TsuzukiSizes.inProgressCover.width),
-        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
-    ) {
-        MediaCover(
-            imageUrl = media.coverUrl,
-            contentDescription = null,
-            placeholderColor = coverColorOrNull(media.coverColor),
-            badge = stringResource(
-                if (media.type == MediaType.ANIME) R.string.home_badge_episode else R.string.home_badge_chapter,
-                progressText(entry.progress, total)
-            ),
-            progress = total?.let { entry.progress.toFloat() / it },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            text = media.title.userPreferred,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.height(InProgressTitleHeight)
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = progressText(entry.progress, total),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
-            )
-            if (done) {
-                CompletedChip()
-            } else if (ListEntryActions.canPlusOne(entry)) {
-                PlusOneButton(
-                    onClick = onPlusOne,
-                    dense = true,
-                    completesEntry =
-                        total != null && entry.progress + 1 >= total
+    Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
+        Column(
+            modifier = Modifier
+                .clickable(
+                    onClickLabel = stringResource(com.tobfd.tsuzuki.core.ui.R.string.ui_list_edit_entry),
+                    onClick = onClick
                 )
+                .padding(TsuzukiSpacing.small)
+                .width(TsuzukiSizes.inProgressCover.width),
+            verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
+        ) {
+            MediaCover(
+                imageUrl = media.coverUrl,
+                contentDescription = null,
+                placeholderColor = coverColorOrNull(media.coverColor),
+                progress = total?.let { entry.progress.toFloat() / it },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = media.title.userPreferred,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.height(InProgressTitleHeight)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = progressText(entry.progress, total),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
+                )
+                if (done) {
+                    CompletedChip()
+                } else if (ListEntryActions.canPlusOne(entry)) {
+                    PlusOneButton(
+                        onClick = onPlusOne,
+                        dense = true,
+                        completesEntry =
+                            total != null && entry.progress + 1 >= total
+                    )
+                }
             }
         }
     }
@@ -592,12 +541,11 @@ private fun FeedFooterPreview() {
 
 @ThemePreviews
 @Composable
-private fun InProgressCardStylesPreview() {
+private fun InProgressCardPreview() {
     TsuzukiPreview {
         Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
-            InProgressCardStyle.entries.forEach { style ->
-                InProgressCard(entry = PreviewListEntries.frieren, onClick = {}, onPlusOne = {}, style = style)
-            }
+            InProgressCard(entry = PreviewListEntries.frieren, onClick = {}, onPlusOne = {})
+            InProgressCard(entry = PreviewListEntries.onePiece, onClick = {}, onPlusOne = {})
         }
     }
 }

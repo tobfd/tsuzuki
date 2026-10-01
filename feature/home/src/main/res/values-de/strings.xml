@@ -10,8 +10,6 @@
     <string name="home_feed_empty_global">Gerade keine Aktivitäten.</string>
     <string name="home_retry">Erneut versuchen</string>
     <string name="home_load_more">Mehr laden</string>
-    <string name="home_badge_episode">F. %1$s</string>
-    <string name="home_badge_chapter">K. %1$s</string>
     <string name="home_completed_chip">Fertig</string>
     <string name="home_completed_anime">%1$s als gesehen markiert</string>
     <string name="home_completed_manga">%1$s als gelesen markiert</string>

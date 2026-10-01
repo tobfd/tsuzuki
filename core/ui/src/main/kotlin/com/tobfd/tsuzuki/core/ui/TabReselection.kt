@@ -52,8 +52,12 @@ fun ScrollToTopOnTabReselect(gridState: LazyStaggeredGridState) = ScrollToTopOnT
     gridState.animateScrollToItem(0)
 }
 
+/**
+ * Runs [scrollToTop] whenever the current tab is reselected. With swipeable pages only the visible
+ * page may call this: the first caller handles the request.
+ */
 @Composable
-private fun ScrollToTopOnTabReselect(key: Any, scrollToTop: suspend () -> Unit) {
+fun ScrollToTopOnTabReselect(key: Any, scrollToTop: suspend () -> Unit) {
     val request = LocalScrollToTopRequest.current ?: return
     LaunchedEffect(request, key) {
         request.isPending.collect { pending ->

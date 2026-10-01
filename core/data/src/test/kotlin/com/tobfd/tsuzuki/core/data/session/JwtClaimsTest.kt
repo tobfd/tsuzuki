@@ -14,7 +14,7 @@ class JwtClaimsTest {
 
     @Test
     fun aniListToken_yieldsSubjectAndExpiry() {
-        val claims = JwtClaims.parse(jwt("""{"aud":"52236","sub":"123456","exp":1790000000.123,"scopes":[]}"""))
+        val claims = JwtClaims.parse(jwt("""{"aud":"12345","sub":"123456","exp":1790000000.123,"scopes":[]}"""))
         assertEquals(JwtClaims(subject = "123456", expiresAt = Instant.ofEpochSecond(1_790_000_000)), claims)
     }
 

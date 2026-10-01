@@ -67,7 +67,7 @@ internal class NotificationsPagingSource(
     private val filter: NotificationFilter,
     private val visit: NotificationVisit,
     /** Called once AniList has reset the unread count. */
-    private val onReset: () -> Unit
+    private val onReset: suspend () -> Unit
 ) : PagingSource<Int, NotificationEntry>() {
 
     private val seen: MutableSet<Int> = Collections.synchronizedSet(mutableSetOf())

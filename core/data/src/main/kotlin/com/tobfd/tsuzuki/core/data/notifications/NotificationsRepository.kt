@@ -1,6 +1,7 @@
 package com.tobfd.tsuzuki.core.data.notifications
 
 import androidx.paging.PagingData
+import com.tobfd.tsuzuki.core.model.Notification
 import com.tobfd.tsuzuki.core.model.NotificationEntry
 import com.tobfd.tsuzuki.core.model.NotificationFilter
 import kotlinx.coroutines.flow.Flow
@@ -28,4 +29,16 @@ interface NotificationsRepository {
 
     /** "Mark all as read": resets the unread count on AniList (one request) and sets [unreadCount] to 0. */
     suspend fun markAllRead(): Result<Unit>
+
+    /**
+     * For the Android notifications: AniList's unread count, fresh from the network (one small request).
+     * Also updates [unreadCount]; unlike [refreshUnreadCount] it reports failures.
+     */
+    suspend fun fetchUnreadCount(): Result<Int>
+
+    /**
+     * For the Android notifications: the newest page of notifications of every type, newest first, without
+     * resetting the unread count (one request). Consecutive likes on the same activity come as one entry.
+     */
+    suspend fun newestNotifications(): Result<List<Notification>>
 }

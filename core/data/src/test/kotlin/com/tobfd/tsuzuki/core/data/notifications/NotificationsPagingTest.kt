@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.core.data.notifications
 
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.paging.testing.asSnapshot
 import com.apollographql.apollo.api.Optional
 import com.tobfd.tsuzuki.core.common.AppError
@@ -8,6 +9,7 @@ import com.tobfd.tsuzuki.core.data.TestApollo
 import com.tobfd.tsuzuki.core.data.list.enqueueJson
 import com.tobfd.tsuzuki.core.data.list.enqueueOffline
 import com.tobfd.tsuzuki.core.data.requestVariables
+import com.tobfd.tsuzuki.core.datastore.AlertStateStore
 import com.tobfd.tsuzuki.core.model.ActivityNotificationKind
 import com.tobfd.tsuzuki.core.model.ListActivitySummary
 import com.tobfd.tsuzuki.core.model.MediaNotificationKind
@@ -16,6 +18,7 @@ import com.tobfd.tsuzuki.core.model.NotificationFilter
 import com.tobfd.tsuzuki.core.network.MarkNotificationsReadQuery
 import com.tobfd.tsuzuki.core.network.NotificationsQuery
 import com.tobfd.tsuzuki.core.network.UnreadNotificationCountQuery
+import com.tobfd.tsuzuki.core.testing.InMemoryDataStore
 import java.time.Instant
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -74,7 +77,8 @@ class NotificationsPagingTest {
 
     private val apollo = TestApollo()
     private val clock = MutableClock(Instant.parse("2026-09-30T12:00:00Z"))
-    private val repository = DefaultNotificationsRepository(apollo.client, clock)
+    private val alertStateStore = AlertStateStore(InMemoryDataStore(emptyPreferences()))
+    private val repository = DefaultNotificationsRepository(apollo.client, clock, alertStateStore)
 
     @After
     fun tearDown() = apollo.client.close()

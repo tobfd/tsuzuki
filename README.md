@@ -2,12 +2,10 @@
   <img src="docs/images/banner.png" alt="Tsuzuki for AniList: keep track of what comes next" width="100%">
 </p>
 
-<p align="center">
-  <a href="https://github.com/tobfd/tsuzuki/releases/latest"><img src="https://img.shields.io/github/v/release/tobfd/tsuzuki?label=download" alt="Latest release"></a>
-  <a href="https://github.com/tobfd/tsuzuki/actions/workflows/ci.yml"><img src="https://github.com/tobfd/tsuzuki/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
-  <img src="https://img.shields.io/badge/Android-12%2B-3DB4F2" alt="Android 12+">
-</p>
+[![Release](https://img.shields.io/github/v/release/tobfd/tsuzuki?style=for-the-badge&label=release)](https://github.com/tobfd/tsuzuki/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/tobfd/tsuzuki/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/tobfd/tsuzuki/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/tobfd/tsuzuki?style=for-the-badge)](LICENSE)
+[![Min SDK](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Ftobfd%2Ftsuzuki%2Fmain%2Fgradle%2Flibs.versions.toml&query=%24.versions.minSdk&label=Min%20SDK&prefix=API%20&color=3DB4F2&style=for-the-badge)](gradle/libs.versions.toml)
 
 **Tsuzuki** (続き, "what comes next") is a native Android client for [AniList](https://anilist.co): your anime and manga lists, what you are watching right now and what comes next, built with Jetpack Compose and Material 3.
 
@@ -27,9 +25,27 @@
 - **Notifications** for new episodes and AniList activity, switchable per kind in Android's settings.
 - **Material You or AniList blue**, light, dark and pure black, tablets and foldables, English and German.
 
+## Tech stack
+
+| Area | What |
+|---|---|
+| Language | Kotlin (K2), Coroutines and Flow, kotlinx.serialization, kotlinx.collections.immutable |
+| UI | Jetpack Compose, Material 3, `material3-adaptive` and the navigation suite, splash screen API, Google Sans Flex, Material Symbols |
+| Navigation | Navigation 3: a back stack per tab, list-detail scenes on large screens, predictive back (`navigationevent`) |
+| Network | Apollo Kotlin 5 with the normalized cache (memory + SQLite), OkHttp with auth and rate-limit interceptors; a separate plain OkHttp client for the GitHub update check |
+| Login | AniList OAuth (implicit grant) in a Custom Tab (`androidx.browser`) |
+| Paging | Paging 3 (search results, notifications) |
+| Local data | Room 3 with the framework SQLite driver (offline lists and the queue of pending changes), DataStore, Tink with an Android Keystore key for the token |
+| Background | WorkManager with Hilt workers (sends queued changes, syncs lists, updates widgets, checks AniList notifications); AlarmManager for new-episode notifications |
+| Widgets | Jetpack Glance |
+| Images | Coil 3 (OkHttp network) |
+| DI | Hilt (KSP) |
+| Build | Gradle version catalog, convention plugins in `build-logic`, KSP, Spotless + ktlint, Android lint, R8 full mode, Baseline Profiles |
+| Tests | JUnit 4, kotlinx-coroutines-test, Turbine, Robolectric, Room and Paging testing, Apollo test transport, hand-written fakes, Compose UI tests, Macrobenchmark with UI Automator |
+
 ## Download
 
-Get the APK from the [latest release](https://github.com/tobfd/tsuzuki/releases/latest) (Android 12 or newer).
+Get the APK from the [latest release](https://github.com/tobfd/tsuzuki/releases/latest) (Android 12 or newer). The app tells you on Home when a newer release is out; Settings > About checks by hand or turns that off.
 
 ## Build from source
 

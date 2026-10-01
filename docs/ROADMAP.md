@@ -249,4 +249,6 @@ Asked for by Tobias on 2026-10-01.
 - [x] Slim README: banner, one sentence, a row of four screenshots, short features, download link (GitHub Releases), build from source, disclaimer, license.
 - [x] Release workflow: a `v*` tag builds a signed release APK (version from the tag, keystore and client ID from GitHub secrets) and attaches it to a GitHub release with generated notes (`docs/RELEASING.md`).
 - [x] Dependabot for Gradle and GitHub Actions, weekly, grouped.
+- [x] README: shields.io badges in Markdown (`for-the-badge`; release, CI, license, Min SDK read from the version catalog, where the SDK levels now live), tech stack checked against the catalog and the code.
+- [x] Update check against GitHub Releases: at most once a day at app start (not in debug builds), a card on Home with Download (browser), Settings > About with a manual check and the automatic switch, off with `-Ptsuzuki.updateCheck=false` (docs/RELEASING.md).
 - [ ] First release v1.0.0 (Tobias: keystore, secrets, tag).

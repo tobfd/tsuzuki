@@ -37,7 +37,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 - **Ask Tobias first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches his AniList account in bulk (mass edits, deletes).
 - **Keep docs true.** When a decision or behavior changes, update the matching doc in the same PR. Tick roadmap boxes in the PR that finishes them.
 - **Licenses screen:** a new runtime dependency (or a new transitive one in `./gradlew :app:dependencies --configuration releaseRuntimeClasspath`) goes into `OpenSourceLibraries` in `feature/settings` (`LicensesScreen.kt`), with its license text in the assets if the license is new.
-- **Releases:** pushing a tag `v1.2.3` builds the signed APK and the GitHub release (`docs/RELEASING.md`). The version comes from the tag; signing only from GitHub secrets, never a keystore in the repo. Dependabot opens one grouped update PR per week for Gradle and for GitHub Actions; review it like any PR (stable versions only).
+- **Releases:** pushing a tag `v1.2.3` builds the signed APK and the GitHub release (`docs/RELEASING.md`). The app's update check (`core/data/update`) asks GitHub with its own plain OkHttp client: never give it the AniList client or any interceptor, the token must not reach GitHub (`GitHubClientTest`). The version comes from the tag; signing only from GitHub secrets, never a keystore in the repo. Dependabot opens one grouped update PR per week for Gradle and for GitHub Actions; review it like any PR (stable versions only).
 - **No secrets in git.** The AniList client ID goes in `local.properties` (`anilist.clientId=...`) and reaches code via `BuildConfig`. Never log or print the access token.
 
 ## Commands

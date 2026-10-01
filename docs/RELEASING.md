@@ -36,3 +36,14 @@ git push origin v1.0.0
 The run shows up under Actions > Release; the APK appears under Releases as `tsuzuki-v1.0.0.apk`. A failed run can be repeated by deleting the tag (`git push --delete origin v1.0.0`, `git tag -d v1.0.0`) and pushing it again.
 
 Signing locally works the same way: set `TSUZUKI_KEYSTORE_FILE`, `TSUZUKI_KEYSTORE_PASSWORD`, `TSUZUKI_KEY_ALIAS` and `TSUZUKI_KEY_PASSWORD` and run `./gradlew :app:assembleRelease --no-configuration-cache`.
+
+## Update check in the app
+
+The app asks GitHub for the newest release (`GET https://api.github.com/repos/tobfd/tsuzuki/releases/latest`, unauthenticated) and compares its tag with its own `versionName` (`core/data/update`).
+
+- Automatically at most once a day when the app starts (the last check is stored in DataStore), never in debug builds, and only with "Check for updates automatically" on (Settings > About, on by default). Settings > About also checks by hand and shows "Up to date" or "vX.Y.Z available".
+- A newer release shows a small card on Home with "Download", which opens the release page in the browser. The app installs nothing and needs no extra permission. Closing the card or using it hides it for that version.
+- Drafts, pre-releases and tags that aren't `vX.Y.Z` are ignored; errors and a 404 (no release yet) stay silent.
+- The request uses its own OkHttp client without any interceptor, so the AniList token can never be sent to GitHub (`GitHubClientTest`).
+- A build for a store turns it off with `-Ptsuzuki.updateCheck=false` (`BuildConfig.UPDATE_CHECK`): no card, no settings rows, no request.
+

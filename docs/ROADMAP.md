@@ -142,7 +142,7 @@ Before M0, Tobias does two things by hand:
 - [x] Top bar on own profile: bell and settings. (The Profile tab shows settings and the bell instead of the avatar.)
 - [x] Other users' lists (added by Tobias, 2026-09-30): "Anime list" / "Manga list" on other profiles open the Lists view read only (`UserListRoute`): `MediaListCollection` by user id, status and custom tabs, sort, search, no +1 or editor, tap → detail. Kept in the Apollo cache only, never in Room. Private lists ("Private User", status 404) show their own state. (Chunks of 500 are loaded one after the other when the list opens, at most 10.)
 
-**Done when:** Tobias's and GeckoTV's profiles render correctly.
+**Done when:** Tobias's profile and a friend's render correctly.
 
 ## Tablet · Adaptive layouts (added by Tobias, 2026-09-30)
 

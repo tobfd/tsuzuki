@@ -175,7 +175,7 @@ private fun template(id: Int, vararg parts: AnnotatedString): AnnotatedString {
     return fillTemplate(stringResource(id, *markers), *parts)
 }
 
-/** "**KiichiVS**, **Mathou** and 3 others liked your activity", "Episode 18 of **Frieren** aired". */
+/** "**Himmel**, **Eisen** and 3 others liked your activity", "Episode 18 of **Frieren** aired". */
 @Composable
 internal fun notificationText(notification: Notification): AnnotatedString = when (notification) {
     is Notification.Airing -> template(
@@ -279,7 +279,7 @@ private fun untitledListActivitySubline(summary: ListActivitySummary): String? {
 @Composable
 private fun NotificationRowPreview() {
     val now = Instant.now()
-    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    val users = listOf(UserLite(1, "Himmel", null), UserLite(2, "Eisen", null), UserLite(3, "Fern", null))
     val summary = ListActivitySummary("watched episode", "17 - 18", 154587, "Frieren")
     TsuzukiPreview {
         Column {

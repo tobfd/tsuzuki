@@ -56,7 +56,7 @@ private fun airingJson(id: Int, episode: Int?, airingAt: Long?, status: String =
 }
 
 private const val USER_JSON =
-    """{"__typename":"User","id":7,"name":"GeckoTV","avatar":{"__typename":"UserAvatar","medium":"https://img/u7.png"}}"""
+    """{"__typename":"User","id":7,"name":"Fern","avatar":{"__typename":"UserAvatar","medium":"https://img/u7.png"}}"""
 
 private fun listActivityJson(id: Int) = """
     {"__typename":"ListActivity","id":$id,"status":"watched episode","progress":"5","createdAt":${1_700_000_000 + id},
@@ -183,7 +183,7 @@ class WidgetRepositoriesTest {
         assertEquals(NOW.toEpochMilli(), feed.fetchedAt?.toEpochMilli())
         assertEquals((20 downTo 11).toList(), feed.activities.map { it.id })
         val first = feed.activities.first() as Activity.ListUpdate
-        assertEquals("GeckoTV", first.user.name)
+        assertEquals("Fern", first.user.name)
         assertEquals("Sousou no Frieren", first.media.title.userPreferred)
         assertEquals("5", first.progress)
     }

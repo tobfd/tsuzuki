@@ -889,7 +889,7 @@ private fun ProfileContentPreview() {
                 followList = FollowList.Following,
                 followLists = mapOf(
                     FollowList.Following to FollowListState.Loaded(
-                        ContentPage(listOf(FollowUser(UserLite(9, "GeckoTV", null), true)), false)
+                        ContentPage(listOf(FollowUser(UserLite(9, "Fern", null), true)), false)
                     )
                 ),
                 today = LocalDate.of(2026, 9, 30)

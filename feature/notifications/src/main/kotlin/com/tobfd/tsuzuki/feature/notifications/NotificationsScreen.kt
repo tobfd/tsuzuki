@@ -372,7 +372,7 @@ private fun NotificationSection.labelRes(): Int = when (this) {
 @Composable
 private fun NotificationsContentPreview() {
     val now = Instant.now()
-    val users = listOf(UserLite(1, "KiichiVS", null), UserLite(2, "Mathou", null), UserLite(3, "GeckoTV", null))
+    val users = listOf(UserLite(1, "Himmel", null), UserLite(2, "Eisen", null), UserLite(3, "Fern", null))
     val items = listOf(
         NotificationListItem.Header(NotificationSection.ThisWeek),
         NotificationListItem.Row(

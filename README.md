@@ -64,4 +64,8 @@ Tsuzuki is an unofficial app and not affiliated with, endorsed or sponsored by A
 
 ## License
 
-[GNU General Public License v3.0](LICENSE). Third-party licenses are listed in the app under Settings > About > Open-source licenses.
+Copyright (C) 2026 Tobias Schmitt
+
+Tsuzuki is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License](LICENSE) for more details.
+
+Third-party licenses are listed in the app under Settings > About > Open-source licenses.

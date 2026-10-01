@@ -20,13 +20,11 @@ import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
 import java.util.Locale
 import javax.inject.Inject
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -58,11 +56,10 @@ sealed interface NotificationsEvent {
 }
 
 /**
- * The notifications screen (docs/ROADMAP.md, M10): one request per page of the chosen filter. Opening the
+ * The notifications screen (docs/ROADMAP.md, M10): one request per page of each filter that is shown. Opening the
  * screen resets the badge; the notifications that were unread at that moment stay highlighted until the
  * screen closes or "Mark all as read" is tapped.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val repository: NotificationsRepository,
@@ -76,15 +73,20 @@ class NotificationsViewModel @Inject constructor(
     private val events = Channel<NotificationsEvent>(Channel.BUFFERED)
     val eventFlow: Flow<NotificationsEvent> = events.receiveAsFlow()
 
-    private val filter = MutableStateFlow(NotificationFilter.All)
+    private val pages = mutableMapOf<NotificationFilter, Flow<PagingData<NotificationListItem>>>()
 
-    val notifications: Flow<PagingData<NotificationListItem>> = filter
-        .flatMapLatest { filter -> repository.notifications(filter, visit) }
-        .map { page -> page.withSections(today(), clock.zone) }
-        .cachedIn(viewModelScope)
+    /**
+     * The notifications of [filter], one request per page. Each filter's page of the swipeable list asks
+     * for its flow when it first shows, so filters nobody swipes to load nothing; a flow is kept for the
+     * visit, so swiping back doesn't load again.
+     */
+    fun notifications(filter: NotificationFilter): Flow<PagingData<NotificationListItem>> = pages.getOrPut(filter) {
+        repository.notifications(filter, visit)
+            .map { page -> page.withSections(today(), clock.zone) }
+            .cachedIn(viewModelScope)
+    }
 
     fun onFilterChange(value: NotificationFilter) {
-        filter.value = value
         state.update { it.copy(filter = value) }
     }
 

@@ -72,7 +72,6 @@ import com.tobfd.tsuzuki.core.model.ScoreFormat
 import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.ui.ActivityCard
 import com.tobfd.tsuzuki.core.ui.ActivityHeatmap
-import com.tobfd.tsuzuki.core.ui.HEATMAP_WEEKS
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
 import com.tobfd.tsuzuki.core.ui.MediaListRow
@@ -634,7 +633,8 @@ private fun PersonCardSamples() {
 private fun HeatmapSample() {
     val today = LocalDate.of(2026, 9, 30)
     ActivityHeatmap(
-        days = (0 until HEATMAP_WEEKS * 7 step 2).map { ActivityDay(today.minusDays(it.toLong()), it % 9) },
+        // About half a year, like AniList keeps.
+        days = (0 until 185 step 2).map { ActivityDay(today.minusDays(it.toLong()), it % 9) },
         today = today
     )
 }

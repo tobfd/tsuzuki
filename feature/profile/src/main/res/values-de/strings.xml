@@ -24,9 +24,9 @@
     <string name="profile_favourites_anime">Anime</string>
     <string name="profile_favourites_manga">Manga</string>
     <string name="profile_favourites_characters">Figuren</string>
-    <string name="profile_favourites_staff">Staff</string>
+    <string name="profile_favourites_staff">Mitwirkende</string>
     <string name="profile_no_favourites_title">Noch keine Favoriten</string>
-    <string name="profile_no_favourites_message">Tippe auf das Herz auf einer Anime-, Manga-, Figuren- oder Staff-Seite.</string>
+    <string name="profile_no_favourites_message">Tippe auf das Herz auf einer Anime-, Manga-, Figuren- oder Mitwirkenden-Seite.</string>
     <string name="profile_stats_anime">Anime</string>
     <string name="profile_stats_manga">Manga</string>
     <string name="profile_stats_count">Gesamt</string>

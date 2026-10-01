@@ -105,13 +105,16 @@ fun ActivityCard(
                 ActivityFooter(activity, onLikeClick)
             }
             if (activity is Activity.ListUpdate) {
+                // A second way to the media; TalkBack names it by its title (M12 accessibility pass).
                 MediaCover(
                     imageUrl = activity.media.coverUrl,
-                    contentDescription = null,
+                    contentDescription = activity.media.title.userPreferred,
                     placeholderColor = coverColorOrNull(activity.media.coverColor),
                     modifier = Modifier
                         .width(TsuzukiSizes.listThumbnail.width - 8.dp)
-                        .clickable { onMediaClick(activity.media.id) }
+                        .clickable(onClickLabel = stringResource(R.string.ui_open_details)) {
+                            onMediaClick(activity.media.id)
+                        }
                 )
             }
         }

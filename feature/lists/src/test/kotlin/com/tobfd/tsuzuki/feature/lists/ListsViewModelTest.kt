@@ -65,6 +65,17 @@ class ListsViewModelTest {
     }
 
     @Test
+    fun everyTab_hasItsRowsReadyForSwiping() = runTest {
+        val state = state(viewModel())
+
+        assertEquals(state.tabs.size, state.tabRows.size)
+        val byTab = state.tabs.map { it.key }.zip(state.tabRows).toMap()
+        assertEquals(listOf(2, frieren.id), byTab.getValue(ListTabKey.Status(MediaListStatus.CURRENT)).map { it.id })
+        assertEquals(listOf(planned.id), byTab.getValue(ListTabKey.Status(MediaListStatus.PLANNING)).map { it.id })
+        assertTrue(byTab.getValue(ListTabKey.Status(MediaListStatus.DROPPED)).isEmpty())
+    }
+
+    @Test
     fun switchingToManga_showsTheMangaListFromItsFirstTab() = runTest {
         val viewModel = viewModel()
         viewModel.onTabSelected(ListTabKey.Status(MediaListStatus.PLANNING))

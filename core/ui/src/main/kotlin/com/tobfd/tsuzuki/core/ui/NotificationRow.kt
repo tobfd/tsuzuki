@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -60,10 +61,11 @@ fun NotificationRow(entry: NotificationEntry, onClick: () -> Unit, modifier: Mod
     val notification = entry.notification
     val unreadLabel = stringResource(R.string.ui_notification_unread)
     val colors = MaterialTheme.colorScheme
+    val background = if (entry.isUnread) colors.surfaceContainerHigh else colors.surface
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(if (entry.isUnread) colors.surfaceContainerHigh else colors.surface)
+            .background(background)
             .clickable(onClick = onClick)
             .semantics(mergeDescendants = true) {}
             .heightIn(min = TsuzukiSizes.minTouchTarget)
@@ -71,8 +73,9 @@ fun NotificationRow(entry: NotificationEntry, onClick: () -> Unit, modifier: Mod
         horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium),
         verticalAlignment = Alignment.Top
     ) {
-        Box(modifier = Modifier.width(TsuzukiSizes.notificationLeading)) {
-            NotificationLeading(notification)
+        // Covers and avatars centred in the leading column, so rows line up whatever they start with.
+        Box(modifier = Modifier.width(TsuzukiSizes.notificationLeading), contentAlignment = Alignment.TopCenter) {
+            NotificationLeading(notification, background)
         }
         Column(
             modifier = Modifier.weight(1f),
@@ -107,13 +110,13 @@ fun NotificationRow(entry: NotificationEntry, onClick: () -> Unit, modifier: Mod
 }
 
 @Composable
-private fun NotificationLeading(notification: Notification) {
+private fun NotificationLeading(notification: Notification, background: Color) {
     when (notification) {
         is Notification.Airing -> NotificationCover(notification.media.coverUrl, notification.media.coverColor)
 
-        is Notification.Follow -> AvatarStack(listOf(notification.user))
+        is Notification.Follow -> AvatarStack(listOf(notification.user), background)
 
-        is Notification.ActivityEvent -> AvatarStack(notification.users)
+        is Notification.ActivityEvent -> AvatarStack(notification.users, background)
 
         is Notification.MediaEvent -> {
             val media = notification.media
@@ -141,9 +144,12 @@ private fun NotificationCover(url: String?, color: String?) {
     )
 }
 
-/** Up to three avatars, each [TsuzukiSizes.notificationAvatarOffset] right of the one before. */
+/**
+ * Up to three avatars, each [TsuzukiSizes.notificationAvatarOffset] right of the one before, ringed in
+ * the row's [background] so the overlap reads on unread (tinted) rows too.
+ */
 @Composable
-private fun AvatarStack(users: List<UserLite>) {
+private fun AvatarStack(users: List<UserLite>, background: Color) {
     Box {
         users.take(MAX_STACKED_AVATARS).forEachIndexed { index, user ->
             UserAvatar(
@@ -152,7 +158,7 @@ private fun AvatarStack(users: List<UserLite>) {
                 size = TsuzukiSizes.notificationAvatar,
                 modifier = Modifier
                     .padding(start = TsuzukiSizes.notificationAvatarOffset * index)
-                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                    .border(2.dp, background, CircleShape)
             )
         }
     }

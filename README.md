@@ -37,7 +37,7 @@ An unofficial, native Android client for [AniList](https://anilist.co), built wi
 - `build-logic`: Gradle convention plugins (`tsuzuki.android.application`, `tsuzuki.android.library`, `tsuzuki.android.compose`, `tsuzuki.android.feature`, `tsuzuki.hilt`, `tsuzuki.room`, `tsuzuki.jvm.library`). New modules apply these instead of configuring Android, Kotlin, Compose, Hilt or Room themselves.
 - `gradle/libs.versions.toml`: every dependency and plugin version.
 - `core/model` (plain Kotlin models), `core/common` (`AppError`, dispatchers), `core/network` (Apollo, AniList schema and operations, auth and rate-limit interceptors), `core/datastore` (encrypted token and session), `core/data` (repositories), `core/designsystem` (theme, tokens, icons, base components), `core/ui` (shared composables that know the models, e.g. `MediaCover`, `ScoreText`), `core/testing` (fakes and test rules), and one module per feature under `feature/` (auth, home, lists, browse, media, people, profile, notifications, settings; most still show placeholders). Navigation is wired in `app` (see `CLAUDE.md`, "Navigation").
-- Debug builds add a second launcher entry, **Tsuzuki Catalog**, with every design system component in both color sources, light and dark.
+- Debug builds contain a component catalog with every design system component in both color sources, light and dark: tap the version in Settings > About 7 times. Release builds don't contain it.
 
 ## CI
 

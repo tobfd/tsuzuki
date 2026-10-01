@@ -38,6 +38,8 @@ data class ListsUiState(
     val tabs: ImmutableList<ListTab> = persistentListOf(),
     val selectedTab: ListTabKey = ListTabKey.Status(MediaListStatus.CURRENT),
     val rows: ImmutableList<MediaListEntry> = persistentListOf(),
+    /** The rows of every tab, in [tabs] order, for the swipeable pages (search uses [rows]). */
+    val tabRows: ImmutableList<ImmutableList<MediaListEntry>> = persistentListOf(),
     val sort: ListSort = ListSort.LastUpdated,
     val searchActive: Boolean = false,
     val query: String = "",
@@ -119,6 +121,9 @@ class ListsViewModel @Inject constructor(
                 tabs = tabs.toImmutableList(),
                 selectedTab = selected,
                 rows = rowsOf(list, selected, query, filters.sort, Locale.getDefault()).toImmutableList(),
+                // Local data from Room: every tab is ready, so swiping never waits.
+                tabRows = tabs.map { rowsOf(list, it.key, "", filters.sort, Locale.getDefault()).toImmutableList() }
+                    .toImmutableList(),
                 sort = filters.sort,
                 searchActive = filters.searchActive,
                 query = filters.query,

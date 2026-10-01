@@ -64,7 +64,7 @@
     <string name="ui_spoiler">Spoiler</string>
     <string name="ui_show_spoilers">Spoiler zeigen</string>
     <string name="ui_hide_spoilers">Spoiler ausblenden</string>
-    <string name="ui_read_more">Mehr lesen</string>
+    <string name="ui_read_more">Weiterlesen</string>
     <string name="ui_read_less">Weniger zeigen</string>
     <string name="ui_season_winter">Winter</string>
     <string name="ui_season_spring">Frühling</string>
@@ -72,7 +72,7 @@
     <string name="ui_season_fall">Herbst</string>
     <string name="ui_role_main">Hauptrolle</string>
     <string name="ui_role_supporting">Nebenrolle</string>
-    <string name="ui_role_background">Hintergrund</string>
+    <string name="ui_role_background">Statist</string>
     <string name="ui_average_score">%1$d %%</string>
     <string name="ui_image_link">[Bild]</string>
     <plurals name="ui_heatmap_description">

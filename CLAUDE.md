@@ -45,6 +45,8 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 ./gradlew spotlessCheck                 # ktlint formatting check (spotlessApply fixes)
 ./gradlew build                         # everything above except connected tests
 ./gradlew :core:network:downloadAnilistApolloSchemaFromIntrospection   # refresh the AniList schema (M2)
+ANDROID_SERIAL=emulator-5554 ./gradlew :app:generateBaselineProfile     # regenerate the Baseline Profile (M12)
+ANDROID_SERIAL=emulator-5554 ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest  # startup + scroll benchmarks
 ```
 
 ## Tech stack
@@ -69,6 +71,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Splash | `androidx.core:core-splashscreen` | |
 | Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
+| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profiles live in `app/src/release/generated/baselineProfiles` (`baseline-prof.txt` from the whole guest journey, `startup-prof.txt` from the cold start only; marked `linguist-generated` in `.gitattributes`); regenerate them after big UI changes, with network on the emulator. Release builds use R8 full mode (`app/proguard-rules.pro`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on Tobias's phone. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture
@@ -88,6 +91,7 @@ Create modules when the milestone that needs them starts; don't scaffold empty o
 ```
 app                     MainActivity, Application, app-level nav graph, NavigationSuiteScaffold shell
 build-logic             convention plugins (android library, compose, feature, hilt, room)
+baselineprofile         Baseline Profile generator and macrobenchmarks (com.android.test, since M12)
 core/model              plain Kotlin models used across the app (Media, MediaListEntry, User, ScoreFormat, ...)
 core/common             dispatchers, Result/AppError, time utils (no Android UI)
 core/network            Apollo client, .graphql files, interceptors (auth, rate limit), error mapping, schema
@@ -169,9 +173,10 @@ Details in `docs/ANILIST_API.md`. The short version:
 - Material 3 components first; custom components only when M3 has nothing (the +1 button and the cover card are custom). Build them in `core/designsystem` / `core/ui`, never inline in a feature.
 - **All colors, type, shapes and spacing come from the theme** (`MaterialTheme.colorScheme`, `MaterialTheme.typography`, `MaterialTheme.shapes`, `TsuzukiTheme.statusColors`, `TsuzukiSpacing`, `TsuzukiSizes`). No hex values or raw `dp` numbers for spacing in features.
 - Icons: Material Symbols Rounded vector drawables through `TsuzukiIcons` in `core/designsystem` (no `material-icons-extended`). New icons are added there.
-- Every component has previews: `@ThemePreviews` (light + dark) around `TsuzukiPreview { }` (both color sources). The debug-only component catalog (`app/src/debug`, launcher entry "Tsuzuki Catalog") shows every component in all four theme combinations; add new components to it.
+- Every component has previews: `@ThemePreviews` (light + dark) around `TsuzukiPreview { }` (both color sources). The debug-only component catalog (`app/src/debug`, opened by tapping the version in Settings > About 7 times; release builds don't contain it) shows every component in all four theme combinations; add new components to it.
 - Default theme: dynamic color (`dynamicLightColorScheme` / `dynamicDarkColorScheme`). Setting "AniList blue" switches to the schemes in `design/tokens.json`. Theme mode: system / light / dark.
 - Edge-to-edge everywhere (`enableEdgeToEdge()`), correct `WindowInsets` padding, predictive back enabled (`android:enableOnBackInvokedCallback="true"`).
+- Tabs at the top of a screen are swipeable (since M12): `rememberTabPagerState` + `PagerTabRow` + `TabPager` in `core/designsystem`. The indicator follows the finger, each page keeps its scroll position (saveable state per page key), and pages that load from the network compose only when visible or swiped into view; Room-backed pages keep their neighbours ready. With swipeable pages only the visible page calls `ScrollToTopOnTabReselect`. The detail page keeps its anchor tabs.
 - Adaptive: `NavigationSuiteScaffold` (bottom bar on phones, rail on larger widths); list-detail (Lists → Detail, Browse → Detail) shows two panes on expanded widths. Never lock orientation.
 - Every screen: loading, content, empty and error states; previews for light + dark and both color schemes where color matters.
 - Accessibility: content descriptions for icon-only buttons, 48 dp minimum touch targets, text scales up to 200 % without clipping, TalkBack reads list rows as one item with actions (`semantics(mergeDescendants = true)` + custom actions for +1).

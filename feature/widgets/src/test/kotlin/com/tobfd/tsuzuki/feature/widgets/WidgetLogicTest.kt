@@ -101,6 +101,13 @@ class WidgetLogicTest {
     }
 
     @Test
+    fun listRows_countWholeRowsAndShrinkWithLargeFonts() {
+        assertEquals(2, WidgetSizes.listRows(DpSize(400.dp, 251.dp), footer = false))
+        assertEquals(1, WidgetSizes.listRows(DpSize(400.dp, 251.dp), footer = false, fontScale = 2f))
+        assertEquals(1, WidgetSizes.listRows(DpSize(400.dp, 80.dp), footer = true))
+    }
+
+    @Test
     fun layout_followsTheSizeTheLauncherGives() {
         assertEquals(WidgetLayout.Row, WidgetLayout.of(DpSize(250.dp, 60.dp)))
         assertEquals(WidgetLayout.Single, WidgetLayout.of(DpSize(130.dp, 130.dp)))

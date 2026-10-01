@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="people_character_title">Figur</string>
-    <string name="people_staff_title">Staff</string>
+    <string name="people_staff_title">Mitwirkende</string>
     <string name="people_error_title">Seite konnte nicht geladen werden</string>
     <string name="people_favourite">Zu Favoriten hinzufügen</string>
     <string name="people_unfavourite">Aus Favoriten entfernen</string>

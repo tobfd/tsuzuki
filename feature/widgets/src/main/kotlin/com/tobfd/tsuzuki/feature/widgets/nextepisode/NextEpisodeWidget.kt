@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.text.format.DateFormat
+import android.util.TypedValue
 import android.widget.RemoteViews
 import androidx.annotation.LayoutRes
 import androidx.compose.runtime.Composable
@@ -182,7 +183,9 @@ internal fun NextEpisodeContent(render: NextEpisodeRender, problem: RefreshProbl
                         // Not a LazyColumn: chronometers in widget collections don't tick. The list
                         // shows as many rows as fit instead of scrolling.
                         Column(modifier = GlanceModifier.defaultWeight()) {
-                            state.items.take(WidgetSizes.listRows(size, footer = problem != null)).forEach { item ->
+                            state.items.take(
+                                WidgetSizes.listRows(size, problem != null, textScale(context))
+                            ).forEach { item ->
                                 Column(modifier = GlanceModifier.padding(bottom = TsuzukiSpacing.small)) {
                                     UpcomingRow(item = item, render = render, now = now, showCover = true)
                                 }
@@ -322,6 +325,17 @@ private fun airingTime(context: Context, airingAt: Instant, now: Instant): Strin
     val pattern = DateFormat.getBestDateTimePattern(locale, skeleton)
     return DateTimeFormatter.ofPattern(pattern, locale).format(airingAt.atZone(ZoneId.systemDefault()))
 }
+
+/**
+ * How much larger the rows' text is than at 100 %. Android 14+ scales large fonts less than linearly,
+ * so this asks for the real size of the 14 sp body text instead of using the font scale setting.
+ */
+private fun textScale(context: Context): Float {
+    val metrics = context.resources.displayMetrics
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, BODY_SP, metrics) / (BODY_SP * metrics.density)
+}
+
+private const val BODY_SP = 14f
 
 /** "5:07:12" for a fixed countdown in previews. */
 private fun clockText(remaining: Duration): String =

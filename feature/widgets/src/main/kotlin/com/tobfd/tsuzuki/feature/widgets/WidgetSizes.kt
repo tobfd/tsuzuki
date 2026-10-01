@@ -21,17 +21,21 @@ internal object WidgetSizes {
     /** Rows show their cover from this width on; narrower ones keep the title readable instead. */
     val rowCoverMinWidth = 180.dp
 
-    /** A list row: the cover and the gap below it. */
-    private val listRowHeight = TsuzukiSizes.widgetCover.height + TsuzukiSpacing.small
-
     /** Glance's title bar plus the frame's bottom padding. */
     private val listChromeHeight = TsuzukiSizes.minTouchTarget + TsuzukiSpacing.medium
 
-    /** How many whole rows a list without scrolling shows at [size], at least one. */
-    fun listRows(size: DpSize, footer: Boolean): Int {
-        val footerHeight = if (footer) TsuzukiSpacing.extraLarge else 0.dp
+    /** A row's two title lines and meta line at font scale 1 (titleSmall + labelMedium line heights). */
+    private val listRowTextHeight = 56.dp
+
+    /**
+     * How many whole rows a list without scrolling shows at [size], at least one. A row is as tall as
+     * its cover or, with large fonts (up to 200 %), its text.
+     */
+    fun listRows(size: DpSize, footer: Boolean, fontScale: Float = 1f): Int {
+        val row = maxOf(TsuzukiSizes.widgetCover.height, listRowTextHeight * fontScale) + TsuzukiSpacing.small
+        val footerHeight = if (footer) TsuzukiSpacing.extraLarge * fontScale else 0.dp
         val available = size.height - listChromeHeight - footerHeight
-        return (available / listRowHeight).toInt().coerceAtLeast(1)
+        return (available / row).toInt().coerceAtLeast(1)
     }
 }
 

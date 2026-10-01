@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.ui
 
+import android.content.Intent
 import android.os.SystemClock
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -7,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -19,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +40,7 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.window.core.layout.WindowSizeClass
+import com.tobfd.tsuzuki.BuildConfig
 import com.tobfd.tsuzuki.core.common.AppDestination
 import com.tobfd.tsuzuki.core.common.AppTab
 import com.tobfd.tsuzuki.core.designsystem.theme.BackStackPosition
@@ -221,7 +225,8 @@ fun AppShell(
             SettingsScreen(
                 onBack = { navigator.back() },
                 onLogOut = onLogOut,
-                onOpenLicenses = { navigator.navigate(LicensesRoute) }
+                onOpenLicenses = { navigator.navigate(LicensesRoute) },
+                onOpenCatalog = rememberCatalogLauncher()
             )
         }
         entry<LicensesRoute> {
@@ -231,7 +236,11 @@ fun AppShell(
 
     val reducedMotion = rememberReducedMotion()
     // Sheets over everything; on expanded widths Lists or Browse with the detail page beside them.
-    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    // Back pops one screen: the default (until the panes change) also popped the list, because the
+    // detail placeholder keeps both panes on screen when the detail closes.
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(
+        backNavigationBehavior = BackNavigationBehavior.PopLatest
+    )
     val sceneStrategies = remember(listDetailStrategy) {
         listOf(BottomSheetSceneStrategy(), listDetailStrategy, SinglePaneSceneStrategy())
     }
@@ -368,6 +377,19 @@ private fun PredictiveBackState.onGestureProgress(event: NavigationEvent) {
         // Before Android 16 the system gives no frame time.
         frameTimeMillis = event.frameTimeMillis.takeIf { it > 0 } ?: SystemClock.uptimeMillis()
     )
+}
+
+/**
+ * Opens the debug-only component catalog (`app/src/debug`), or null in release builds, which don't
+ * contain it. By class name, since the catalog's code exists only in the debug source set.
+ */
+@Composable
+private fun rememberCatalogLauncher(): (() -> Unit)? {
+    if (!BuildConfig.DEBUG) return null
+    val context = LocalContext.current
+    return remember(context) {
+        { context.startActivity(Intent().setClassName(context, "com.tobfd.tsuzuki.catalog.CatalogActivity")) }
+    }
 }
 
 private fun AppTab.toTopLevelTab(): TopLevelTab = when (this) {

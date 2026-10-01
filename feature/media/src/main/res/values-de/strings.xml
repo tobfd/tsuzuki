@@ -15,7 +15,7 @@
     <string name="media_tab_stats">Statistik</string>
     <string name="media_tab_social">Freunde</string>
     <string name="media_tab_recommendations">Empfehlungen</string>
-    <string name="media_where_to_watch">Wo schauen</string>
+    <string name="media_where_to_watch">Wo ansehen</string>
     <string name="media_trailer">Trailer</string>
     <string name="media_relations">Verwandte Titel</string>
     <string name="media_tag_rank">%1$s %2$d %%</string>
@@ -43,10 +43,10 @@
     <string name="media_social_empty">Niemand, dem du folgst, hat das auf der Liste.</string>
     <string name="media_no_recommendations">Noch keine Empfehlungen.</string>
     <string name="media_recommendation_votes">+%1$d</string>
-    <string name="media_rank_rated_all_time">#%1$d bestbewertet aller Zeiten</string>
-    <string name="media_rank_rated_year">#%1$d bestbewertet %2$d</string>
-    <string name="media_rank_popular_all_time">#%1$d beliebteste aller Zeiten</string>
-    <string name="media_rank_popular_year">#%1$d beliebteste %2$d</string>
+    <string name="media_rank_rated_all_time">#%1$d der bestbewerteten aller Zeiten</string>
+    <string name="media_rank_rated_year">#%1$d der bestbewerteten %2$d</string>
+    <string name="media_rank_popular_all_time">#%1$d der beliebtesten aller Zeiten</string>
+    <string name="media_rank_popular_year">#%1$d der beliebtesten %2$d</string>
     <string name="media_relation_adaptation">Adaption</string>
     <string name="media_relation_prequel">Vorgeschichte</string>
     <string name="media_relation_sequel">Fortsetzung</string>

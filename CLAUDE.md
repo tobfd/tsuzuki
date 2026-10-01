@@ -7,7 +7,7 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 - OAuth redirect: `tsuzuki://auth`
 - minSdk 31 (Android 12), targetSdk and compileSdk 37 (Android 17)
 - Repository: [`tobfd/tsuzuki`](https://github.com/tobfd/tsuzuki). Open source, built Play-Store-ready (`docs/PRODUCT.md`, D1).
-- License: GPL-3.0 (`LICENSE`). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
+- License: GPL-3.0 (`LICENSE`, kept verbatim; the copyright notice "Copyright (C) 2026 Tobias Schmitt" is in the README and on the licenses screen). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
 
 ## Read these first
 

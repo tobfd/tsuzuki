@@ -67,7 +67,7 @@ enum class OpenSourceLicense(val title: String, val asset: String) {
  * (`./gradlew :app:dependencies --configuration releaseRuntimeClasspath`). Test-only libraries are left out.
  */
 internal val OpenSourceLibraries: Map<OpenSourceLicense, List<String>> = mapOf(
-    OpenSourceLicense.Gpl3 to listOf("Tsuzuki"),
+    OpenSourceLicense.Gpl3 to listOf("Tsuzuki, Copyright (C) 2026 Tobias Schmitt"),
     OpenSourceLicense.Apache2 to listOf(
         "AndroidX (Activity, Browser, Core, DataStore, Glance, Hilt, Lifecycle, Navigation 3, Paging, ProfileInstaller, Room, SQLite, WorkManager)",
         "Jetpack Compose and Material 3",

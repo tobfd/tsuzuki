@@ -17,19 +17,23 @@ spotless {
     // LF everywhere, matching .gitattributes (Windows batch files are not formatted).
     lineEndings = com.diffplug.spotless.LineEnding.UNIX
     val ktlintVersion = libs.versions.ktlint.get()
+
+    // File trees that skip build output entirely: a plain glob walks into build directories while
+    // other tasks of the same build (KSP of the Baseline Profile variants) are still writing there.
+    fun sources(pattern: String) = fileTree(rootDir) {
+        include(pattern)
+        exclude("**/build/**", "**/.gradle/**", "**/.kotlin/**", ".idea/**")
+    }
     kotlin {
-        target("**/*.kt")
-        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
+        target(sources("**/*.kt"))
         ktlint(ktlintVersion)
     }
     kotlinGradle {
-        target("**/*.kts")
-        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
+        target(sources("**/*.kts"))
         ktlint(ktlintVersion)
     }
     format("xml") {
-        target("**/*.xml")
-        targetExclude("**/build/**", "**/.gradle/**", "**/.kotlin/**", ".idea/**")
+        target(sources("**/*.xml"))
         trimTrailingWhitespace()
         endWithNewline()
     }

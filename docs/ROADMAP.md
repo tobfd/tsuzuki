@@ -200,6 +200,7 @@ Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack
 - [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots. (Skipped for v1.)
 - [x] Profile activity history over a year (added by Tobias, 2026-10-01). (Up to 53 weeks, scrolling sideways from today. AniList's `activityHistory` only goes back about 185 days and lists days with activity only, so the grid starts at the oldest day it sends, at least 12 weeks.)
 - [x] Notification rows: avatars centred in the leading column, their ring in the row's color on unread rows (added by Tobias, 2026-10-01).
+- [x] Swipeable tabs (added by Tobias, 2026-10-01): the Lists tab (status and custom lists), other users' lists, the profile tabs and the notification filters change by swiping, with the indicator following the finger and each tab keeping its scroll position. Network pages load only when shown; on tablets only the list pane swipes. The detail page keeps its anchor tabs, the Anime / Manga toggles stay toggles (a second swipe would fight the tabs, and Browse would load both types).
 - [x] Component catalog without a launcher entry (added by Tobias, 2026-10-01): debug builds open it by tapping the version in Settings > About 7 times; release builds don't contain it.
 
 **Done when:** Tobias has used v1 as his only AniList app for a week.

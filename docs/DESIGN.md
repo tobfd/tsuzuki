@@ -123,6 +123,7 @@ Top bar "Home" + bell + avatar. Scrolling column:
 ### Lists (tab)
 
 - Top bar "Lists" with search and sort actions. Below: Anime / Manga segmented toggle (full width), then scrollable status tabs with counts ("Watching 1", "Planning 3", "Completed", "Paused", "Dropped", "Rewatching", then custom lists). Manga uses Reading / Rereading. Status tabs leave out entries hidden from status lists; custom list tabs show them.
+- Swipe left or right to change the tab (M12): the pages move with the finger, the tab indicator follows, and each tab keeps its scroll position. The Anime / Manga toggle stays a toggle (a second horizontal swipe would fight the tabs).
 - Search opens a pill field below the toggle; while it has text, the tabs hide and the results come from the whole list (every title language). Sort menu: Title, Score, Progress, Last updated (default), Start date; the current one has a check mark.
 - Changes that wait longer than 3 seconds to be sent (e.g. offline) show a quiet hint under the tabs: cloud icon and "2 changes wait to be sent".
 - Content: `MediaListRow`s. Planning rows show "Start" instead of +1.
@@ -160,7 +161,7 @@ Top bar "Home" + bell + avatar. Scrolling column:
 
 - Banner (140 dp) with top-right bell and settings buttons (own profile), avatar 88 dp overlapping, name (headlineMedium).
 - Stats row (3 columns): Total anime, Episodes watched, Days watched.
-- Tabs: Overview, Favourites, Stats, Social.
+- Tabs: Overview, Favourites, Stats, Social, swipeable (M12). Banner, name, stats and list buttons scroll away above the tabs, then the tabs stay at the top and each tab scrolls on its own, keeping its position.
 - Overview: "Activity history" heatmap (up to a year × 7 days, as far back as AniList keeps (about 185 days), 12 dp cells, 4 intensity levels of primary, month labels), "Recent activity" list.
 - Favourites: grid of covers; empty state "No favourites yet · Tap the heart on any anime, manga, character or staff page."
 - Stats: key numbers + "Anime by status" bars in status colors.
@@ -169,7 +170,7 @@ Top bar "Home" + bell + avatar. Scrolling column:
 ### Notifications
 
 - Top bar: back, "Notifications", "Mark all as read" action.
-- Filter chips: All, Airing, Activity, Follows, Media.
+- Filter chips: All, Airing, Activity, Follows, Media. Swiping the list changes the filter (M12); the chip follows and stays in view, and a filter loads only when its page shows.
 - Groups by time ("This week", "Last week", "Earlier"); weeks start on the locale's first day of the week.
 - Row: stacked avatars (up to 3, 16 dp offset), bold names + text ("KiichiVS, ProfilPublicDeMathou and 3 others liked your activity"), subline with context ("Watched episodes 17 – 18 of Frieren"), relative time, unread dot (primary) and surfaceContainerHigh background when unread.
 - Per-item "read" is not supported by the API; unread items are the first `unreadNotificationCount` items at open time.

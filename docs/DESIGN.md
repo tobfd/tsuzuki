@@ -100,7 +100,7 @@ Material Symbols Rounded, 24 dp, weight 400. Icon-only buttons are 48 dp touch t
 | `ActivityCard` | surfaceContainerLow, large shape: avatar 40, "user" bold + text ("watched episode 18 of") + media title in primary, 40 × 56 cover on the right, relative time, like button with count (heart, primary when liked), reply count. |
 | `MediaResultRow` | Browse results: the `MediaListRow` card without +1; title (2 lines), "TV · 2023 · 91%", and the viewer's list status (status dot + label) when the media is on the list. Tap opens detail. |
 | `PersonCoverCard` | A character or staff member as a 2:3 card (120 dp wide) with name and one more line (e.g. the media a character is from); next to `MediaCoverCard` in grids and rows. |
-| `ActivityHeatmap` | Profile activity history: 12 weeks × 7 days (Monday on top), 12 dp cells with 3 dp gaps, empty days in surfaceContainerHighest, 4 strengths of primary relative to the busiest day shown, month labels above the week a month starts in. TalkBack reads the total. |
+| `ActivityHeatmap` | Profile activity history: up to a year of weeks × 7 days (Monday on top), starting at the oldest day AniList keeps (about half a year, at least 12 weeks), scrolling sideways when wider than the screen and opening at today, 12 dp cells with 3 dp gaps, empty days in surfaceContainerHighest, 4 strengths of primary relative to the busiest day shown, month labels above the week a month starts in. TalkBack reads the total. |
 | Empty / error states | Centered: 56 dp icon tile (surfaceContainerHigh, 16 dp radius), titleLarge headline, bodyMedium text, optional tonal action button. |
 | Snackbar | M3 snackbar with action ("Undo"). |
 | Bottom sheets | `ModalBottomSheet`, drag handle, extraLarge top corners, surfaceContainerLow. |
@@ -161,7 +161,7 @@ Top bar "Home" + bell + avatar. Scrolling column:
 - Banner (140 dp) with top-right bell and settings buttons (own profile), avatar 88 dp overlapping, name (headlineMedium).
 - Stats row (3 columns): Total anime, Episodes watched, Days watched.
 - Tabs: Overview, Favourites, Stats, Social.
-- Overview: "Activity history" heatmap (12 weeks × 7 days, 12 dp cells, 4 intensity levels of primary, month labels), "Recent activity" list.
+- Overview: "Activity history" heatmap (up to a year × 7 days, as far back as AniList keeps (about 185 days), 12 dp cells, 4 intensity levels of primary, month labels), "Recent activity" list.
 - Favourites: grid of covers; empty state "No favourites yet · Tap the heart on any anime, manga, character or staff page."
 - Stats: key numbers + "Anime by status" bars in status colors.
 - Social: user rows with "Follows you" label; follow button on other profiles.

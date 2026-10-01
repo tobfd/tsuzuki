@@ -45,6 +45,8 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 ./gradlew spotlessCheck                 # ktlint formatting check (spotlessApply fixes)
 ./gradlew build                         # everything above except connected tests
 ./gradlew :core:network:downloadAnilistApolloSchemaFromIntrospection   # refresh the AniList schema (M2)
+ANDROID_SERIAL=emulator-5554 ./gradlew :app:generateBaselineProfile     # regenerate the Baseline Profile (M12)
+ANDROID_SERIAL=emulator-5554 ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest  # startup + scroll benchmarks
 ```
 
 ## Tech stack
@@ -69,6 +71,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Splash | `androidx.core:core-splashscreen` | |
 | Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
+| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profile lives in `app/src/release/generated/baselineProfiles`; regenerate it after big UI changes. Release builds use R8 full mode (`app/proguard-rules.pro`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on Tobias's phone. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture
@@ -88,6 +91,7 @@ Create modules when the milestone that needs them starts; don't scaffold empty o
 ```
 app                     MainActivity, Application, app-level nav graph, NavigationSuiteScaffold shell
 build-logic             convention plugins (android library, compose, feature, hilt, room)
+baselineprofile         Baseline Profile generator and macrobenchmarks (com.android.test, since M12)
 core/model              plain Kotlin models used across the app (Media, MediaListEntry, User, ScoreFormat, ...)
 core/common             dispatchers, Result/AppError, time utils (no Android UI)
 core/network            Apollo client, .graphql files, interceptors (auth, rate limit), error mapping, schema

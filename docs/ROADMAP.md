@@ -189,14 +189,14 @@ Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack
 
 ## M12 · Polish and release readiness
 
-- [ ] German translation complete and reviewed by Tobias.
-- [ ] Accessibility pass: TalkBack on every screen and widget, font scale 200 %, contrast in both color sources.
-- [ ] Large screens: re-check the Tablet package's layouts with M10/M11's new screens and the widgets' sizes (tablet + foldable emulator), no orientation lock warnings.
-- [ ] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler); widget updates stay cheap (no work on the main thread, no updates beyond the planned ones).
+- [ ] German translation complete and reviewed by Tobias. (Complete: every English string has a German one. Checked by Claude on 2026-10-01; clear inconsistencies fixed (Episoden → Folgen, Season → Saison, Überblick → Übersicht), the open wording questions are in the M12 PR. Tobias's review is still open.)
+- [ ] Accessibility pass: TalkBack on every screen and widget, font scale 200 %, contrast in both color sources. (Done on the emulator: a scan of every reachable screen for unnamed buttons and touch targets under 48 dp (one unnamed cover button in the feed fixed), all screens and the widgets at 200 % (names on the detail page now wrap, the Next episode widget counts rows by text size), and `ContrastTest` for AniList blue, pure black and the status colors (dynamic color keeps its contrast by construction). Open: a hands-on TalkBack run on the phone.)
+- [x] Large screens: re-check the Tablet package's layouts with M10/M11's new screens and the widgets' sizes (tablet + foldable emulator), no orientation lock warnings. (Notifications, settings and licenses keep their reading width; the widgets fill wide cells. Found and fixed: back from a detail pane also closed the list pane beside it and landed on Home (`BackNavigationBehavior.PopLatest`). No activity locks its orientation.)
+- [x] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler); widget updates stay cheap (no work on the main thread, no updates beyond the planned ones). (Release builds run R8 in full mode (APK 9.2 MB). New `:baselineprofile` module: a guest journey (start, Home, Browse, detail) generates the profile, `AppBenchmarks` measures cold start and scrolling with and without it. Widgets render in Glance's worker and are redrawn only when their data changes; see the M12 PR for the emulator numbers.)
 - [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
-- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes.
-- [ ] Final app icon and themed icon.
-- [ ] Crash-free run through all screens and widgets with airplane mode toggled.
+- [ ] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes. (Measured 2026-10-01: 4.15 MB, 2.4 MB compressed, about a quarter of the 9.2 MB release APK. Decision open for Tobias.)
+- [ ] Final app icon and themed icon. (Three proposals in `design/icon-proposals/`; Tobias picks one.)
+- [ ] Crash-free run through all screens and widgets with airplane mode toggled. (Done on the emulator with the minified build as a guest, online and offline, and with the debug build's sample session and widgets offline: no crash. Open: the logged-in run on the phone.)
 - [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots.
 
 **Done when:** Tobias has used v1 as his only AniList app for a week.

@@ -25,6 +25,9 @@ internal const val SESSION_DATASTORE_NAME = "session"
 /** File name of the app settings DataStore (appearance); part of backups. */
 internal const val SETTINGS_DATASTORE_NAME = "settings"
 
+/** File name of the Android notifications' bookkeeping (AlertStateStore); excluded from backups. */
+internal const val ALERTS_DATASTORE_NAME = "alerts"
+
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SessionPreferences
@@ -32,6 +35,10 @@ annotation class SessionPreferences
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SettingsPreferences
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AlertPreferences
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -58,6 +65,18 @@ object DataStoreModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
         produceFile = { context.preferencesDataStoreFile(SETTINGS_DATASTORE_NAME) }
+    )
+
+    @Provides
+    @Singleton
+    @AlertPreferences
+    fun alertDataStore(
+        @ApplicationContext context: Context,
+        @Dispatcher(TsuzukiDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+        @ApplicationScope scope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
+        produceFile = { context.preferencesDataStoreFile(ALERTS_DATASTORE_NAME) }
     )
 }
 

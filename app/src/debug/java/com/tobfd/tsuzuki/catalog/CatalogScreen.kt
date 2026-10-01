@@ -1,6 +1,7 @@
 package com.tobfd.tsuzuki.catalog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -83,6 +85,8 @@ import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
 import com.tobfd.tsuzuki.core.ui.score.ScoreText
 import com.tobfd.tsuzuki.core.ui.statusColor
+import com.tobfd.tsuzuki.feature.home.InProgressCard
+import com.tobfd.tsuzuki.feature.home.InProgressCardStyle
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorActions
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorContent
 import com.tobfd.tsuzuki.feature.lists.editor.ListEditorForm
@@ -158,6 +162,7 @@ fun CatalogScreen(
             item { CatalogSection(R.string.catalog_section_activity_card) { ActivityCardSamples() } }
             item { CatalogSection(R.string.catalog_section_notification_row) { NotificationRowSamples() } }
             item { CatalogSection(R.string.catalog_section_cover_card) { CoverCardSamples() } }
+            item { CatalogSection(R.string.catalog_section_in_progress_card) { InProgressCardSamples() } }
             item { CatalogSection(R.string.catalog_section_result_row) { ResultRowSamples() } }
             item { CatalogSection(R.string.catalog_section_person_card) { PersonCardSamples() } }
             item { CatalogSection(R.string.catalog_section_heatmap) { HeatmapSample() } }
@@ -606,6 +611,28 @@ private fun CoverCardSamples() {
     Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
         MediaCoverCard(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER), onClick = {})
         MediaCoverCard(media = PreviewListEntries.dandadan.media, onClick = {}, label = "Sequel")
+    }
+}
+
+/** The Home In Progress card in each candidate style, side by side as in Home's row. */
+@Composable
+private fun InProgressCardSamples() {
+    val entries = listOf(
+        PreviewListEntries.frieren.copy(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)),
+        PreviewListEntries.apothecary
+    )
+    listOf(
+        InProgressCardStyle.Plain to R.string.catalog_in_progress_plain,
+        InProgressCardStyle.Tonal to R.string.catalog_in_progress_tonal,
+        InProgressCardStyle.Outlined to R.string.catalog_in_progress_outlined
+    ).forEach { (style, label) ->
+        CatalogVariantLabel(label)
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)
+        ) {
+            entries.forEach { entry -> InProgressCard(entry = entry, onClick = {}, onPlusOne = {}, style = style) }
+        }
     }
 }
 

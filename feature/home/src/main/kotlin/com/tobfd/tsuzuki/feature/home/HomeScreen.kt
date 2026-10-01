@@ -22,9 +22,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,6 +49,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,6 +75,7 @@ import com.tobfd.tsuzuki.core.model.UserLite
 import com.tobfd.tsuzuki.core.ui.ActivityCard
 import com.tobfd.tsuzuki.core.ui.MediaCover
 import com.tobfd.tsuzuki.core.ui.MediaCoverCard
+import com.tobfd.tsuzuki.core.ui.PreviewListEntries
 import com.tobfd.tsuzuki.core.ui.ScrollToTopOnTabReselect
 import com.tobfd.tsuzuki.core.ui.coverColorOrNull
 import com.tobfd.tsuzuki.core.ui.labelRes
@@ -382,24 +387,70 @@ private fun FeedError(error: AppError, onRetry: () -> Unit) {
     }
 }
 
-/** A 144 dp card: cover with "EP x / y" and progress bar, title, progress and +1. */
+/**
+ * How an In Progress card sets itself apart from the page. Home uses [Plain]; the others are
+ * candidates Tobias compares in the component catalog before choosing one.
+ */
+enum class InProgressCardStyle {
+    /** No container: cover, title and progress sit on the page (the current look). */
+    Plain,
+
+    /** A filled card in `surfaceContainerHighest` (M3 filled card). */
+    Tonal,
+
+    /** A card with a thin `outlineVariant` border on the page color (M3 outlined card). */
+    Outlined
+}
+
+/**
+ * A card with a 144 dp cover: "EP x / y" and progress bar on the cover, title, progress and +1.
+ * [style] other than [InProgressCardStyle.Plain] wraps it in an M3 card with an inner padding.
+ */
 @Composable
-internal fun InProgressCard(
+fun InProgressCard(
     entry: MediaListEntry,
     onClick: () -> Unit,
     onPlusOne: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    style: InProgressCardStyle = InProgressCardStyle.Plain
+) {
+    when (style) {
+        InProgressCardStyle.Plain -> InProgressCardContent(entry, onClick, onPlusOne, modifier, padding = null)
+
+        InProgressCardStyle.Tonal -> Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
+            InProgressCardContent(entry, onClick, onPlusOne, padding = TsuzukiSpacing.small)
+        }
+
+        InProgressCardStyle.Outlined -> OutlinedCard(
+            modifier = modifier,
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            InProgressCardContent(entry, onClick, onPlusOne, padding = TsuzukiSpacing.small)
+        }
+    }
+}
+
+/** The card's content; [padding] keeps it off the edges of a card container, null for none. */
+@Composable
+private fun InProgressCardContent(
+    entry: MediaListEntry,
+    onClick: () -> Unit,
+    onPlusOne: () -> Unit,
+    modifier: Modifier = Modifier,
+    padding: Dp?
 ) {
     val media = entry.media
     val total = media.total
     val done = total != null && entry.progress >= total
     Column(
         modifier = modifier
-            .width(TsuzukiSizes.inProgressCover.width)
             .clickable(
                 onClickLabel = stringResource(com.tobfd.tsuzuki.core.ui.R.string.ui_list_edit_entry),
                 onClick = onClick
-            ),
+            )
+            .then(if (padding != null) Modifier.padding(padding) else Modifier)
+            .width(TsuzukiSizes.inProgressCover.width),
         verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.small)
     ) {
         MediaCover(
@@ -536,5 +587,17 @@ private fun FeedFooterPreview() {
             onLoadMore = {},
             onRetry = {}
         )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun InProgressCardStylesPreview() {
+    TsuzukiPreview {
+        Row(horizontalArrangement = Arrangement.spacedBy(TsuzukiSpacing.cardGap)) {
+            InProgressCardStyle.entries.forEach { style ->
+                InProgressCard(entry = PreviewListEntries.frieren, onClick = {}, onPlusOne = {}, style = style)
+            }
+        }
     }
 }

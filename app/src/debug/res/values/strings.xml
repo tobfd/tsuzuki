@@ -66,5 +66,9 @@
     <string name="catalog_section_person_card" translatable="false">PersonCoverCard</string>
     <string name="catalog_section_heatmap" translatable="false">ActivityHeatmap</string>
     <string name="catalog_section_cover_card" translatable="false">MediaCoverCard</string>
+    <string name="catalog_section_in_progress_card" translatable="false">InProgressCard (Home, variants to choose from)</string>
+    <string name="catalog_in_progress_plain" translatable="false">A · Plain (current)</string>
+    <string name="catalog_in_progress_tonal" translatable="false">B · Tonal (filled card)</string>
+    <string name="catalog_in_progress_outlined" translatable="false">C · Outlined</string>
     <string name="catalog_section_share_card" translatable="false">Share card (9:16 and 1:1)</string>
 </resources>

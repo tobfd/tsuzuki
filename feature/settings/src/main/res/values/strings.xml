@@ -50,4 +50,7 @@
     <string name="settings_licenses">Open-source licenses</string>
     <string name="settings_license_show">Show license</string>
     <string name="settings_license_hide">Hide license</string>
+    <string name="settings_section_notifications">Notifications</string>
+    <string name="settings_notifications">New episodes, activity, follows</string>
+    <string name="settings_notifications_supporting">Choose in Android\'s settings</string>
 </resources>

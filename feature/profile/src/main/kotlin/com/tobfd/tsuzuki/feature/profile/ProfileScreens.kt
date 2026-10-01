@@ -1,11 +1,13 @@
 package com.tobfd.tsuzuki.feature.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,7 +24,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
@@ -30,7 +34,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,6 +51,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -66,10 +73,13 @@ import coil3.compose.AsyncImage
 import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.designsystem.component.EmptyState
 import com.tobfd.tsuzuki.core.designsystem.component.ErrorState
+import com.tobfd.tsuzuki.core.designsystem.component.PagerTabRow
 import com.tobfd.tsuzuki.core.designsystem.component.SegmentedToggle
 import com.tobfd.tsuzuki.core.designsystem.component.StatusDot
+import com.tobfd.tsuzuki.core.designsystem.component.TabPager
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiBackTopBar
 import com.tobfd.tsuzuki.core.designsystem.component.TsuzukiPullToRefresh
+import com.tobfd.tsuzuki.core.designsystem.component.rememberTabPagerState
 import com.tobfd.tsuzuki.core.designsystem.icon.TsuzukiIcons
 import com.tobfd.tsuzuki.core.designsystem.preview.ThemePreviews
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiSizes
@@ -294,7 +304,11 @@ internal fun ProfileContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+/**
+ * The profile: header, stats and list buttons scroll away above the tabs, then the tabs stay on top and
+ * each tab is a swipeable page with its own list and scroll position (M12). Social loads its people when
+ * its page first shows.
+ */
 @Composable
 private fun ProfileList(
     state: ProfileUiState.Content,
@@ -310,48 +324,101 @@ private fun ProfileList(
         end = contentPadding.calculateEndPadding(layoutDirection)
     )
     var tab by rememberSaveable { mutableStateOf(ProfileTab.Overview) }
-    val listState = rememberLazyListState()
-    ScrollToTopOnTabReselect(listState)
-    LaunchedEffect(tab) { if (tab == ProfileTab.Social) onShowFollowList(state.followList) }
+    val pagerState = rememberTabPagerState(
+        selectedIndex = tab.ordinal,
+        pageCount = ProfileTab.entries.size,
+        onPageSelected = { tab = ProfileTab.entries[it] }
+    )
+    val header = rememberScrollState()
+    val collapse = remember(header) { CollapsingHeader(header) }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            top = contentPadding.calculateTopPadding(),
-            bottom = contentPadding.calculateBottomPadding()
-        ),
-        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = contentPadding.calculateTopPadding())
     ) {
-        item(key = "header") {
+        val pageHeight = maxHeight - TsuzukiSizes.minTouchTarget
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(collapse)
+                .verticalScroll(header),
+            verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)
+        ) {
             Header(state = state, side = side, onToggleFollow = onToggleFollow)
-        }
-        item(key = "stats") { StatsRow(state.profile.anime, modifier = Modifier.padding(side)) }
-        if (!state.isOwn) {
-            item(key = "lists") {
+            StatsRow(state.profile.anime, modifier = Modifier.padding(side))
+            if (!state.isOwn) {
                 ListButtons(
                     onOpenList = { type -> navigation.onOpenList(state.profile.id, state.profile.name, type) },
                     modifier = Modifier.padding(side)
                 )
             }
-        }
-        stickyHeader(key = "tabs") {
-            PrimaryTabRow(selectedTabIndex = tab.ordinal, containerColor = MaterialTheme.colorScheme.surface) {
-                ProfileTab.entries.forEach { entry ->
+            Column {
+                PagerTabRow(pagerState = pagerState, containerColor = MaterialTheme.colorScheme.surface) {
+                        index,
+                        selected,
+                        onClick
+                    ->
                     Tab(
-                        selected = entry == tab,
-                        onClick = { tab = entry },
-                        text = { Text(stringResource(entry.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        selected = selected,
+                        onClick = onClick,
+                        text = {
+                            Text(
+                                stringResource(ProfileTab.entries[index].labelRes),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     )
+                }
+                TabPager(
+                    pagerState = pagerState,
+                    pageKey = { ProfileTab.entries[it].name },
+                    modifier = Modifier.height(pageHeight)
+                ) { page ->
+                    val listState = rememberLazyListState()
+                    if (page == pagerState.currentPage) {
+                        ScrollToTopOnTabReselect(listState) {
+                            listState.animateScrollToItem(0)
+                            header.animateScrollTo(0)
+                        }
+                    }
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            top = TsuzukiSpacing.medium,
+                            bottom = contentPadding.calculateBottomPadding()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(TsuzukiSpacing.medium)
+                    ) {
+                        when (ProfileTab.entries[page]) {
+                            ProfileTab.Overview -> overview(state, side, navigation, onToggleLike)
+                            ProfileTab.Favourites -> favourites(state.profile.favourites, side, navigation)
+                            ProfileTab.Stats -> stats(state.profile, side)
+                            ProfileTab.Social -> social(state, side, navigation, onShowFollowList)
+                        }
+                    }
+                    if (ProfileTab.entries[page] == ProfileTab.Social) {
+                        // Only when the page is about to be seen: one request for the people.
+                        LaunchedEffect(state.followList) { onShowFollowList(state.followList) }
+                    }
                 }
             }
         }
-        when (tab) {
-            ProfileTab.Overview -> overview(state, side, navigation, onToggleLike)
-            ProfileTab.Favourites -> favourites(state.profile.favourites, side, navigation)
-            ProfileTab.Stats -> stats(state.profile, side)
-            ProfileTab.Social -> social(state, side, navigation, onShowFollowList)
-        }
+    }
+}
+
+/**
+ * Scrolling up first moves the header out of the way, then the page's list; scrolling down moves the
+ * list first and the header comes back once the list is at its top.
+ */
+private class CollapsingHeader(private val header: ScrollState) : NestedScrollConnection {
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        val delta = available.y
+        if (delta >= 0 || header.value >= header.maxValue) return Offset.Zero
+        val consumed = header.dispatchRawDelta(-delta)
+        return Offset(0f, -consumed)
     }
 }
 

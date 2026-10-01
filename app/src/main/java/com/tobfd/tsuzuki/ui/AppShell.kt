@@ -7,6 +7,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -231,7 +232,11 @@ fun AppShell(
 
     val reducedMotion = rememberReducedMotion()
     // Sheets over everything; on expanded widths Lists or Browse with the detail page beside them.
-    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    // Back pops one screen: the default (until the panes change) also popped the list, because the
+    // detail placeholder keeps both panes on screen when the detail closes.
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(
+        backNavigationBehavior = BackNavigationBehavior.PopLatest
+    )
     val sceneStrategies = remember(listDetailStrategy) {
         listOf(BottomSheetSceneStrategy(), listDetailStrategy, SinglePaneSceneStrategy())
     }

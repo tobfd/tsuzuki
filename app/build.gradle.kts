@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.tsuzuki.android.application)
     alias(libs.plugins.tsuzuki.android.compose)
     alias(libs.plugins.tsuzuki.hilt)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -22,8 +23,12 @@ android {
 
     buildTypes {
         release {
+            // R8 in full mode (AGP's default): code and resource shrinking, obfuscation, optimization.
             optimization {
-                enable = false
+                enable = true
+                keepRules {
+                    files.add(file("proguard-rules.pro"))
+                }
             }
         }
     }
@@ -39,6 +44,12 @@ val anilistClientId: Provider<String> = providers
     .orElse("")
 
 androidComponents {
+    // The Baseline Profile plugin collects from this copy of release. It has to stay unobfuscated so the
+    // profile names the real classes; R8 maps the profile onto the minified release build itself.
+    beforeVariants(selector().withBuildType("nonMinifiedRelease")) { variant ->
+        variant.isMinifyEnabled = false
+        variant.shrinkResources = false
+    }
     onVariants { variant ->
         variant.buildConfigFields?.put(
             "ANILIST_CLIENT_ID",
@@ -76,6 +87,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
+    // Installs the Baseline Profile on devices without Play's cloud profiles (sideloads, first start).
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.lifecycle.runtime.compose)

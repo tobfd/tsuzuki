@@ -28,7 +28,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      # The real client ID never leaves Tobias's machine; CI only needs any valid value.
+      # The real client ID stays out of CI; any valid value is enough to build and test.
       - name: Write local.properties with a dummy AniList client ID
         run: echo "anilist.clientId=0" > local.properties
 

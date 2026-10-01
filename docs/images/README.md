@@ -6,7 +6,7 @@ Product images for the README and a later Play Store listing (made 2026-10-01). 
 |---|---|
 | `banner.png` | README banner, 1280 x 640 (also fits GitHub's social preview). |
 | `framed/` | Screenshots in a device frame with a transparent background (WebP), for the row in the README: `home`, `lists`, `detail`, `widgets`. |
-| `screenshots/` | The same screenshots without a frame: phone (Tobias's account on a Pixel 9, 1080 x 2424), tablet (emulator as a 2560 x 1600 tablet, guest mode) and widgets (emulator, debug sample data). |
+| `screenshots/` | The same screenshots without a frame: phone (a real account on a Pixel 9, 1080 x 2424), tablet (emulator as a 2560 x 1600 tablet, guest mode) and widgets (emulator, debug sample data). |
 | `store/` | Play Store assets: `feature-graphic.png` (1024 x 500), phone images with captions (1080 x 1920) and one tablet image (1920 x 1080). |
 
 Every status bar is replaced by a neutral one (12:00, Wi-Fi, signal, full battery). No other AniList users appear: the phone shots avoid the feed and the Social tabs, and the sample friends in the widget data have made-up names.

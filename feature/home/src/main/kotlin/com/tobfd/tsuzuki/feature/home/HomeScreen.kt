@@ -410,8 +410,8 @@ private fun FeedError(error: AppError, onRetry: () -> Unit) {
 
 /**
  * A filled card (M3 filled card, `surfaceContainerHighest`) with a 144 dp cover and its progress
- * bar, title, progress and +1. Tobias chose the filled card over a plain and an outlined one
- * (2026-10-01) and dropped the "EP x / y" badge on the cover, which repeated the progress below.
+ * bar, title, progress and +1. Chosen over a plain and an outlined card (2026-10-01); the cover has no
+ * "EP x / y" badge, which would repeat the progress below.
  */
 @Composable
 fun InProgressCard(entry: MediaListEntry, onClick: () -> Unit, onPlusOne: () -> Unit, modifier: Modifier = Modifier) {

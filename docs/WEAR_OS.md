@@ -1,6 +1,6 @@
 # Wear OS: assessment
 
-An assessment only (asked for by Tobias, 2026-10-01). Nothing here is decided or scheduled; a watch app is not part of v1 (`docs/PRODUCT.md`). Library versions are the latest stable ones as of 2026-10-01.
+An assessment only (added 2026-10-01). Nothing here is decided or scheduled; a watch app is not part of v1 (`docs/PRODUCT.md`). Library versions are the latest stable ones as of 2026-10-01.
 
 ## What it would do
 
@@ -50,7 +50,7 @@ minSdk for the watch: 33 (Wear OS 4) or 34 (Wear OS 5). Glance for Wear Tiles is
 
 ## Effort
 
-About one package the size of the Widgets package: one branch, one PR, one watch test by Tobias.
+About one package the size of the Widgets package: one branch, one PR, one test on a real watch.
 
 | Task | Size |
 |---|---|
@@ -65,9 +65,9 @@ About one package the size of the Widgets package: one branch, one PR, one watch
 ## Risks
 
 - **Google Play services:** the Data Layer is part of Play services, which is proprietary. That rules out devices without Play services (and an F-Droid build with this feature) and, since the app is GPL-3.0, needs a look at whether linking it is fine or wants an explicit exception or a build flavor without it. Today the app has no Play services dependency at all.
-- **Needs a new dependency and a module structure change**, both of which need Tobias's OK under `CLAUDE.md`.
+- **Needs a new dependency and a module structure change**, both of which need the maintainer's OK under `CLAUDE.md`.
 - **Same package and key:** the watch app has to ship with the phone app's applicationId and signing key; a debug watch app only pairs with a debug phone app.
-- **Testing:** needs a Wear OS emulator paired with a phone emulator, and ideally a real watch. Does Tobias have one?
+- **Testing:** needs a Wear OS emulator paired with a phone emulator, and ideally a real watch.
 - **Phone required:** with the recommended architecture the watch shows the last snapshot and queues +1 while the phone is away; it can't refresh on its own.
 - **Tile and complication update limits:** tiles refresh at most every few seconds on request and complications on the system's schedule, so the snapshot push from the phone has to trigger `TileService.getUpdater(...).requestUpdate(...)` and complication update requests, never polling.
 - **Maintenance:** a second UI toolkit (Wear Compose and ProtoLayout) next to phone Compose and Glance.

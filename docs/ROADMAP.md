@@ -1,22 +1,22 @@
 # Roadmap
 
-Work top to bottom. Each milestone ends in a working app that Tobias can install. Tick boxes in the PR that finishes them. "Done when" is the acceptance check; it must hold before the next milestone starts.
+Work top to bottom. Each milestone ends in a working app that can be installed. Tick boxes in the PR that finishes them. "Done when" is the acceptance check; it must hold before the next milestone starts.
 
-From M4 on, milestones ship in packages (decided by Tobias, 2026-09-28), each with one branch, one PR and one phone test:
+From M4 on, milestones ship in packages (decided 2026-09-28), each with one branch, one PR and one phone test:
 
 1. M4
 2. M5 + M6
 3. M7 + M8 + M9
-4. Tablet (added by Tobias, 2026-09-30)
+4. Tablet (added 2026-09-30)
 5. M10 + M11
 6. Widgets (formerly M13, part of v1 since 2026-09-30)
 7. M12 (polish, the last package before v1; covers the widgets too)
 
-Reordered by Tobias on 2026-09-30: M12 moved behind the widgets so its accessibility, large-screen and performance passes include them.
+Reordered on 2026-09-30: M12 moved behind the widgets so its accessibility, large-screen and performance passes include them.
 
-Claude may squash-merge a package's PR once CI is green and Tobias has written "passt", then starts the next package from `main` without waiting, unless a decision from Tobias is needed.
+A package's PR is squash-merged once CI is green and the maintainer approved it; the next package starts from `main`.
 
-Before M0, Tobias does two things by hand:
+Before M0, two things by hand:
 
 - [x] Create the AniList API client at https://anilist.co/settings/developer: name "Tsuzuki for AniList", redirect URL `tsuzuki://auth`. Put the client ID in `local.properties` as `anilist.clientId=<id>`.
 - [x] Create the GitHub repository (private) and copy this handoff folder into its root. (`tobfd/tsuzuki`, 2026-09-28.)
@@ -61,7 +61,7 @@ Before M0, Tobias does two things by hand:
 - [x] Expiry handling: warning banner 14 days before `exp`; on expiry or 401 → login screen with a short explanation.
 - [x] Tests: fragment parser, JWT parser, rate limiter, error mapper, login ViewModel.
 
-**Done when:** Tobias can log in on his Pixel, the app shows "Logged in as tobfd" somewhere temporary, and he stays logged in after the app is killed and restarted.
+**Done when:** logging in works on a real phone, the app shows "Logged in as <name>" somewhere temporary, and the session survives the app being killed and restarted.
 
 ## M3 · App shell and navigation
 
@@ -76,7 +76,7 @@ Before M0, Tobias does two things by hand:
 
 ## M4 · Lists (offline first)
 
-- [x] Room: `media_list_entry`, `media_lite`, `custom_list`, `pending_mutation`; DAOs with Flows. (New module `core/database`, framework SQLite driver as Tobias decided; a small `list_sync` table keeps the 15-minute rule.)
+- [x] Room: `media_list_entry`, `media_lite`, `custom_list`, `pending_mutation`; DAOs with Flows. (New module `core/database`, framework SQLite driver as decided; a small `list_sync` table keeps the 15-minute rule.)
 - [x] Sync from `MediaListCollection` (anime and manga) incl. custom lists; refresh rules from `CLAUDE.md`. (On login, app start and every return to the foreground if older than 15 minutes, on pull to refresh, and every 6 hours in the background. The sync skips the Apollo cache and never overwrites entries whose changes are still queued.)
 - [x] Lists screen: Anime/Manga toggle, status tabs with counts (Watching/Reading, Planning, Completed, Paused, Dropped, Rewatching/Rereading, then custom lists), sort (title, score, progress, last updated, start date), search within the list. (Search opens a field below the toggle and searches the whole list in every title language.)
 - [x] Row: cover, title (user's title language), format + year, progress `x / y` (or `x / ?`), score in the user's format, +1 button (current/repeating) or Start (planning).
@@ -87,7 +87,7 @@ Before M0, Tobias does two things by hand:
 - [x] Empty states per tab; pull to refresh.
 - [x] Tests: sync mapper, mutation queue, +1/undo logic, score format conversion, editor ViewModel.
 
-**Done when:** Tobias uses the Lists tab instead of the website for a day, including in airplane mode, and nothing gets lost.
+**Done when:** the Lists tab replaces the website for a day of real use, including in airplane mode, and nothing gets lost.
 
 ## M5 · Home
 
@@ -109,7 +109,7 @@ Before M0, Tobias does two things by hand:
 - [x] Character and staff lists open the people screens (M8).
 - [x] Two-pane layout on expanded widths when opened from Lists or Browse. (`ListDetailSceneStrategy` from material3-adaptive-navigation3; phones in landscape count as expanded.)
 - [ ] Shared element transition cover → header if cheap. (Not cheap: every tab has its own decorated entries and the back gesture draws its own animation; left for M12.)
-- [x] "Share as image" (added by Tobias, 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing. (Guests and media not on the list share the link only.)
+- [x] "Share as image" (added 2026-09-29): the share button makes a card image: cover, title in the viewer's title language, list status, progress x / y, own score in the viewer's score format, color accent from the cover, avatar and name, small "Tsuzuki" logo. Rendered with Compose (GraphicsLayer → Bitmap), shared through a FileProvider with `ACTION_SEND` and the `siteUrl` link as text. Formats 9:16 (story) and 1:1, with a preview before sharing. (Guests and media not on the list share the link only.)
 
 **Done when:** the Frieren page (id 154587) matches the design and needs exactly one request.
 
@@ -135,16 +135,16 @@ Before M0, Tobias does two things by hand:
 - [x] Own profile (Profile tab) and other users (route `UserRoute(id, name)`: `UserProfile` needs the id for the activity page, and every link to a user knows it; the name titles the page while it loads).
 - [x] Banner, avatar, name, stats (total anime, episodes watched, days watched, mean score), tabs Overview / Favourites / Stats / Social. (One `UserProfile` request when the profile first shows and on pull to refresh. "Follows you" under the name; the about text on Overview, images in it shown as links.)
 - [x] Overview: activity history heatmap (12 weeks, `User.stats.activityHistory`), recent activity. (4 strengths relative to the busiest day shown, dates in UTC like AniList; likes on the recent activities.)
-- [x] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided by Tobias, 2026-09-28). (Checked 2026-09-30: `statistics` has no activity history, so it stays.)
+- [x] `User.stats` is deprecated in the AniList schema (Apollo warns on `UserProfile` since M2). Check whether the schema offers a replacement for `activityHistory`; if not, keep using it (decided 2026-09-28). (Checked 2026-09-30: `statistics` has no activity history, so it stays.)
 - [x] Favourites: anime, manga, characters, staff; empty state.
 - [x] Stats: anime by status, score overview. (Anime and manga: totals, mean score, standard deviation, and bars by status in the status colors.)
 - [x] Social: following / followers (first page); follow / unfollow on other profiles. (Each list loads when first shown; "More on AniList" when there are more. Follow is optimistic; guests get the log-in prompt.)
 - [x] Top bar on own profile: bell and settings. (The Profile tab shows settings and the bell instead of the avatar.)
-- [x] Other users' lists (added by Tobias, 2026-09-30): "Anime list" / "Manga list" on other profiles open the Lists view read only (`UserListRoute`): `MediaListCollection` by user id, status and custom tabs, sort, search, no +1 or editor, tap → detail. Kept in the Apollo cache only, never in Room. Private lists ("Private User", status 404) show their own state. (Chunks of 500 are loaded one after the other when the list opens, at most 10.)
+- [x] Other users' lists (added 2026-09-30): "Anime list" / "Manga list" on other profiles open the Lists view read only (`UserListRoute`): `MediaListCollection` by user id, status and custom tabs, sort, search, no +1 or editor, tap → detail. Kept in the Apollo cache only, never in Room. Private lists ("Private User", status 404) show their own state. (Chunks of 500 are loaded one after the other when the list opens, at most 10.)
 
-**Done when:** Tobias's profile and a friend's render correctly.
+**Done when:** your own profile and someone else's render correctly.
 
-## Tablet · Adaptive layouts (added by Tobias, 2026-09-30)
+## Tablet · Adaptive layouts (added 2026-09-30)
 
 For medium and expanded widths (Pixel Tablet, foldables open, phones in landscape). Phones in portrait stay as they are.
 
@@ -172,53 +172,53 @@ For medium and expanded widths (Pixel Tablet, foldables open, phones in landscap
 - [x] Title language, score format, adult content: read from and saved to AniList (`UpdateUser`), cached locally. (One request per change, online only; the Apollo cache is cleared and the list titles in Room follow without a sync.)
 - [x] Account: avatar, name, log out (confirm). (Guests get "Log in with AniList".)
 - [x] About: version, "Unofficial app. Not affiliated with AniList. Data from the AniList API.", open-source licenses screen. (Hand-made list by license with the license texts bundled; no new dependency.)
-- [x] AMOLED option "Pure black" for the dark theme (added by Tobias, 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog. (Containers keep 60 % of their color, `design/tokens.json`.)
+- [x] AMOLED option "Pure black" for the dark theme (added 2026-09-29): background #000000, surfaces raised slightly, works with Material You and AniList blue; shown in the catalog. (Containers keep 60 % of their color, `design/tokens.json`.)
 
 **Done when:** changing title language on the phone changes it on anilist.co and in every screen.
 
-## Widgets (Glance; added by Tobias, 2026-09-30, part of v1)
+## Widgets (Glance; added 2026-09-30, part of v1)
 
-Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack Glance (latest stable) is approved and listed in `CLAUDE.md`.
+Formerly M13 after v1; moved into v1 before M12 on 2026-09-30. Jetpack Glance (latest stable) is approved and listed in `CLAUDE.md`.
 
-- [x] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes. (Named "In Progress" / "Aktuell dabei" like Home's row. The +1 on the last episode opens the list editor instead of completing silently (Tobias, 2026-10-01). `WidgetUpdater` watches Room, the session and the appearance while the app process runs, which is where every change happens, and redraws a widget only when what it shows changed.)
+- [x] "Currently watching": In Progress entries from Room (no request of its own), +1 on each goes through the existing mutation queue (`ListRepository` → `ListMutationWorker`), and the widget updates whenever Room changes. (Named "In Progress" / "Aktuell dabei" like Home's row. The +1 on the last episode opens the list editor instead of completing silently (2026-10-01). `WidgetUpdater` watches Room, the session and the appearance while the app process runs, which is where every change happens, and redraws a widget only when what it shows changed.)
 - [x] "Next episode": the next airing episodes of the viewer's current anime with a countdown, from `airingSchedule` / `nextAiringEpisode`; refreshed by WorkManager at most once an hour and right after an episode airs, never in a loop. (`nextAiringEpisode` of up to 50 ids in one `NextEpisodes` request, 2 minutes after the soonest episode airs but at least an hour apart and at most 12 hours; a request-free redraw when an episode airs. The airing time is a new Room column, so the list sync fills it too. Live `Chronometer` countdown within a day.)
 - [x] "Friends' activity": the newest activities of the people the viewer follows, one request per periodic update (every few hours, backed off on errors and rate limits), shown from the last result in between. (Every 3 hours, the newest 10 kept in Room; one extra request right after a login.)
 - [x] Widgets follow the app theme (dynamic color / AniList blue, light/dark), open the matching screen on tap, and show a clear state when logged out or offline. (Pure black too. Taps go through `tsuzuki://open/...` links (`AppLink`), restricted to the app's package. Row, single and list layouts; picker previews drawn by the widgets on Android 15+, static layouts below.)
 
-**Done when:** all three widgets run on Tobias's home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.
+**Done when:** all three widgets run on a real home screen for a day, stay current, and the request log shows no extra load beyond the planned updates.
 
 ## M12 · Polish and release readiness
 
-- [x] German translation complete and reviewed by Tobias. (Complete: every English string has a German one. Reviewed 2026-10-01: Episoden → Folgen, Season → Saison, Überblick → Übersicht; Tobias chose „Folge ich" over „Gefolgt" and „Mitwirkende" over „Staff"; the rest by natural German: „Gerade im Trend" on Home too, „Weiterlesen", „Statist", „Wo ansehen", „#3 der bestbewerteten aller Zeiten".)
+- [x] German translation complete and reviewed. (Complete: every English string has a German one. Reviewed 2026-10-01: Episoden → Folgen, Season → Saison, Überblick → Übersicht; chosen: „Folge ich" over „Gefolgt" and „Mitwirkende" over „Staff"; the rest by natural German: „Gerade im Trend" on Home too, „Weiterlesen", „Statist", „Wo ansehen", „#3 der bestbewerteten aller Zeiten".)
 - [ ] Accessibility pass: TalkBack on every screen and widget, font scale 200 %, contrast in both color sources. (Done on the emulator: a scan of every reachable screen for unnamed buttons and touch targets under 48 dp (one unnamed cover button in the feed fixed), all screens and the widgets at 200 % (names on the detail page now wrap, the Next episode widget counts rows by text size), and `ContrastTest` for AniList blue, pure black and the status colors (dynamic color keeps its contrast by construction). Open: a hands-on TalkBack run on the phone.)
 - [x] Large screens: re-check the Tablet package's layouts with M10/M11's new screens and the widgets' sizes (tablet + foldable emulator), no orientation lock warnings. (Notifications, settings and licenses keep their reading width; the widgets fill wide cells. Found and fixed: back from a detail pane also closed the list pane beside it and landed on Home (`BackNavigationBehavior.PopLatest`). No activity locks its orientation.)
 - [x] Performance: Baseline Profile, R8 full mode, no jank in list scroll (check with Macrobenchmark or at least the profiler); widget updates stay cheap (no work on the main thread, no updates beyond the planned ones). (Release builds run R8 in full mode (APK 9.2 MB). New `:baselineprofile` module: a guest journey (start, Home, Browse, detail) generates the baseline profile and the cold start alone the startup profile R8 uses for the DEX layout (the emulator needs network, or the journey never reaches the detail page), `AppBenchmarks` measures cold start and scrolling with and without it. Widgets render in Glance's worker and are redrawn only when their data changes; see the M12 PR for the emulator numbers.)
-- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided by Tobias, 2026-09-28: no alpha).
-- [x] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes. (Measured 2026-10-01: 4.15 MB, 2.4 MB compressed, about a quarter of the 9.2 MB release APK. Tobias: keep it unmodified.)
-- [x] Final app icon and themed icon. (Tobias keeps the current 続 icon with its monochrome layer, 2026-10-01; the three proposals were dropped.)
+- [ ] M3 Expressive motion: switch the theme to `MaterialExpressiveTheme` / `MotionScheme.expressive()` once material3 1.5 is stable. M1 stays on stable material3 1.4.0, where these APIs are internal (decided 2026-09-28: no alpha).
+- [x] APK size: measure the bundled Google Sans Flex (about 4 MB, unmodified since M1) and decide whether to subset it; a subset is a Modified Version under the font's trademark notes. (Measured 2026-10-01: 4.15 MB, 2.4 MB compressed, about a quarter of the 9.2 MB release APK. Decision: keep it unmodified.)
+- [x] Final app icon and themed icon. (The current 続 icon with its monochrome layer stays, 2026-10-01; the three proposals were dropped.)
 - [ ] Crash-free run through all screens and widgets with airplane mode toggled. (Done on the emulator with the minified build as a guest, online and offline, and with the debug build's sample session and widgets offline: no crash. Open: the logged-in run on the phone.)
-- [ ] Play-ready basics (only if Tobias wants to publish): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots. (Skipped for v1.)
-- [x] Profile activity history over a year (added by Tobias, 2026-10-01). (Up to 53 weeks, scrolling sideways from today. AniList's `activityHistory` only goes back about 185 days and lists days with activity only, so the grid starts at the oldest day it sends, at least 12 weeks.)
-- [x] Notification rows: avatars centred in the leading column, their ring in the row's color on unread rows (added by Tobias, 2026-10-01).
-- [x] Swipeable tabs (added by Tobias, 2026-10-01): the Lists tab (status and custom lists), other users' lists, the profile tabs and the notification filters change by swiping, with the indicator following the finger and each tab keeping its scroll position. Network pages load only when shown; on tablets only the list pane swipes. The detail page keeps its anchor tabs, the Anime / Manga toggles stay toggles (a second swipe would fight the tabs, and Browse would load both types).
-- [x] Component catalog without a launcher entry (added by Tobias, 2026-10-01): debug builds open it by tapping the version in Settings > About 7 times; release builds don't contain it.
+- [ ] Play-ready basics (only for a store release): privacy policy page, data safety answers, store listing "Tsuzuki for AniList", screenshots. (Skipped for v1.)
+- [x] Profile activity history over a year (added 2026-10-01). (Up to 53 weeks, scrolling sideways from today. AniList's `activityHistory` only goes back about 185 days and lists days with activity only, so the grid starts at the oldest day it sends, at least 12 weeks.)
+- [x] Notification rows: avatars centred in the leading column, their ring in the row's color on unread rows (added 2026-10-01).
+- [x] Swipeable tabs (added 2026-10-01): the Lists tab (status and custom lists), other users' lists, the profile tabs and the notification filters change by swiping, with the indicator following the finger and each tab keeping its scroll position. Network pages load only when shown; on tablets only the list pane swipes. The detail page keeps its anchor tabs, the Anime / Manga toggles stay toggles (a second swipe would fight the tabs, and Browse would load both types).
+- [x] Component catalog without a launcher entry (added 2026-10-01): debug builds open it by tapping the version in Settings > About 7 times; release builds don't contain it.
 
-**Done when:** Tobias has used v1 as his only AniList app for a week.
+**Done when:** v1 has been the only AniList app in daily use for a week.
 
-**Status:** v1 is feature complete. The week test runs from 2026-10-01: Tobias uses Tsuzuki as his only AniList app; the open boxes above (a hands-on TalkBack run, the logged-in airplane mode run, expressive motion once material3 1.5 is stable) happen along the way.
+**Status:** v1 is feature complete. The week test runs from 2026-10-01: Tsuzuki is the only AniList app in daily use; the open boxes above (a hands-on TalkBack run, the logged-in airplane mode run, expressive motion once material3 1.5 is stable) happen along the way.
 
 ---
 
 ## GitHub ready (after v1)
 
-Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. Tobias changes the visibility himself.
+Added on 2026-10-01: make the repository ready to be opened up. The maintainer changes the visibility.
 
 - [x] `LICENSE`: GPL-3.0. The licenses screen lists it first and now covers everything the release runtime classpath ships (SQLDelight, Accompanist Drawable Painter, Gson, uuid, the annotation libraries, Protocol Buffers bundled in Tink under BSD 3-Clause, the Noto Sans JP icon glyph under the OFL).
 - [x] Secret check of the current tree and the whole Git history (result in the PR).
 - [x] README for an open-source app: banner, badges, features, screenshot gallery (light and dark, phone and tablet, widgets), tech stack, build from source, roadmap, disclaimer, license.
 - [x] `.github`: issue templates (bug, feature), PR template, `CONTRIBUTING.md`.
-- [x] Product images from the Pixel (Home, Lists, Frieren detail, share card, Browse, profile) and the emulator (tablet, widgets), framed for the README and captioned for a store listing, in `docs/images`.
-- [x] Home In Progress card: three variants (plain, tonal, outlined) in the catalog; Tobias chose the filled (tonal) card and dropped the "EP x / y" badge on the cover.
+- [x] Product images from a real phone (Home, Lists, Frieren detail, share card, Browse, profile) and the emulator (tablet, widgets), framed for the README and captioned for a store listing, in `docs/images`.
+- [x] Home In Progress card: three variants (plain, tonal, outlined) in the catalog; the filled (tonal) card was chosen and dropped the "EP x / y" badge on the cover.
 - [x] Follow-ups from the review: placeholder client ID in tests, made-up user names (Frieren characters) in previews, tests and docs, `navigationevent` declared, unit tests opted into their experimental APIs, keep rules in `src/main/keepRules` (AGP deprecation), D1 in `docs/PRODUCT.md` now "open source (GPL-3.0)".
 - [x] Modern check: all libraries on their latest stable version (Gradle wrapper 9.6.0 → 9.8.0), no deprecated APIs in main code except AniList's `stats.activityHistory` (kept, M9), opt-ins that stable Compose no longer needs removed.
 - [x] `docs/WEAR_OS.md`: assessment of a Wear OS companion.
@@ -227,28 +227,28 @@ Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. To
 
 ## Android notifications (after v1)
 
-Asked for by Tobias on 2026-10-01. One branch, one PR, one phone test.
+Added on 2026-10-01. One branch, one PR, one phone test.
 
-- [x] New episodes: planned locally from the airing times in Room (`nextAiringEpisode` from the list sync), an alarm at the airing time, no request; only anime being watched or rewatched. (Inexact alarm without the exact alarm permission, a few minutes late is fine (Tobias, 2026-10-01). Missed by more than 6 hours: skipped. AniList's own airing notifications are never shown, they would be duplicates.)
+- [x] New episodes: planned locally from the airing times in Room (`nextAiringEpisode` from the list sync), an alarm at the airing time, no request; only anime being watched or rewatched. (Inexact alarm without the exact alarm permission, a few minutes late is fine (2026-10-01). Missed by more than 6 hours: skipped. AniList's own airing notifications are never shown, they would be duplicates.)
 - [x] AniList notifications: WorkManager about every 30 minutes, network required; `unreadNotificationCount` first, the newest notifications only when it went up. Rate-limit and battery friendly, never resets the count.
 - [x] Own channels (New episodes, Activity, Follows, Other), grouped notifications, a tap opens the right screen (detail page, profile, notifications).
 - [x] No switches per kind in the app, only the Android channels: Settings gets one entry that opens the app's Android notification settings (`ACTION_APP_NOTIFICATION_SETTINGS`).
 - [x] Before checking or planning: are the app's notifications and the channel on? If not, no request and no alarm.
 - [x] Permission (`POST_NOTIFICATIONS`) asked after the login with a short word on what for, never on the first start; logout stops everything.
-- [x] Tests, phone test. (Unit tests for the plan, the coordinator and the repository; checked on the emulator with the sample session: hint and permission, the alarm, the notification at the airing time and its tap, and that a revoked permission removes the alarm and the periodic check. Phone test by Tobias, 2026-10-01.)
+- [x] Tests, phone test. (Unit tests for the plan, the coordinator and the repository; checked on the emulator with the sample session: hint and permission, the alarm, the notification at the airing time and its tap, and that a revoked permission removes the alarm and the periodic check. Tested on a real phone, 2026-10-01.)
 
-**Done when:** on Tobias's Pixel a new episode of something he watches shows up at (or a few minutes after) its airing time, a like or follow on AniList shows up within about half an hour, and switching a channel off stops its alarms or requests.
+**Done when:** on a real phone a new episode of something being watched shows up at (or a few minutes after) its airing time, a like or follow on AniList shows up within about half an hour, and switching a channel off stops its alarms or requests.
 
 ---
 
 ## README & Releases (after v1)
 
-Asked for by Tobias on 2026-10-01.
+Added on 2026-10-01.
 
-- [x] Product images again, one look: English, AniList blue, dark only. Home, list, Frieren detail and share card from the Pixel; widgets and one tablet image from the emulator; the old light, browse and profile images removed.
+- [x] Product images again, one look: English, AniList blue, dark only. Home, list, Frieren detail and share card from a real phone; widgets and one tablet image from the emulator; the old light, browse and profile images removed.
 - [x] Slim README: banner, one sentence, a row of four screenshots, short features, download link (GitHub Releases), build from source, disclaimer, license.
 - [x] Release workflow: a `v*` tag builds a signed release APK (version from the tag, keystore and client ID from GitHub secrets) and attaches it to a GitHub release with generated notes (`docs/RELEASING.md`).
 - [x] Dependabot for Gradle and GitHub Actions, weekly, grouped.
 - [x] README: shields.io badges in Markdown (`for-the-badge`; release, CI, license, Min SDK read from the version catalog, where the SDK levels now live), tech stack checked against the catalog and the code.
 - [x] Update check against GitHub Releases: at most once a day at app start (not in debug builds), a card on Home with Download (browser), Settings > About with a manual check and the automatic switch, off with `-Ptsuzuki.updateCheck=false` (docs/RELEASING.md).
-- [ ] First release v1.0.0 (Tobias: keystore, secrets, tag).
+- [ ] First release v1.0.0 (maintainer: keystore, secrets, tag).

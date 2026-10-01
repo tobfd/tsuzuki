@@ -22,7 +22,7 @@ internal data class InProgressItem(
 
     /**
      * The next +1 would complete the entry. The widget can't offer Undo, so that +1 opens the app's list
-     * editor instead (decided by Tobias, 2026-10-01).
+     * editor instead (decided 2026-10-01).
      */
     val plusOneCompletes: Boolean get() = total != null && progress + 1 >= total
 }

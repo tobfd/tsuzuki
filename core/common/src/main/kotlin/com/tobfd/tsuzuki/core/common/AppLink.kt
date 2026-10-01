@@ -16,6 +16,9 @@ sealed interface AppDestination {
 
     data class Media(val id: Int, val tab: AppTab) : AppDestination
 
+    /** The list editor of a media on the viewer's list, over the Lists tab. */
+    data class ListEditor(val mediaId: Int) : AppDestination
+
     data class User(val id: Int, val name: String) : AppDestination
 }
 
@@ -32,6 +35,8 @@ object AppLink {
             is AppDestination.Tab -> "tab/${destination.tab.path}"
 
             is AppDestination.Media -> "media/${destination.id}?tab=${destination.tab.path}"
+
+            is AppDestination.ListEditor -> "editor/${destination.mediaId}"
 
             is AppDestination.User -> "user/${destination.id}?name=${URLEncoder.encode(
                 destination.name,
@@ -55,6 +60,8 @@ object AppLink {
             "media" -> segments.getOrNull(1)?.toIntOrNull()?.let {
                 AppDestination.Media(it, tabOf(query["tab"]) ?: AppTab.Home)
             }
+
+            "editor" -> segments.getOrNull(1)?.toIntOrNull()?.let { AppDestination.ListEditor(it) }
 
             "user" -> {
                 val id = segments.getOrNull(1)?.toIntOrNull()

@@ -142,12 +142,21 @@ class InProgressWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 private val EntryIdKey = ActionParameters.Key<Int>("entryId")
+private val MediaIdKey = ActionParameters.Key<Int>("mediaId")
 
-/** +1 from the widget: the same `ListRepository.plusOne` as the app (Room first, then the queue). */
+/**
+ * +1 from the widget: the same `ListRepository.plusOne` as the app (Room first, then the queue). A +1
+ * that would complete the entry is left to the list editor (see [InProgressItem.plusOneCompletes]); if
+ * the entry changed since the widget was drawn, this only redraws it.
+ */
 internal class PlusOneAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         val entryId = parameters[EntryIdKey] ?: return
-        context.widgetDependencies().listRepository().plusOne(entryId)
+        val mediaId = parameters[MediaIdKey] ?: return
+        val lists = context.widgetDependencies().listRepository()
+        val entry = lists.observeEntry(mediaId).first()
+        val total = entry?.media?.total
+        if (entry != null && (total == null || entry.progress + 1 < total)) lists.plusOne(entryId)
         InProgressWidget().updateAll(context)
     }
 }
@@ -282,10 +291,19 @@ private fun InProgressSingle(item: InProgressItem, cover: Bitmap?) {
 @Composable
 private fun PlusOne(item: InProgressItem) {
     val context = LocalContext.current
-    WidgetPlusOneButton(
-        action = actionRunCallback<PlusOneAction>(actionParametersOf(EntryIdKey to item.entryId)),
-        contentDescription = context.getString(R.string.widget_plus_one_description, item.title)
-    )
+    if (item.plusOneCompletes) {
+        WidgetPlusOneButton(
+            action = openAction(context, AppDestination.ListEditor(item.mediaId)),
+            contentDescription = context.getString(R.string.widget_plus_one_last_description, item.title)
+        )
+    } else {
+        WidgetPlusOneButton(
+            action = actionRunCallback<PlusOneAction>(
+                actionParametersOf(EntryIdKey to item.entryId, MediaIdKey to item.mediaId)
+            ),
+            contentDescription = context.getString(R.string.widget_plus_one_description, item.title)
+        )
+    }
 }
 
 private fun progressText(context: Context, item: InProgressItem): String = if (item.total != null) {

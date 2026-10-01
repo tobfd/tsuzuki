@@ -49,6 +49,21 @@ class WidgetLogicTest {
     }
 
     @Test
+    fun inProgress_lastEpisodeOpensTheEditorInsteadOfCompleting() {
+        val items = inProgressItems(
+            listOf(
+                SampleData.listEntry(1, progress = 11, total = 12),
+                SampleData.listEntry(2, progress = 10, total = 12),
+                SampleData.listEntry(3, progress = 500, total = null)
+            )
+        ).associateBy { it.entryId }
+
+        assertTrue(items.getValue(1).plusOneCompletes)
+        assertFalse(items.getValue(2).plusOneCompletes)
+        assertFalse(items.getValue(3).plusOneCompletes)
+    }
+
+    @Test
     fun upcoming_countsAiredEpisodesNotWatchedYet() {
         val episode = UpcomingEpisode(SampleData.listEntry(1, progress = 3), episode = 6, airingAt = now)
 

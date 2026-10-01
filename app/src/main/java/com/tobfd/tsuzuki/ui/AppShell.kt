@@ -107,6 +107,7 @@ fun AppShell(
             null -> return@LaunchedEffect
             is AppDestination.Tab -> navigator.open(destination.tab.toTopLevelTab(), key = null)
             is AppDestination.Media -> navigator.open(destination.tab.toTopLevelTab(), MediaRoute(destination.id))
+            is AppDestination.ListEditor -> navigator.open(TopLevelTab.Lists, ListEditorRoute(destination.mediaId))
             is AppDestination.User -> navigator.open(TopLevelTab.Home, UserRoute(destination.id, destination.name))
         }
         onDestinationOpened()

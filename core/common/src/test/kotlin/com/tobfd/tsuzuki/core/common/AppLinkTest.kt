@@ -13,6 +13,7 @@ class AppLinkTest {
             AppDestination.Tab(AppTab.Lists),
             AppDestination.Media(154587, AppTab.Lists),
             AppDestination.Media(1, AppTab.Home),
+            AppDestination.ListEditor(154587),
             AppDestination.User(5424000, "tobfd"),
             AppDestination.User(7, "Gecko TV & Co/?")
         )
@@ -30,6 +31,7 @@ class AppLinkTest {
         assertNull(AppLink.parse("https://anilist.co/anime/154587"))
         assertNull(AppLink.parse("tsuzuki://open/media/abc"))
         assertNull(AppLink.parse("tsuzuki://open/user/5"))
+        assertNull(AppLink.parse("tsuzuki://open/editor/x"))
         assertNull(AppLink.parse("tsuzuki://open/tab/browse"))
         assertNull(AppLink.parse("not a uri"))
     }

@@ -19,6 +19,7 @@
         <item quantity="other">%d Änderungen warten aufs Senden</item>
     </plurals>
     <string name="widget_plus_one_description">+1 für %1$s</string>
+    <string name="widget_plus_one_last_description">+1 für %1$s, öffnet den Listen-Editor</string>
     <string name="widget_row_description">%1$s, %2$s</string>
     <plurals name="widget_progress_episodes">
         <item quantity="one">Folge %1$d von %2$d</item>

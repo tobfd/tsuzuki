@@ -90,7 +90,7 @@ internal fun WidgetFrame(
         titleBar = if (showTitle) {
             {
                 TitleBar(
-                    startIcon = ImageProvider(TsuzukiIcons.LogoGlyph),
+                    startIcon = ImageProvider(TsuzukiIcons.LogoGlyphTight),
                     title = title,
                     iconColor = GlanceTheme.colors.primary,
                     textColor = GlanceTheme.colors.onSurface,

@@ -7,6 +7,7 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 - OAuth redirect: `tsuzuki://auth`
 - minSdk 31 (Android 12), targetSdk and compileSdk 37 (Android 17)
 - Owner: Tobias (GitHub `tobfd`). Private first, but everything is built Play-Store-ready.
+- License: GPL-3.0 (`LICENSE`, decided by Tobias 2026-10-01). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
 
 ## Read these first
 
@@ -18,6 +19,8 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 | `docs/DESIGN.md` | Design system and a spec for every v1 screen. |
 | `design/tokens.json` | Colors, type scale, shapes, spacing, component sizes. The single source for theme values. |
 | `graphql/` | Starting GraphQL operations, already checked against the AniList schema. They move into `core/network` in M2. |
+| `docs/WEAR_OS.md` | Assessment of a possible Wear OS companion (not planned, no code). |
+| `docs/images/` | README and store images and how to make them again (`docs/images/README.md`). |
 
 The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh388ZqzPNPR8. It is private to Tobias; `docs/DESIGN.md` describes everything you need, so you never have to open it.
 
@@ -32,6 +35,7 @@ The clickable design prototype lives at https://claude.ai/artifact/6Ek7UyxL3Eh38
 - **Before saying "done":** `./gradlew spotlessApply` then `./gradlew build` (compiles, unit tests, lint). Report failures honestly with the output.
 - **Ask Tobias first** before: adding a dependency not listed below, changing anything in `docs/PRODUCT.md`, changing the module structure, or anything that touches his AniList account in bulk (mass edits, deletes).
 - **Keep docs true.** When a decision or behavior changes, update the matching doc in the same PR. Tick roadmap boxes in the PR that finishes them.
+- **Licenses screen:** a new runtime dependency (or a new transitive one in `./gradlew :app:dependencies --configuration releaseRuntimeClasspath`) goes into `OpenSourceLibraries` in `feature/settings` (`LicensesScreen.kt`), with its license text in the assets if the license is new.
 - **No secrets in git.** The AniList client ID goes in `local.properties` (`anilist.clientId=...`) and reaches code via `BuildConfig`. Never log or print the access token.
 
 ## Commands

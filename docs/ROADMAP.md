@@ -206,3 +206,18 @@ Formerly M13 after v1; moved into v1 before M12 by Tobias on 2026-09-30. Jetpack
 **Done when:** Tobias has used v1 as his only AniList app for a week.
 
 **Status:** v1 is feature complete. The week test runs from 2026-10-01: Tobias uses Tsuzuki as his only AniList app; the open boxes above (a hands-on TalkBack run, the logged-in airplane mode run, expressive motion once material3 1.5 is stable) happen along the way.
+
+---
+
+## GitHub ready (after v1)
+
+Asked for by Tobias on 2026-10-01: make the repository ready to be opened up. Tobias changes the visibility himself.
+
+- [x] `LICENSE`: GPL-3.0. The licenses screen lists it first and now covers everything the release runtime classpath ships (SQLDelight, Accompanist Drawable Painter, Gson, uuid, the annotation libraries, Protocol Buffers bundled in Tink under BSD 3-Clause, the Noto Sans JP icon glyph under the OFL).
+- [x] Secret check of the current tree and the whole Git history (result in the PR).
+- [x] README for an open-source app: banner, badges, features, screenshot gallery (light and dark, phone and tablet, widgets), tech stack, build from source, roadmap, disclaimer, license.
+- [x] `.github`: issue templates (bug, feature), PR template, `CONTRIBUTING.md`.
+- [x] Product images from the Pixel (Home, Lists, Frieren detail, share card, Browse, profile) and the emulator (tablet, widgets), framed for the README and captioned for a store listing, in `docs/images`.
+- [x] Home In Progress card: three variants (plain, tonal, outlined) in the catalog for Tobias to choose from.
+- [x] Modern check: all libraries on their latest stable version (Gradle wrapper 9.6.0 → 9.8.0), no deprecated APIs in main code except AniList's `stats.activityHistory` (kept, M9), opt-ins that stable Compose no longer needs removed.
+- [x] `docs/WEAR_OS.md`: assessment of a Wear OS companion.

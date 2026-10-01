@@ -6,7 +6,7 @@ Decided with Tobias during planning (2026-09-28). Changing any of these needs hi
 
 | # | Topic | Decision | Why |
 |---|---|---|---|
-| D1 | Distribution | Private first, built so it can go to Google Play later. | Adult content off by default, clean naming, no secrets in the repo. |
+| D1 | Distribution | Open source (GPL-3.0), Play-Store-ready. (Changed by Tobias on 2026-10-01; was "private first".) | Adult content off by default, clean naming, no secrets in the repo. |
 | D2 | Scope | Useful every day, not overloaded. v1 = the screens below; everything else comes later. | Keep v1 shippable. |
 | D3 | Theme | **Material You (dynamic color) by default.** Settings can switch to **AniList blue**. Theme mode system / light / dark. | Dynamic color exists on every supported device (D6). |
 | D4 | Navigation | 4 bottom tabs: **Home, Lists, Browse, Profile**. Notifications = bell with badge in the top app bar. No forum tab. | Few tabs keep the app calm; notifications don't need a permanent tab. |

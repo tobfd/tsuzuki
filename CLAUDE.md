@@ -6,7 +6,7 @@ Tsuzuki (続き, "what comes next") is a native Android client for [AniList](htt
 - Package / applicationId: `com.tobfd.tsuzuki`
 - OAuth redirect: `tsuzuki://auth`
 - minSdk 31 (Android 12), targetSdk and compileSdk 37 (Android 17)
-- Owner: Tobias (GitHub `tobfd`). Private first, but everything is built Play-Store-ready.
+- Owner: Tobias (GitHub `tobfd`). Open source, built Play-Store-ready (`docs/PRODUCT.md`, D1).
 - License: GPL-3.0 (`LICENSE`, decided by Tobias 2026-10-01). Third-party licenses are listed in the app (Settings > About > Open-source licenses).
 
 ## Read these first
@@ -61,7 +61,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 |---|---|---|
 | Language | Kotlin (K2), Kotlin Serialization, Coroutines + Flow | |
 | UI | Jetpack Compose (BOM), Material 3, M3 Expressive components, `material3-adaptive`, `material3-adaptive-navigation-suite` | Expressive APIs that are still experimental: `@OptIn` only inside `core:designsystem`. material3 1.4.0 (the version in the BOM) keeps the Expressive APIs (`MaterialExpressiveTheme`, `MotionScheme`, shape morphs) internal; they are public only in the 1.5 alphas. Decided: stay on stable; expressive motion follows in M12 once material3 1.5 is stable. |
-| Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. Stable since 1.0 (M0 pins 1.2.0), so no Navigation Compose fallback is needed. |
+| Navigation | **Navigation 3** (`navigation3-runtime`, `navigation3-ui`, `material3-adaptive-navigation3`) | Back stack as state, list-detail scenes on large screens, predictive back. Stable since 1.0 (M0 pins 1.2.0), so no Navigation Compose fallback is needed. `navigationevent` (+ `-compose`) is declared explicitly because `AppShell` uses its back events. |
 | GraphQL | Apollo Kotlin 5 + normalized cache library `com.apollographql.cache` (memory + SQLite) | Codegen from the AniList schema, Kotlin models, `responseBased` not needed; default `operationBased`. The cache library replaces Apollo's older built-in `apollo-normalized-cache*` artifacts. |
 | HTTP | OkHttp (through Apollo) | Auth + rate-limit interceptors live here. |
 | DI | Hilt (KSP) | `hilt-navigation-compose` or the Nav3 ViewModel integration for scoped ViewModels. |
@@ -75,7 +75,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Splash | `androidx.core:core-splashscreen` | |
 | Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
-| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profiles live in `app/src/release/generated/baselineProfiles` (`baseline-prof.txt` from the whole guest journey, `startup-prof.txt` from the cold start only; marked `linguist-generated` in `.gitattributes`); regenerate them after big UI changes, with network on the emulator. Release builds use R8 full mode (`app/proguard-rules.pro`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on Tobias's phone. |
+| Performance | Baseline Profile (`androidx.baselineprofile` plugin, `benchmark-macro-junit4`, `uiautomator`, `profileinstaller`) | Since M12. The profiles live in `app/src/release/generated/baselineProfiles` (`baseline-prof.txt` from the whole guest journey, `startup-prof.txt` from the cold start only; marked `linguist-generated` in `.gitattributes`); regenerate them after big UI changes, with network on the emulator. Release builds use R8 full mode (`app/src/main/keepRules/rules.keep`); the `nonMinifiedRelease` variant the plugin collects from stays unobfuscated. Set `ANDROID_SERIAL` to the emulator so the tasks never run on Tobias's phone. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
 ## Architecture

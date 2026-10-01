@@ -38,7 +38,8 @@ internal fun MediaCard.toModel(): MediaLite? = MediaLite(
     year = seasonYear ?: startDate?.year,
     averageScore = averageScore,
     nextAiringEpisode = nextAiringEpisode?.episode,
-    isAdult = isAdult ?: false
+    isAdult = isAdult ?: false,
+    nextAiringAt = nextAiringEpisode?.airingAt?.let { Instant.ofEpochSecond(it.toLong()) }
 )
 
 internal fun NetworkUserLite.toModel() = UserLite(id = id, name = name, avatarUrl = avatar?.medium)

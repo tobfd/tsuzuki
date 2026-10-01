@@ -40,6 +40,39 @@ class TopLevelNavigatorTest {
     }
 
     @Test
+    fun open_showsTheTabWithTheScreenOnTopOfItsStack() {
+        navigator.selectTab(TopLevelTab.Lists)
+        navigator.navigate(MediaRoute(1))
+        navigator.selectTab(TopLevelTab.Profile)
+
+        navigator.open(TopLevelTab.Lists, MediaRoute(2))
+
+        assertEquals(TopLevelTab.Lists, navigator.currentTab)
+        assertEquals(listOf(ListsRoute, MediaRoute(1), MediaRoute(2)), navigator.stackOf(TopLevelTab.Lists))
+        assertEquals(NavigationTransition.TabSwitch, navigator.lastTransition)
+    }
+
+    @Test
+    fun open_sameScreenAgain_pushesNothing() {
+        navigator.open(TopLevelTab.Home, MediaRoute(1))
+        navigator.open(TopLevelTab.Home, MediaRoute(1))
+
+        assertEquals(listOf(HomeRoute, MediaRoute(1)), navigator.stackOf(TopLevelTab.Home))
+    }
+
+    @Test
+    fun open_tabOnly_keepsItsStack() {
+        navigator.selectTab(TopLevelTab.Lists)
+        navigator.navigate(MediaRoute(1))
+        navigator.selectTab(TopLevelTab.Home)
+
+        navigator.open(TopLevelTab.Lists, null)
+
+        assertEquals(listOf(ListsRoute, MediaRoute(1)), navigator.stackOf(TopLevelTab.Lists))
+        assertFalse(pendingScroll(TopLevelTab.Lists))
+    }
+
+    @Test
     fun switchingTabs_keepsEveryStack() {
         navigator.navigate(MediaRoute(1))
         navigator.selectTab(TopLevelTab.Profile)

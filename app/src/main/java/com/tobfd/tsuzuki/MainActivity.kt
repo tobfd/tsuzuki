@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tobfd.tsuzuki.core.common.AppLink
 import com.tobfd.tsuzuki.core.designsystem.theme.ColorSource
 import com.tobfd.tsuzuki.core.designsystem.theme.ThemeMode
 import com.tobfd.tsuzuki.core.designsystem.theme.TsuzukiTheme
@@ -38,11 +39,12 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition {
             viewModel.uiState.value == MainUiState.Loading || viewModel.appearance.value == null
         }
-        // After a configuration change the redirect in the launch intent was already handled.
-        if (savedInstanceState == null) handleAuthRedirect(intent)
+        // After a configuration change the redirect or link in the launch intent was already handled.
+        if (savedInstanceState == null) handleIntent(intent)
         enableEdgeToEdge()
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val destination by viewModel.destination.collectAsStateWithLifecycle()
             LifecycleResumeEffect(viewModel) {
                 viewModel.onAppResumed()
                 onPauseOrDispose {}
@@ -65,19 +67,31 @@ class MainActivity : ComponentActivity() {
                 themeMode = themeMode,
                 pureBlack = appearance.pureBlack
             ) {
-                TsuzukiApp(uiState = uiState, onLogOut = viewModel::onLogOut)
+                TsuzukiApp(
+                    uiState = uiState,
+                    onLogOut = viewModel::onLogOut,
+                    destination = destination,
+                    onDestinationOpened = viewModel::onDestinationOpened
+                )
             }
         }
     }
 
-    /** `launchMode="singleTask"`: the tsuzuki://auth redirect from the login Custom Tab arrives here. */
+    /**
+     * `launchMode="singleTask"`: the tsuzuki://auth redirect from the login Custom Tab and the
+     * widgets' tsuzuki://open links arrive here while the app runs.
+     */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleAuthRedirect(intent)
+        handleIntent(intent)
     }
 
-    private fun handleAuthRedirect(intent: Intent) {
+    private fun handleIntent(intent: Intent) {
         val uri = intent.dataString ?: return
+        AppLink.parse(uri)?.let {
+            viewModel.open(it)
+            return
+        }
         if (authRedirects.dispatch(uri)) {
             // The token must not linger in the intent.
             intent.data = null

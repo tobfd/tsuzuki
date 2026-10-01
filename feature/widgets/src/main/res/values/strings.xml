@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_in_progress_name">In Progress</string>
+    <string name="widget_in_progress_picker_description">Your current anime and manga, with +1</string>
+    <string name="widget_next_episode_name">Next episode</string>
+    <string name="widget_next_episode_picker_description">Countdown to the next episodes of the anime you watch</string>
+    <string name="widget_friends_name">Friends\' activity</string>
+    <string name="widget_friends_picker_description">What the people you follow watch and read</string>
+
+    <string name="widget_log_in">Log in to Tsuzuki</string>
+    <string name="widget_log_in_lists">Your lists show up here once you\'re logged in.</string>
+    <string name="widget_log_in_friends">See what the people you follow watch and read.</string>
+    <string name="widget_loading">Loading…</string>
+
+    <string name="widget_in_progress_empty">Nothing in progress</string>
+    <string name="widget_in_progress_empty_body">Start something from your Planning list.</string>
+    <plurals name="widget_changes_waiting">
+        <item quantity="one">%d change waiting to be sent</item>
+        <item quantity="other">%d changes waiting to be sent</item>
+    </plurals>
+    <string name="widget_plus_one_description">+1 for %1$s</string>
+    <string name="widget_plus_one_last_description">+1 for %1$s, opens the list editor</string>
+    <string name="widget_row_description">%1$s, %2$s</string>
+    <plurals name="widget_progress_episodes">
+        <item quantity="one">episode %1$d of %2$d</item>
+        <item quantity="other">episode %1$d of %2$d</item>
+    </plurals>
+    <plurals name="widget_progress_chapters">
+        <item quantity="one">chapter %1$d of %2$d</item>
+        <item quantity="other">chapter %1$d of %2$d</item>
+    </plurals>
+    <string name="widget_progress_episode_unknown_total">episode %1$d</string>
+    <string name="widget_progress_chapter_unknown_total">chapter %1$d</string>
+
+    <string name="widget_next_episode_empty">No episodes coming up</string>
+    <string name="widget_next_episode_empty_body">Airing anime you\'re watching show up here.</string>
+    <string name="widget_episode">Episode %1$d</string>
+    <plurals name="widget_behind">
+        <item quantity="one">%d behind</item>
+        <item quantity="other">%d behind</item>
+    </plurals>
+    <string name="widget_separator" translatable="false">" · "</string>
+    <plurals name="widget_in_days">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+    <string name="widget_aired">Aired</string>
+    <string name="widget_next_episode_offline">Offline · times may have changed</string>
+    <string name="widget_next_episode_failed">Couldn\'t update · times may have changed</string>
+    <string name="widget_next_episode_description">%1$s, %2$s</string>
+
+    <string name="widget_friends_empty">Nothing new yet</string>
+    <string name="widget_friends_empty_body">Activities of the people you follow show up here.</string>
+    <string name="widget_friends_offline_title">Offline. The activities load once you\'re back online.</string>
+    <string name="widget_updated">Updated %1$s</string>
+    <string name="widget_updated_offline">Offline · updated %1$s</string>
+    <string name="widget_updated_failed">Couldn\'t update · updated %1$s</string>
+    <string name="widget_text_activity" translatable="false">%1$s: %2$s</string>
+    <string name="widget_activity_description">%1$s, %2$s</string>
+    <!-- Sample content of the static picker previews (res/layout/widget_preview_*). -->
+    <string name="widget_preview_frieren" translatable="false">Sousou no Frieren</string>
+    <string name="widget_preview_frieren_2" translatable="false">Sousou no Frieren 2nd Season</string>
+    <string name="widget_preview_berserk" translatable="false">Berserk</string>
+    <string name="widget_preview_one_piece" translatable="false">ONE PIECE</string>
+    <string name="widget_preview_blue_box" translatable="false">Blue Box</string>
+    <string name="widget_preview_progress_frieren" translatable="false">18 / 28</string>
+    <string name="widget_preview_progress_berserk" translatable="false">364 / ?</string>
+    <string name="widget_preview_progress_one_piece" translatable="false">1071 / ?</string>
+    <string name="widget_preview_countdown" translatable="false">5:07:12</string>
+    <string name="widget_preview_episode_6">Episode 6 · Fri 5:30 PM</string>
+    <string name="widget_preview_episode_1146">Episode 1146 · Sun 1:15 AM</string>
+    <string name="widget_preview_episode_20">Episode 20 · Tue 6:00 PM</string>
+    <string name="widget_preview_in_2_days">in 2 days</string>
+    <string name="widget_preview_in_4_days">in 4 days</string>
+    <string name="widget_preview_activity_1">GeckoTV watched episode 5 of Sousou no Frieren</string>
+    <string name="widget_preview_activity_2">Sora completed Shingeki no Kyojin</string>
+    <string name="widget_preview_activity_3">GeckoTV read chapter 120 of Berserk</string>
+    <string name="widget_preview_time_1">2:48 PM</string>
+    <string name="widget_preview_time_2">12:30 PM</string>
+    <string name="widget_preview_time_3">Mon 9:10 PM</string>
+</resources>

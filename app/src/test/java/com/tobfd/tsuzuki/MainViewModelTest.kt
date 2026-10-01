@@ -1,5 +1,7 @@
 package com.tobfd.tsuzuki
 
+import com.tobfd.tsuzuki.core.common.AppDestination
+import com.tobfd.tsuzuki.core.common.AppTab
 import com.tobfd.tsuzuki.core.model.LogoutReason
 import com.tobfd.tsuzuki.core.model.SessionState
 import com.tobfd.tsuzuki.core.testing.FakeListRepository
@@ -153,5 +155,17 @@ class MainViewModelTest {
         viewModel.onLogOut()
 
         assertEquals(MainUiState.LoggedOut, viewModel.uiState.value)
+    }
+
+    @Test
+    fun widgetDestination_staysUntilTheShellOpenedIt() {
+        val viewModel = viewModel()
+        val destination = AppDestination.Media(154587, AppTab.Lists)
+
+        viewModel.open(destination)
+        assertEquals(destination, viewModel.destination.value)
+
+        viewModel.onDestinationOpened()
+        assertEquals(null, viewModel.destination.value)
     }
 }

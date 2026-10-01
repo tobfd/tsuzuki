@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_in_progress_name">Aktuell dabei</string>
+    <string name="widget_in_progress_picker_description">Deine laufenden Anime und Manga, mit +1</string>
+    <string name="widget_next_episode_name">Nächste Folge</string>
+    <string name="widget_next_episode_picker_description">Countdown bis zu den nächsten Folgen der Anime, die du schaust</string>
+    <string name="widget_friends_name">Freunde-Aktivität</string>
+    <string name="widget_friends_picker_description">Was die Leute, denen du folgst, schauen und lesen</string>
+
+    <string name="widget_log_in">Bei Tsuzuki anmelden</string>
+    <string name="widget_log_in_lists">Deine Listen erscheinen hier, sobald du angemeldet bist.</string>
+    <string name="widget_log_in_friends">Sieh, was die Leute, denen du folgst, schauen und lesen.</string>
+    <string name="widget_loading">Wird geladen…</string>
+
+    <string name="widget_in_progress_empty">Gerade nichts dabei</string>
+    <string name="widget_in_progress_empty_body">Starte etwas aus deiner „Geplant“-Liste.</string>
+    <plurals name="widget_changes_waiting">
+        <item quantity="one">%d Änderung wartet aufs Senden</item>
+        <item quantity="other">%d Änderungen warten aufs Senden</item>
+    </plurals>
+    <string name="widget_plus_one_description">+1 für %1$s</string>
+    <string name="widget_plus_one_last_description">+1 für %1$s, öffnet den Listen-Editor</string>
+    <string name="widget_row_description">%1$s, %2$s</string>
+    <plurals name="widget_progress_episodes">
+        <item quantity="one">Folge %1$d von %2$d</item>
+        <item quantity="other">Folge %1$d von %2$d</item>
+    </plurals>
+    <plurals name="widget_progress_chapters">
+        <item quantity="one">Kapitel %1$d von %2$d</item>
+        <item quantity="other">Kapitel %1$d von %2$d</item>
+    </plurals>
+    <string name="widget_progress_episode_unknown_total">Folge %1$d</string>
+    <string name="widget_progress_chapter_unknown_total">Kapitel %1$d</string>
+
+    <string name="widget_next_episode_empty">Keine Folgen in Sicht</string>
+    <string name="widget_next_episode_empty_body">Laufende Anime, die du schaust, erscheinen hier.</string>
+    <string name="widget_episode">Folge %1$d</string>
+    <plurals name="widget_behind">
+        <item quantity="one">%d offen</item>
+        <item quantity="other">%d offen</item>
+    </plurals>
+    <plurals name="widget_in_days">
+        <item quantity="one">in %d Tag</item>
+        <item quantity="other">in %d Tagen</item>
+    </plurals>
+    <string name="widget_aired">Erschienen</string>
+    <string name="widget_next_episode_offline">Offline · Zeiten können sich geändert haben</string>
+    <string name="widget_next_episode_failed">Nicht aktualisiert · Zeiten können sich geändert haben</string>
+    <string name="widget_next_episode_description">%1$s, %2$s</string>
+
+    <string name="widget_friends_empty">Noch nichts Neues</string>
+    <string name="widget_friends_empty_body">Aktivitäten der Leute, denen du folgst, erscheinen hier.</string>
+    <string name="widget_friends_offline_title">Offline. Die Aktivitäten laden, sobald du wieder online bist.</string>
+    <string name="widget_updated">Aktualisiert %1$s</string>
+    <string name="widget_updated_offline">Offline · aktualisiert %1$s</string>
+    <string name="widget_updated_failed">Nicht aktualisiert · Stand %1$s</string>
+    <string name="widget_activity_description">%1$s, %2$s</string>
+    <string name="widget_preview_episode_6">Folge 6 · Fr. 17:30</string>
+    <string name="widget_preview_episode_1146">Folge 1146 · So. 01:15</string>
+    <string name="widget_preview_episode_20">Folge 20 · Di. 18:00</string>
+    <string name="widget_preview_in_2_days">in 2 Tagen</string>
+    <string name="widget_preview_in_4_days">in 4 Tagen</string>
+    <string name="widget_preview_activity_1">GeckoTV hat Folge 5 von Sousou no Frieren geschaut</string>
+    <string name="widget_preview_activity_2">Sora hat Shingeki no Kyojin abgeschlossen</string>
+    <string name="widget_preview_activity_3">GeckoTV hat Kapitel 120 von Berserk gelesen</string>
+    <string name="widget_preview_time_1">14:48</string>
+    <string name="widget_preview_time_2">12:30</string>
+    <string name="widget_preview_time_3">Mo. 21:10</string>
+</resources>

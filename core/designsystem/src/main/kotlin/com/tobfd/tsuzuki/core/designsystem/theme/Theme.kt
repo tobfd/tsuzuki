@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.core.designsystem.theme
 
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -75,6 +76,18 @@ fun colorScheme(colorSource: ColorSource, darkTheme: Boolean): ColorScheme = whe
     }
 
     ColorSource.AniListBlue -> if (darkTheme) AniListBlueDarkColorScheme else AniListBlueLightColorScheme
+}
+
+/**
+ * The scheme [TsuzukiTheme] uses, outside of composition: the home-screen widgets theme themselves
+ * with it.
+ */
+fun colorScheme(context: Context, colorSource: ColorSource, darkTheme: Boolean, pureBlack: Boolean): ColorScheme {
+    val base = when (colorSource) {
+        ColorSource.Dynamic -> if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        ColorSource.AniListBlue -> if (darkTheme) AniListBlueDarkColorScheme else AniListBlueLightColorScheme
+    }
+    return if (darkTheme && pureBlack) base.pureBlack() else base
 }
 
 /** Black background and surface; containers keep their order, raised slightly above the black. */

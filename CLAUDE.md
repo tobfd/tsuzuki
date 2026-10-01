@@ -67,7 +67,7 @@ Use the latest **stable** version of each library at project start (M0) and pin 
 | Paging | Paging 3 (`paging-compose`) | Search, notifications. The Home feed loads more by button, without Paging. |
 | Auth UI | `androidx.browser` Custom Tabs | Login page. |
 | Splash | `androidx.core:core-splashscreen` | |
-| Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; latest stable is 1.2.0 (pin it when the package starts). Widgets read Room and go through `ListRepository` like the app. |
+| Widgets | Jetpack Glance (`glance-appwidget`, `glance-material3`) | Approved by Tobias 2026-09-30 for the Widgets package; pinned at 1.2.0 (latest stable) since the Widgets package. Widgets read Room and go through `ListRepository` like the app. |
 | Tests | JUnit 4/5, kotlinx-coroutines-test, Turbine, MockK or fakes, Compose UI test, Robolectric where handy, `apollo-testing-support` (test only) | Prefer hand-written fakes over mocks for repositories. Apollo responses come from `QueueTestNetworkTransport`. |
 | Build | Gradle version catalog, `build-logic` convention plugins, Spotless + ktlint | AGP 9 compiles Kotlin itself (built-in Kotlin): never apply `org.jetbrains.kotlin.android`. The root build pins the Kotlin Gradle plugin version. |
 
@@ -106,6 +106,7 @@ feature/people          character and staff pages
 feature/profile         Profile tab + other users
 feature/notifications   notifications
 feature/settings        settings
+feature/widgets         home-screen widgets (Glance): In Progress, Next episode, Friends' activity
 ```
 
 Dependency rules: `feature/*` depends on `core/*` only, never on another feature. Navigation between features goes through route keys defined in each feature (`HomeRoute`, `MediaRoute(id)`) and wired in `app`. `core/designsystem` knows nothing about AniList models; `core/ui` does.
@@ -137,6 +138,13 @@ Dependency rules: `feature/*` depends on `core/*` only, never on another feature
 - Every change (+1, status, score, editor save, delete) is written to Room immediately (optimistic), then appended to a `pending_mutation` table. A WorkManager job (network constraint, exponential backoff) sends them in order. On a validation error the local change is rolled back and the user sees why.
 - Full list refresh (`MediaListCollection`) on app start if older than 15 minutes, on pull to refresh, and via a periodic worker (every 6 hours, unmetered not required).
 - In code (since M4): `ListRepository` in `core/data` is the only entry point. `ListMutationSender` sends the queue oldest first, all queued changes of one entry as one `SaveMediaListEntry` (a +1 undone before sending sends nothing) and rolls rejected ones back from the `previous` snapshot stored with each change. `ListWorkScheduler` runs it through WorkManager (`ListMutationWorker`, `ListSyncWorker`, Hilt worker factory in `TsuzukiApplication`). A sync never overwrites entries whose changes are still queued. Logout clears the whole database (`UserDataCleaner`).
+
+### Widgets (since the Widgets package)
+
+- `feature/widgets` holds the three Glance widgets, their receivers, `WidgetWork` (the only background requests they cause, see `docs/ANILIST_API.md`, Widgets) and `WidgetUpdater`, which the `Application` starts: it redraws placed widgets whenever what they show changes in Room, the session or the appearance settings. Widgets reach Hilt through `WidgetDependencies` (an entry point) and use the repositories in `core/data` like the app: `ListRepository` (+1), `AiringRepository`, `FriendActivityRepository`.
+- Taps open the app through `tsuzuki://open/...` links (`AppLink` in `core/common`); `MainActivity` hands them to `AppShell`, which opens the tab and pushes the screen (`TopLevelNavigator.open`).
+- Glance pitfalls: a `Chronometer` (through `AndroidRemoteViews`) doesn't tick inside a `LazyColumn`, and put directly into a `Row` it drops the row's other children (wrap it in a `Box`). RemoteViews layouts (also the static picker previews) only allow the RemoteViews view classes (no plain `View`).
+- Debug builds have `PinWidgetActivity` (pins a widget through the launcher's dialog) and `WidgetSampleDataActivity` (a made-up session and sample data, emulator only and offline) for checks without an account.
 
 ### Settings (since M11)
 

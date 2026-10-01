@@ -70,6 +70,7 @@ dependencies {
     implementation(project(":feature:profile"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:auth"))
+    implementation(project(":feature:widgets"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -85,6 +86,10 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.navigation.suite)
+
+    // The debug-only widget sample data writes straight into the app's storage.
+    debugImplementation(project(":core:database"))
+    debugImplementation(project(":core:datastore"))
 
     testImplementation(project(":core:testing"))
 }

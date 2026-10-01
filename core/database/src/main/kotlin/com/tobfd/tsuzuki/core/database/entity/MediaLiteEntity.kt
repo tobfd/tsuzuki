@@ -26,5 +26,7 @@ data class MediaLiteEntity(
     val year: Int?,
     @ColumnInfo(name = "average_score") val averageScore: Int?,
     @ColumnInfo(name = "next_airing_episode") val nextAiringEpisode: Int?,
-    @ColumnInfo(name = "is_adult") val isAdult: Boolean
+    @ColumnInfo(name = "is_adult") val isAdult: Boolean,
+    /** When [nextAiringEpisode] airs, epoch seconds (since database version 2, for the widgets). */
+    @ColumnInfo(name = "next_airing_at") val nextAiringAt: Long? = null
 )

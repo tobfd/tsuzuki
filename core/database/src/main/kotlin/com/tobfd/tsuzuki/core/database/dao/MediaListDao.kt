@@ -5,6 +5,7 @@ import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Upsert
+import com.tobfd.tsuzuki.core.database.entity.AiringUpdate
 import com.tobfd.tsuzuki.core.database.entity.CustomListEntity
 import com.tobfd.tsuzuki.core.database.entity.EntryWithMedia
 import com.tobfd.tsuzuki.core.database.entity.ListSyncEntity
@@ -67,6 +68,33 @@ abstract class MediaListDao {
         """
     )
     abstract suspend fun applyTitleLanguage(language: String)
+
+    /**
+     * Anime the viewer is watching (or rewatching) that are still airing or not released yet, soonest
+     * next episode first: the ids the widgets' airing refresh asks AniList about.
+     */
+    @Query(
+        """
+        SELECT DISTINCT m.id FROM media_lite m JOIN media_list_entry e ON e.media_id = m.id
+        WHERE e.type = 'ANIME' AND e.status IN ('CURRENT', 'REPEATING')
+            AND m.status IN ('RELEASING', 'NOT_YET_RELEASED')
+        ORDER BY m.next_airing_at IS NULL, m.next_airing_at
+        LIMIT :limit
+        """
+    )
+    abstract suspend fun airingAnimeIds(limit: Int): List<Int>
+
+    @Query(
+        "UPDATE media_lite SET next_airing_episode = :episode, next_airing_at = :airingAt, " +
+            "status = COALESCE(:status, status), episodes = COALESCE(:episodes, episodes) WHERE id = :id"
+    )
+    abstract suspend fun updateAiring(id: Int, episode: Int?, airingAt: Long?, status: String?, episodes: Int?)
+
+    /** Writes the next episodes from one airing refresh in a single transaction. */
+    @Transaction
+    open suspend fun updateAiring(updates: List<AiringUpdate>) {
+        updates.forEach { updateAiring(it.mediaId, it.episode, it.airingAt, it.status, it.episodes) }
+    }
 
     /** Media rows no entry refers to any more (no data beyond what the app needs). */
     @Query("DELETE FROM media_lite WHERE id NOT IN (SELECT media_id FROM media_list_entry)")

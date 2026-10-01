@@ -4,8 +4,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
-/** Corner radii from design/tokens.json (shape). "full" is a pill or circle (`CircleShape`). */
-internal object ShapeTokens {
+/**
+ * Corner radii from design/tokens.json (shape). "full" is a pill or circle (`CircleShape`). Public for
+ * the home-screen widgets, where Glance takes radii instead of shapes.
+ */
+object ShapeTokens {
     val extraSmall = 4.dp
     val small = 8.dp
     val medium = 12.dp

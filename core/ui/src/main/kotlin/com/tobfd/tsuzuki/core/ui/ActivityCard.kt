@@ -1,5 +1,6 @@
 package com.tobfd.tsuzuki.core.ui
 
+import android.content.res.Resources
 import android.text.format.DateUtils
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -190,6 +191,22 @@ private fun listUpdateText(activity: Activity.ListUpdate): AnnotatedString {
         fillTemplate(stringResource(template, "\u0001", "\u0002", "\u0003"), user, AnnotatedString(progress), title)
     } else {
         fillTemplate(stringResource(template, "\u0001", "\u0002"), user, title)
+    }
+}
+
+/**
+ * "tobfd watched episode 18 of Frieren" without styles, for places that can't show them (the
+ * home-screen widgets).
+ */
+fun listUpdateSummary(resources: Resources, activity: Activity.ListUpdate): String {
+    val user = activity.user.name
+    val title = activity.media.title.userPreferred
+    val progress = activity.progress
+    val template = listUpdateTemplate(activity.status, progress != null)
+    return when {
+        template == null -> listOfNotNull(user, activity.status, progress, title).joinToString(" ")
+        progress != null -> resources.getString(template, user, progress, title)
+        else -> resources.getString(template, user, title)
     }
 }
 

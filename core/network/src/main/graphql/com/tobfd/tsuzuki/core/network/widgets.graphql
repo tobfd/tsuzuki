@@ -1,0 +1,13 @@
+# "Next episode" widget: the next episode of the viewer's airing anime, up to 50 ids in ONE request.
+# At most once an hour and right after an episode airs (docs/ANILIST_API.md, Widgets). No isAdult:
+# the ids come from the viewer's own list.
+query NextEpisodes($ids: [Int]) {
+  Page(perPage: 50) {
+    media(id_in: $ids, type: ANIME) {
+      id
+      status
+      episodes
+      nextAiringEpisode { episode airingAt }
+    }
+  }
+}

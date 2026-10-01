@@ -52,6 +52,9 @@ object TsuzukiIcons {
     /** The 続 logo glyph (not a Material Symbol); use through `TsuzukiLogo`. */
     @DrawableRes val LogoGlyph: Int = R.drawable.ic_logo_glyph
 
+    /** The glyph without the launcher icon's padding, for small places (widget title bars). */
+    @DrawableRes val LogoGlyphTight: Int = R.drawable.ic_logo_glyph_tight
+
     @DrawableRes val Logout: Int = R.drawable.ic_logout
 
     @DrawableRes val Notifications: Int = R.drawable.ic_notifications

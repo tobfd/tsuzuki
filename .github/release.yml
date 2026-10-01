@@ -1,0 +1,9 @@
+# Sections of the generated release notes (gh release create --generate-notes).
+changelog:
+  categories:
+    - title: Changes
+      labels: ['*']
+      exclude:
+        labels: [dependencies]
+    - title: Dependencies
+      labels: [dependencies]

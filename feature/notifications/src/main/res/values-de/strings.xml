@@ -18,4 +18,22 @@
     <string name="notifications_empty_media">Änderungen an Titeln auf deinen Listen erscheinen hier.</string>
     <string name="notifications_error_title">Benachrichtigungen konnten nicht geladen werden</string>
     <string name="notifications_more_failed">Weitere Benachrichtigungen konnten nicht geladen werden.</string>
+    <!-- Android-Benachrichtigungen (Kanäle, Texte, Hinweis nach dem Login) -->
+    <string name="alerts_channel_episodes">Neue Folgen</string>
+    <string name="alerts_channel_episodes_description">Wenn eine neue Folge eines Animes erscheint, den du gerade schaust.</string>
+    <string name="alerts_channel_activity">Aktivität</string>
+    <string name="alerts_channel_activity_description">Likes, Antworten, Erwähnungen und Nachrichten auf AniList.</string>
+    <string name="alerts_channel_follows">Follows</string>
+    <string name="alerts_channel_follows_description">Wenn dir jemand auf AniList folgt.</string>
+    <string name="alerts_channel_other">Sonstiges</string>
+    <string name="alerts_channel_other_description">Änderungen an Titeln auf deinen Listen, etwa neue verwandte Titel.</string>
+    <string name="alerts_episode_text">Folge %1$d ist da</string>
+    <string name="alerts_hint_title">Auf dem Laufenden bleiben?</string>
+    <string name="alerts_hint_text">Tsuzuki kann dir Bescheid geben, wenn eine neue Folge eines Animes erscheint, den du gerade schaust, und wenn dir auf AniList jemand ein Like gibt, antwortet oder folgt. Jede Sorte kannst du jederzeit in den Android-Einstellungen an- oder ausschalten.</string>
+    <string name="alerts_hint_allow">Benachrichtigungen erlauben</string>
+    <string name="alerts_hint_later">Nicht jetzt</string>
+    <string name="alerts_exact_title">Auf die Minute?</string>
+    <string name="alerts_exact_text">Damit neue Folgen genau zur Ausstrahlung gemeldet werden, braucht Tsuzuki die Berechtigung für Wecker und Erinnerungen. Ohne sie zeigt Android die Meldung eventuell etwas später.</string>
+    <string name="alerts_exact_allow">Einstellungen öffnen</string>
+    <string name="alerts_exact_skip">Nicht nötig</string>
 </resources>

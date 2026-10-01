@@ -10,6 +10,7 @@ import com.tobfd.tsuzuki.core.common.AppError
 import com.tobfd.tsuzuki.core.data.notifications.NotificationsRepository
 import com.tobfd.tsuzuki.core.model.NotificationEntry
 import com.tobfd.tsuzuki.core.model.NotificationFilter
+import com.tobfd.tsuzuki.feature.notifications.alerts.AlertPoster
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.DayOfWeek
@@ -63,10 +64,16 @@ sealed interface NotificationsEvent {
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val repository: NotificationsRepository,
-    private val clock: Clock
+    private val clock: Clock,
+    alertPoster: AlertPoster
 ) : ViewModel() {
 
     private val visit = repository.startVisit()
+
+    init {
+        // The screen shows them now: their Android notifications can go.
+        alertPoster.cancelAniList()
+    }
     private val state = MutableStateFlow(NotificationsUiState())
     val uiState: StateFlow<NotificationsUiState> = state.asStateFlow()
 

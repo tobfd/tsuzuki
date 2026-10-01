@@ -2,6 +2,7 @@ package com.tobfd.tsuzuki.di
 
 import com.tobfd.tsuzuki.BuildConfig
 import com.tobfd.tsuzuki.core.common.AniListClientId
+import com.tobfd.tsuzuki.core.common.AppBuildInfo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,4 +15,11 @@ object AppModule {
     @Provides
     @AniListClientId
     fun aniListClientId(): String = BuildConfig.ANILIST_CLIENT_ID
+
+    @Provides
+    fun appBuildInfo(): AppBuildInfo = AppBuildInfo(
+        versionName = BuildConfig.VERSION_NAME,
+        isDebug = BuildConfig.DEBUG,
+        updateCheckEnabled = BuildConfig.UPDATE_CHECK
+    )
 }

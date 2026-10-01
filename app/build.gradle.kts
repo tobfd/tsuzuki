@@ -13,6 +13,10 @@ plugins {
 val releaseVersionName: String? = providers.gradleProperty("tsuzuki.versionName").orNull
 val releaseVersionCode: Int? = providers.gradleProperty("tsuzuki.versionCode").orNull?.toInt()
 
+// The GitHub update check (docs/RELEASING.md) is on unless a build turns it off, e.g. a later Play Store
+// build with -Ptsuzuki.updateCheck=false.
+val updateCheck: Boolean = providers.gradleProperty("tsuzuki.updateCheck").orNull?.toBooleanStrict() ?: true
+
 // Signing for releases comes only from environment variables that the release workflow fills from
 // GitHub secrets. Without them (local builds, CI) the release build is unsigned.
 val releaseKeystore: String? = providers.environmentVariable("TSUZUKI_KEYSTORE_FILE").orNull
@@ -70,6 +74,10 @@ androidComponents {
         variant.shrinkResources = false
     }
     onVariants { variant ->
+        variant.buildConfigFields?.put(
+            "UPDATE_CHECK",
+            BuildConfigField("boolean", updateCheck.toString(), "Whether the app checks GitHub Releases for updates")
+        )
         variant.buildConfigFields?.put(
             "ANILIST_CLIENT_ID",
             anilistClientId.map { clientId ->

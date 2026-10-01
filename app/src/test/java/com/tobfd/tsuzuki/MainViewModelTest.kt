@@ -8,12 +8,15 @@ import com.tobfd.tsuzuki.core.testing.FakeListRepository
 import com.tobfd.tsuzuki.core.testing.FakeNotificationsRepository
 import com.tobfd.tsuzuki.core.testing.FakeSessionRepository
 import com.tobfd.tsuzuki.core.testing.FakeSettingsRepository
+import com.tobfd.tsuzuki.core.testing.FakeUpdateRepository
 import com.tobfd.tsuzuki.core.testing.MainDispatcherRule
 import com.tobfd.tsuzuki.core.testing.SampleData
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -33,8 +36,11 @@ class MainViewModelTest {
         notificationsRepository,
         listRepository,
         FakeSettingsRepository(),
+        updateRepository,
         Clock.fixed(now, ZoneOffset.UTC)
     )
+
+    private val updateRepository = FakeUpdateRepository()
 
     private val loggedIn = SessionState.LoggedIn(SampleData.viewer, SampleData.tokenExpiry)
 
@@ -167,5 +173,12 @@ class MainViewModelTest {
 
         viewModel.onDestinationOpened()
         assertEquals(null, viewModel.destination.value)
+    }
+
+    @Test
+    fun appStart_asksForAnUpdateCheck() = runTest {
+        viewModel()
+        runCurrent()
+        assertEquals(1, updateRepository.startChecks)
     }
 }

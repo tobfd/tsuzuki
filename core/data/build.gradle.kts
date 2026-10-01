@@ -22,6 +22,8 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:network"))
     implementation(libs.kotlinx.serialization.json)
+    // The GitHub update check has its own plain client (core/data/update).
+    implementation(libs.okhttp)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)

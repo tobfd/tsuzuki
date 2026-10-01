@@ -63,36 +63,56 @@ class WidgetSampleDataActivity : ComponentActivity() {
             now
         )
         val samples = listOf(
-            Sample(1, 154587, "ANIME", "Sousou no Frieren", 18, 28, "FINISHED", null, null, "#e4a15d"),
+            Sample(
+                1, 154587, "ANIME", "Sousou no Frieren", 18, 28, "FINISHED", null, null, "#bbf1a1",
+                cover(
+                    "anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg"
+                )
+            ),
             Sample(
                 2, 182255, "ANIME", "Sousou no Frieren 2nd Season", 3, 12, "RELEASING", 6,
                 now + Duration.ofHours(
                     5
                 ),
-                "#e4a15d"
+                "#5dc9f1",
+                cover("anime/cover/medium/bx182255-butzrqd4I0aC.jpg")
             ),
-            Sample(3, 21, "ANIME", "ONE PIECE", 1143, null, "RELEASING", 1146, now + Duration.ofDays(2), "#e4865d"),
-            Sample(4, 30002, "MANGA", "Berserk", 364, null, "RELEASING", null, null, "#e4a143"),
-            Sample(5, 170942, "ANIME", "Ao no Hako", 19, 25, "RELEASING", 20, now + Duration.ofMinutes(40), "#5da1e4")
+            Sample(
+                3, 21, "ANIME", "ONE PIECE", 1143, null, "RELEASING", 1146, now + Duration.ofDays(2), "#e49335",
+                cover("anime/cover/medium/bx21-ELSYx3yMPcKM.jpg")
+            ),
+            Sample(
+                4, 30002, "MANGA", "Berserk", 364, null, "RELEASING", null, null, "#d6861a",
+                cover(
+                    "manga/cover/medium/bx30002-Cul4OeN7bYtn.jpg"
+                )
+            ),
+            Sample(
+                5, 170942, "ANIME", "Ao no Hako", 19, 25, "RELEASING", 20, now + Duration.ofMinutes(40), "#5daee4",
+                cover("anime/cover/medium/bx170942-KKcLfQzV57nG.jpg")
+            )
         )
         val dao = database.mediaListDao()
         dao.upsertMedia(samples.map { it.media() })
         samples.forEachIndexed { index, sample -> dao.upsertEntry(sample.entry(now.epochSecond - index * 600)) }
         database.friendActivityDao().replaceAll(
             listOf(
-                friend(1, "GeckoTV", now - Duration.ofMinutes(12), "watched episode", "5", samples[1], now),
-                friend(2, "Sora", now - Duration.ofHours(3), "completed", null, samples[0], now),
+                friend(1, "Fern", now - Duration.ofMinutes(12), "watched episode", "5", samples[1], now),
+                friend(2, "Stark", now - Duration.ofHours(3), "completed", null, samples[0], now),
                 FriendActivityEntity(
-                    id = 3, userId = 3, userName = "Mika", userAvatarUrl = null,
+                    id = 3, userId = 3, userName = "Heiter", userAvatarUrl = null,
                     createdAt = (now - Duration.ofDays(2)).epochSecond, status = null, progress = null,
                     html = "Finally caught up! <span class='markdown_spoiler'>Himmel!</span> What a show.",
                     mediaId = null, mediaType = null, mediaTitle = null, coverUrl = null, coverColor = null,
                     fetchedAt = now.toEpochMilli()
                 ),
-                friend(4, "GeckoTV", now - Duration.ofDays(8), "read chapter", "120", samples[3], now)
+                friend(4, "Fern", now - Duration.ofDays(8), "read chapter", "120", samples[3], now)
             )
         )
     }
+
+    /** A real AniList cover; shown only when the emulator can reach the image CDN. */
+    private fun cover(path: String) = "https://s4.anilist.co/file/anilistcdn/media/$path"
 
     private data class Sample(
         val entryId: Int,
@@ -104,12 +124,14 @@ class WidgetSampleDataActivity : ComponentActivity() {
         val status: String,
         val nextEpisode: Int?,
         val nextAiringAt: Instant?,
-        val color: String
+        val color: String,
+        val coverUrl: String
     ) {
         fun media() = MediaLiteEntity(
             id = mediaId, type = type, format = if (type == "ANIME") "TV" else "MANGA", status = status,
             episodes = total.takeIf { type == "ANIME" }, chapters = total.takeIf { type == "MANGA" }, volumes = null,
-            titleUserPreferred = title, titleRomaji = title, titleEnglish = null, titleNative = null, coverUrl = null,
+            titleUserPreferred = title, titleRomaji = title, titleEnglish = null, titleNative = null,
+            coverUrl = coverUrl,
             coverColor = color, year = 2026, averageScore = 85, nextAiringEpisode = nextEpisode, isAdult = false,
             nextAiringAt = nextAiringAt?.epochSecond
         )
@@ -133,6 +155,6 @@ class WidgetSampleDataActivity : ComponentActivity() {
     ) = FriendActivityEntity(
         id = id, userId = id, userName = name, userAvatarUrl = null, createdAt = at.epochSecond, status = status,
         progress = progress, html = null, mediaId = media.mediaId, mediaType = media.type,
-        mediaTitle = media.title, coverUrl = null, coverColor = media.color, fetchedAt = now.toEpochMilli()
+        mediaTitle = media.title, coverUrl = media.coverUrl, coverColor = media.color, fetchedAt = now.toEpochMilli()
     )
 }

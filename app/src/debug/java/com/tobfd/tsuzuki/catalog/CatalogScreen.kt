@@ -101,6 +101,8 @@ private const val FRIEREN_TITLE = "Sousou no Frieren"
 private const val FRIEREN_COVER =
     "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/" + "bx154587-qQTzQnEJJ3oB.jpg"
 private const val FRIEREN_COLOR = "#bbf1a1"
+private const val APOTHECARY_COVER =
+    "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/" + "bx161645-QLbzHXiYRgV2.jpg"
 private const val FRIEREN_EPISODES = 28
 private const val SAMPLE_PROGRESS = 18
 private const val SAMPLE_VIEWER = "tobfd"
@@ -619,7 +621,9 @@ private fun CoverCardSamples() {
 private fun InProgressCardSamples() {
     val entries = listOf(
         PreviewListEntries.frieren.copy(media = PreviewListEntries.frieren.media.copy(coverUrl = FRIEREN_COVER)),
-        PreviewListEntries.apothecary
+        PreviewListEntries.apothecary.copy(
+            media = PreviewListEntries.apothecary.media.copy(coverUrl = APOTHECARY_COVER, coverColor = "#f1865d")
+        )
     )
     listOf(
         InProgressCardStyle.Plain to R.string.catalog_in_progress_plain,

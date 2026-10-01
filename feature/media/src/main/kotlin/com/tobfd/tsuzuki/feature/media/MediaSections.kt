@@ -305,10 +305,12 @@ private fun PersonCell(
             horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start,
             modifier = Modifier.weight(1f, fill = false)
         ) {
+            // Two lines: at large font scales one line cut most names short (M12 accessibility pass).
             Text(
                 text = person.name,
                 style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
+                textAlign = if (alignEnd) TextAlign.End else TextAlign.Start,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             detail?.let {

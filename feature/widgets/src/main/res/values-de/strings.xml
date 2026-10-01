@@ -15,8 +15,8 @@
     <string name="widget_in_progress_empty">Gerade nichts dabei</string>
     <string name="widget_in_progress_empty_body">Starte etwas aus deiner „Geplant“-Liste.</string>
     <plurals name="widget_changes_waiting">
-        <item quantity="one">%d Änderung wartet aufs Senden</item>
-        <item quantity="other">%d Änderungen warten aufs Senden</item>
+        <item quantity="one">%d Änderung wartet auf das Senden</item>
+        <item quantity="other">%d Änderungen warten auf das Senden</item>
     </plurals>
     <string name="widget_plus_one_description">+1 für %1$s</string>
     <string name="widget_plus_one_last_description">+1 für %1$s, öffnet den Listen-Editor</string>

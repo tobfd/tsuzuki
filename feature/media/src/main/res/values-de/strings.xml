@@ -10,7 +10,7 @@
     <string name="media_log_in_to_use">Melde dich an, um Listen und Favoriten zu führen.</string>
     <string name="media_log_in">Anmelden</string>
     <string name="media_average_score">%1$d %%</string>
-    <string name="media_tab_overview">Überblick</string>
+    <string name="media_tab_overview">Übersicht</string>
     <string name="media_tab_characters">Figuren</string>
     <string name="media_tab_stats">Statistik</string>
     <string name="media_tab_social">Freunde</string>
@@ -29,7 +29,7 @@
     <string name="media_info_status">Status</string>
     <string name="media_info_start">Beginn</string>
     <string name="media_info_end">Ende</string>
-    <string name="media_info_season">Season</string>
+    <string name="media_info_season">Saison</string>
     <string name="media_info_studio">Studio</string>
     <string name="media_info_source">Vorlage</string>
     <string name="media_info_popularity">Beliebtheit</string>

@@ -29,7 +29,7 @@
     </plurals>
     <string name="lists_editor_details">Details</string>
     <string name="lists_editor_status">Status</string>
-    <string name="lists_editor_progress_episodes">Episoden</string>
+    <string name="lists_editor_progress_episodes">Folgen</string>
     <string name="lists_editor_progress_chapters">Kapitel</string>
     <string name="lists_editor_volumes">Bände</string>
     <string name="lists_editor_score">Bewertung</string>

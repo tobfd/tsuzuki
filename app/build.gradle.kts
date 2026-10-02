@@ -58,13 +58,19 @@ android {
 }
 
 // The AniList client ID comes from local.properties (never committed) and reaches the code as
-// BuildConfig.ANILIST_CLIENT_ID. It is resolved lazily, so only tasks that generate BuildConfig
-// fail when it is missing; everything else (Spotless, IDE sync) keeps working.
+// BuildConfig.ANILIST_CLIENT_ID. In GitHub Actions (for example CodeQL autobuild), local.properties
+// is absent, so CI falls back to a harmless numeric placeholder.
 val anilistClientId: Provider<String> = providers
     .fileContents(layout.settingsDirectory.file("local.properties"))
     .asText
     .map { text -> Properties().apply { load(text.reader()) }.getProperty("anilist.clientId").orEmpty().trim() }
-    .orElse("")
+    .orElse(providers.environmentVariable("ANILIST_CLIENT_ID"))
+    .orElse(
+        providers.environmentVariable("GITHUB_ACTIONS").map { isGithubActions ->
+            if (isGithubActions.equals("true", ignoreCase = true)) "0" else ""
+        }
+    )
+    .map { it.trim() }
 
 androidComponents {
     // The Baseline Profile plugin collects from this copy of release. It has to stay unobfuscated so the

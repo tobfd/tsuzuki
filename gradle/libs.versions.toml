@@ -6,9 +6,9 @@ minSdk = "31"
 
 # Build
 agp = "9.4.1"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 ksp = "2.3.12"
-spotless = "8.10.3"
+spotless = "8.10.4"
 ktlint = "1.8.0"
 
 # Kotlin libraries
@@ -28,7 +28,7 @@ androidxHilt = "1.4.0"
 androidxLifecycle = "2.11.0"
 androidxNavigation3 = "1.2.0"
 # Back events for the predictive back animation in AppShell; Navigation 3 and Activity bring it too.
-androidxNavigationevent = "1.1.2"
+androidxNavigationevent = "1.2.0"
 androidxPaging = "3.5.1"
 androidxProfileinstaller = "1.4.1"
 androidxRoom = "3.0.3"

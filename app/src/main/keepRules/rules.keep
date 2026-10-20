@@ -3,3 +3,9 @@
 # the app needs none of its own beyond readable crash stack traces.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# Glance finds a widget's placed instances by the class name of its GlanceAppWidget
+# (GlanceAppWidgetManager.getGlanceIds). R8 merged the three widgets into one class, so every update
+# of one widget redrew all of them with its own content (issue #18). Keeping them stops the merging
+# and also keeps their names stable across releases, which Glance stores per receiver.
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget

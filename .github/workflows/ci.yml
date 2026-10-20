@@ -35,6 +35,16 @@ jobs:
       - name: Spotless check and build
         run: ./gradlew spotlessCheck build
 
+      # Glance finds a widget's instances by its class name. If R8 merges or renames the widget
+      # classes, one widget's updates redraw the others with its content (issue #18).
+      - name: Check that R8 kept the widget classes apart
+        run: |
+          mapping=app/build/outputs/mapping/release/mapping.txt
+          for widget in inprogress.InProgressWidget nextepisode.NextEpisodeWidget friends.FriendActivityWidget; do
+            class="com.tobfd.tsuzuki.feature.widgets.$widget"
+            grep -qxF "$class -> $class:" "$mapping" || { echo "::error::R8 merged or renamed $class"; exit 1; }
+          done
+
       - name: Upload reports
         if: failure()
         uses: actions/upload-artifact@v7
